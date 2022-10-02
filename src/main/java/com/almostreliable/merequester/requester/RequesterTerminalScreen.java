@@ -71,4 +71,16 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         setInitialFocus(searchField);
         resetScrollbar();
     }
+
+    private <T extends Enum<T>> void togleTerminalStyle(SettingToggleButton<T> setting, boolean state) {
+        // TODO
+    }
+
+    private void resetScrollbar() {
+        // TODO
+    }
+
+    private void refreshList() {
+        // TODO
+    }
 }
