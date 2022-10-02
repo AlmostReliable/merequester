@@ -1,5 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
+import net.fabricmc.loom.task.GenerateSourcesTask
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -138,6 +139,12 @@ tasks {
         inputs.properties(replaceProperties)
         filesMatching(resourceTargets) {
             expand(replaceProperties)
+        }
+    }
+    withType<GenerateSourcesTask> {
+        if (name != "genSourcesWithQuiltflower") {
+            dependsOn("genSourcesWithQuiltflower")
+            onlyIf { false }
         }
     }
     withType<JavaCompile> {
