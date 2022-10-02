@@ -8,7 +8,6 @@ import appeng.api.util.IConfigManager;
 import appeng.api.util.IConfigurableObject;
 import appeng.items.parts.PartModels;
 import appeng.menu.MenuOpener;
-import appeng.menu.implementations.PatternAccessTermMenu;
 import appeng.menu.locator.MenuLocators;
 import appeng.parts.PartModel;
 import appeng.parts.reporting.AbstractDisplayPart;
@@ -45,7 +44,7 @@ public class RequesterTerminal extends AbstractDisplayPart implements IConfigura
     @Override
     public boolean onPartActivate(Player player, InteractionHand hand, Vec3 pos) {
         if (!super.onPartActivate(player, hand, pos) && !isClientSide()) {
-            MenuOpener.open(PatternAccessTermMenu.TYPE, player, MenuLocators.forPart(this));
+            MenuOpener.open(RequesterTerminalMenu.TYPE, player, MenuLocators.forPart(this));
         }
         return true;
     }
