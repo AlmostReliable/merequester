@@ -71,6 +71,7 @@ repositories {
         name = extraModsDirectory
         dir(file("$extraModsDirectory-$mcVersion"))
     }
+    mavenLocal()
 }
 
 dependencies {

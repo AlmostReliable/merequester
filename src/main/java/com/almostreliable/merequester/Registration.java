@@ -21,7 +21,6 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.registries.RegisterEvent;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -41,7 +40,6 @@ public final class Registration {
         );
     }
 
-    // TODO: check why this does not add the block item to the creative tab
     public static BlockDefinition<RequesterBlock> setupRequester() {
         var blockDef = AEBlocksInvokerMixin.merequester$aeBlock(
             "",
@@ -49,7 +47,7 @@ public final class Registration {
             RequesterBlock::new,
             (block, properties) -> new AEBaseBlockItem(block, properties.tab(TAB))
         );
-        setupRequesterEntity(blockDef.block());
+        setupRequesterEntity(blockDef);
         return blockDef;
     }
 
@@ -57,12 +55,12 @@ public final class Registration {
      * logic taken from {@link AEBlockEntities}
      */
     @SuppressWarnings("CastToIncompatibleInterface")
-    private static void setupRequesterEntity(RequesterBlock block) {
+    private static void setupRequesterEntity(BlockDefinition<RequesterBlock> block) {
         AtomicReference<BlockEntityType<RequesterBlockEntity>> typeHolder = new AtomicReference<>();
         BlockEntityType.BlockEntitySupplier<RequesterBlockEntity> supplier = (blockPos, blockState) -> new RequesterBlockEntity(typeHolder.get(), blockPos, blockState);
 
         @SuppressWarnings("ConstantConditions")
-        var type = BlockEntityType.Builder.of(supplier, block).build(null);
+        var type = BlockEntityType.Builder.of(supplier, block.block()).build(null);
         typeHolder.set(type);
         AEBlockEntitiesAccessorMixin.merequester$getBlockEntityTypes().put(Utils.getRL(MERequester.REQUESTER_ID), type);
 
@@ -81,14 +79,7 @@ public final class Registration {
             };
         }
 
-        block.setBlockEntity(RequesterBlockEntity.class, type, clientTicker, serverTicker);
-    }
-
-    // TODO: remove this if not required later | AE2 handles registration of the terminal
-    public static void registryEvent(RegisterEvent event) {
-        // if (event.getRegistryKey().equals(Registry.ITEM_REGISTRY)) {
-        //     ForgeRegistries.ITEMS.register(TERMINAL.id(), TERMINAL.asItem());
-        // }
+        block.block().setBlockEntity(RequesterBlockEntity.class, type, clientTicker, serverTicker);
     }
 
     private static final class Tab extends CreativeModeTab {

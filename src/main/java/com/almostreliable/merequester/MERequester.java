@@ -6,9 +6,7 @@ import appeng.items.parts.PartItem;
 import com.almostreliable.merequester.requester.RequesterBlock;
 import com.almostreliable.merequester.terminal.RequesterTerminalPart;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-@SuppressWarnings("UtilityClassWithPublicConstructor")
 @Mod(BuildConfig.MOD_ID)
 public final class MERequester {
 
@@ -17,9 +15,4 @@ public final class MERequester {
 
     public static final ItemDefinition<PartItem<RequesterTerminalPart>> TERMINAL = Registration.setupTerminal();
     public static final BlockDefinition<RequesterBlock> REQUESTER = Registration.setupRequester();
-
-    public MERequester() {
-        var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modEventBus.addListener(Registration::registryEvent);
-    }
 }
