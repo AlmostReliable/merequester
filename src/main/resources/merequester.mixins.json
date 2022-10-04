@@ -5,6 +5,8 @@
   "refmap": "merequester.refmap.json",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "AEBlockEntitiesAccessorMixin",
+    "AEBlocksInvokerMixin",
     "AEItemsInvokerMixin"
   ],
   "client": [],

@@ -1,4 +1,4 @@
-package com.almostreliable.merequester.requester;
+package com.almostreliable.merequester.terminal;
 
 import appeng.api.config.Settings;
 import appeng.api.config.TypeFilter;
@@ -25,10 +25,10 @@ import net.minecraftforge.common.util.INBTSerializable;
 /**
  * logic taken from {@link PatternAccessTerminalPart}
  */
-public class RequesterTerminal extends AbstractDisplayPart implements IConfigurableObject, INBTSerializable<CompoundTag> {
+public class RequesterTerminalPart extends AbstractDisplayPart implements IConfigurableObject, INBTSerializable<CompoundTag> {
 
-    @PartModels public static final ResourceLocation MODEL_OFF = Utils.getRL(MERequester.TERMINAL_ID + "_off");
-    @PartModels public static final ResourceLocation MODEL_ON = Utils.getRL(MERequester.TERMINAL_ID + "_on");
+    @PartModels public static final ResourceLocation MODEL_OFF = Utils.getRL("part/" + MERequester.TERMINAL_ID + "_off");
+    @PartModels public static final ResourceLocation MODEL_ON = Utils.getRL("part/" + MERequester.TERMINAL_ID + "_on");
 
     public static final IPartModel MODELS_OFF = new PartModel(MODEL_BASE, MODEL_OFF, MODEL_STATUS_OFF);
     public static final IPartModel MODELS_ON = new PartModel(MODEL_BASE, MODEL_ON, MODEL_STATUS_ON);
@@ -36,7 +36,7 @@ public class RequesterTerminal extends AbstractDisplayPart implements IConfigura
 
     private final ConfigManager configManager = new ConfigManager(() -> getHost().markForSave());
 
-    public RequesterTerminal(IPartItem<?> partItem) {
+    public RequesterTerminalPart(IPartItem<?> partItem) {
         super(partItem, true);
         configManager.registerSetting(Settings.TYPE_FILTER, TypeFilter.ALL);
     }

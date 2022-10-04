@@ -1,4 +1,4 @@
-package com.almostreliable.merequester.requester;
+package com.almostreliable.merequester.terminal;
 
 import appeng.api.config.SecurityPermissions;
 import appeng.api.config.TypeFilter;
@@ -13,14 +13,14 @@ import net.minecraft.world.inventory.MenuType;
 public class RequesterTerminalMenu extends AEBaseMenu {
 
     public static final MenuType<RequesterTerminalMenu> TYPE = MenuTypeBuilder
-        .create(RequesterTerminalMenu::new, RequesterTerminal.class)
+        .create(RequesterTerminalMenu::new, RequesterTerminalPart.class)
         .requirePermission(SecurityPermissions.BUILD)
         .build(MERequester.TERMINAL_ID);
 
     private final IConfigurableObject host;
     @GuiSync(1) public TypeFilter typeFilter = TypeFilter.ALL; // test if this needs to be public for the gui sync annotation
 
-    public RequesterTerminalMenu(int id, Inventory playerInventory, RequesterTerminal host) {
+    public RequesterTerminalMenu(int id, Inventory playerInventory, RequesterTerminalPart host) {
         super(TYPE, id, playerInventory, host);
         this.host = host;
         createPlayerInventorySlots(playerInventory);

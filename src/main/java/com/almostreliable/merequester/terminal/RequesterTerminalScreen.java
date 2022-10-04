@@ -1,4 +1,4 @@
-package com.almostreliable.merequester.requester;
+package com.almostreliable.merequester.terminal;
 
 import appeng.api.config.Settings;
 import appeng.api.config.TerminalStyle;

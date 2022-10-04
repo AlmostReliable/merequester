@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "merequester:block/requester"
+    }
+  }
+}
