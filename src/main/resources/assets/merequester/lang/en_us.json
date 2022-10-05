@@ -1,5 +1,6 @@
 {
   "itemGroup.merequester": "ME Requester",
   "item.merequester.requester_terminal": "ME Requester Terminal",
-  "block.merequester.requester": "ME Requester"
+  "block.merequester.requester": "ME Requester",
+  "gui.merequester.requester_terminal": "ME Requ. Terminal"
 }

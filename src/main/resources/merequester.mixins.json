@@ -7,9 +7,12 @@
   "mixins": [
     "AEBlockEntitiesMixin",
     "AEBlocksMixin",
-    "AEItemsMixin"
+    "AEItemsMixin",
+    "InitMenuTypesMixin"
   ],
-  "client": [],
+  "client": [
+    "InitScreensMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
