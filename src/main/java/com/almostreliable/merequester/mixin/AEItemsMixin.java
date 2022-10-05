@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 @SuppressWarnings("ALL")
 @Mixin(AEItems.class)
-public interface AEItemsInvokerMixin {
+public interface AEItemsMixin {
     @Invoker(value = "item", remap = false)
     static <T extends Item> ItemDefinition<T> merequester$partItem(
         String name, ResourceLocation id, Function<Item.Properties, T> partFactory, CreativeModeTab creativeTab

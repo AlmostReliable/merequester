@@ -10,9 +10,9 @@ import appeng.core.definitions.BlockDefinition;
 import appeng.core.definitions.ItemDefinition;
 import appeng.items.parts.PartItem;
 import appeng.items.parts.PartModelsHelper;
-import com.almostreliable.merequester.mixin.AEBlockEntitiesAccessorMixin;
-import com.almostreliable.merequester.mixin.AEBlocksInvokerMixin;
-import com.almostreliable.merequester.mixin.AEItemsInvokerMixin;
+import com.almostreliable.merequester.mixin.AEBlockEntitiesMixin;
+import com.almostreliable.merequester.mixin.AEBlocksMixin;
+import com.almostreliable.merequester.mixin.AEItemsMixin;
 import com.almostreliable.merequester.requester.RequesterBlock;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.terminal.RequesterTerminalPart;
@@ -32,7 +32,7 @@ public final class Registration {
 
     public static ItemDefinition<PartItem<RequesterTerminalPart>> setupTerminal() {
         PartModels.registerModels(PartModelsHelper.createModels(RequesterTerminalPart.class));
-        return AEItemsInvokerMixin.merequester$partItem(
+        return AEItemsMixin.merequester$partItem(
             "",
             Utils.getRL(MERequester.TERMINAL_ID),
             props -> new PartItem<>(props, RequesterTerminalPart.class, RequesterTerminalPart::new),
@@ -41,7 +41,7 @@ public final class Registration {
     }
 
     public static BlockDefinition<RequesterBlock> setupRequester() {
-        var blockDef = AEBlocksInvokerMixin.merequester$aeBlock(
+        var blockDef = AEBlocksMixin.merequester$aeBlock(
             "",
             Utils.getRL(MERequester.REQUESTER_ID),
             RequesterBlock::new,
@@ -62,7 +62,7 @@ public final class Registration {
         @SuppressWarnings("ConstantConditions")
         var type = BlockEntityType.Builder.of(supplier, block.block()).build(null);
         typeHolder.set(type);
-        AEBlockEntitiesAccessorMixin.merequester$getBlockEntityTypes().put(Utils.getRL(MERequester.REQUESTER_ID), type);
+        AEBlockEntitiesMixin.merequester$getBlockEntityTypes().put(Utils.getRL(MERequester.REQUESTER_ID), type);
 
         AEBaseBlockEntity.registerBlockEntityItem(type, block.asItem());
 

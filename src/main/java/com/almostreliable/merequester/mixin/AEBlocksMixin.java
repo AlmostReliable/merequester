@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 @SuppressWarnings("ALL")
 @Mixin(AEBlocks.class)
-public interface AEBlocksInvokerMixin {
+public interface AEBlocksMixin {
     @Invoker(value = "block", remap = false)
     static <T extends Block> BlockDefinition<T> merequester$aeBlock(
         String name, ResourceLocation id, Supplier<T> blockSupplier,
