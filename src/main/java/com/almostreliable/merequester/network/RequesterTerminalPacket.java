@@ -5,8 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Objects;
 
@@ -16,7 +14,7 @@ public class RequesterTerminalPacket extends ServerToClientPacket<RequesterTermi
     private long inventoryId;
     private CompoundTag in;
 
-    public RequesterTerminalPacket(boolean clearExistingData, long inventoryId, CompoundTag in) {
+    private RequesterTerminalPacket(boolean clearExistingData, long inventoryId, CompoundTag in) {
         this.clearExistingData = clearExistingData;
         this.inventoryId = inventoryId;
         this.in = in;
@@ -40,19 +38,18 @@ public class RequesterTerminalPacket extends ServerToClientPacket<RequesterTermi
         );
     }
 
+    @Override
+    protected void handlePacket(RequesterTerminalPacket packet, ClientLevel level) {
+        if (Minecraft.getInstance().screen instanceof RequesterTerminalScreen screen) {
+            screen.postInventoryUpdate(packet.clearExistingData, packet.inventoryId, packet.in);
+        }
+    }
+
     public static RequesterTerminalPacket clearExistingData() {
         return new RequesterTerminalPacket(true, -1, new CompoundTag());
     }
 
     public static RequesterTerminalPacket inventory(long id, CompoundTag data) {
         return new RequesterTerminalPacket(false, id, data);
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    protected void handlePacket(RequesterTerminalPacket packet, ClientLevel level) {
-        if (Minecraft.getInstance().screen instanceof RequesterTerminalScreen screen) {
-            screen.postInventoryUpdate(packet.clearExistingData, packet.inventoryId, packet.in);
-        }
     }
 }
