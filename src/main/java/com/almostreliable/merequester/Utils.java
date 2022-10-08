@@ -1,4 +1,4 @@
-package com.almostreliable.merequester.utils;
+package com.almostreliable.merequester;
 
 import com.almostreliable.merequester.BuildConfig;
 import net.minecraft.resources.ResourceLocation;

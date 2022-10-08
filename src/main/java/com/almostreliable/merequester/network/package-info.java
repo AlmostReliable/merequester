@@ -1,5 +1,5 @@
 @ParametersAreNonnullByDefault @MethodsReturnNonnullByDefault
-package com.almostreliable.merequester.utils;
+package com.almostreliable.merequester.network;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

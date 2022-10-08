@@ -22,6 +22,7 @@ import com.almostreliable.merequester.requester.progression.ProgressionType;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -116,6 +117,13 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
         // handled by progression states
     }
 
+    public long getSortValue() {
+        var entity = getBlockEntity();
+        return (long) entity.getBlockPos().getZ() << 24 ^
+            (long) entity.getBlockPos().getX() << 8 ^
+            entity.getBlockPos().getY();
+    }
+
     private boolean handleProgression() {
         var changed = false;
 
@@ -145,5 +153,10 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
         }
 
         return progressions[slot];
+    }
+
+    public Component getTermName() {
+        if (hasCustomInventoryName()) return getCustomInventoryName();
+        return Component.literal("Requester");
     }
 }

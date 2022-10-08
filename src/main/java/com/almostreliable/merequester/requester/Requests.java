@@ -9,19 +9,24 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class Requests implements InternalInventory, INBTSerializable<CompoundTag> {
 
-    private final InternalInventoryHost host;
+    @Nullable private final InternalInventoryHost host;
     private final Request[] requests;
 
-    public Requests(InternalInventoryHost host) {
+    public Requests(@Nullable InternalInventoryHost host) {
         this.host = host;
         requests = new Request[RequesterBlockEntity.SLOTS];
         for (var i = 0; i < requests.length; i++) {
             requests[i] = new Request(this, i);
         }
+    }
+
+    public Requests() {
+        this(null);
     }
 
     @Override
@@ -36,7 +41,7 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
 
     @Override
     public void setItemDirect(int slot, ItemStack stack) {
-        if (host.isClientSide()) {
+        if (host == null || host.isClientSide()) {
             get(slot).updateStackClient(stack);
         } else {
             get(slot).updateStack(stack);
@@ -138,8 +143,10 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
         public void updateState(boolean state) {
             if (this.state != state) {
                 this.state = state;
-                host.saveChanges();
-                // changed = true;
+                if (host != null) {
+                    host.saveChanges();
+                    // changed = true;
+                }
             }
         }
 
@@ -153,15 +160,17 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
                 this.count = count;
             }
             if (!oldStack.sameItem(stack) || oldCount != this.count || oldBatch != batch) {
-                host.saveChanges();
-                // changed = true;
+                if (host != null) {
+                    host.saveChanges();
+                    // changed = true;
+                }
             }
         }
 
         public void updateBatch(long batch) {
             var oldBatch = this.batch;
             this.batch = batch <= 0 ? 1 : batch;
-            if (oldBatch != this.batch) {
+            if (oldBatch != this.batch && host != null) {
                 host.saveChanges();
                 // changed = true;
             }
@@ -170,6 +179,10 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
         @Override
         public String toString() {
             return "Request[" + "state=" + state + ", " + "stack=" + stack + ", " + "count=" + count + ", " + "batch=" + batch + ']';
+        }
+
+        public boolean isDifferent(Request other) {
+            return state != other.state || !ItemStack.isSameItemSameTags(stack, other.stack) || count != other.count || batch != other.batch;
         }
 
         // @Override
@@ -224,8 +237,10 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
         }
 
         private void stackChanged() {
-            host.onChangeInventory(requestHost, slot);
-            // changed = true;
+            if (host != null) {
+                host.onChangeInventory(requestHost, slot);
+                // changed = true;
+            }
         }
 
         private void resetSlot() {
