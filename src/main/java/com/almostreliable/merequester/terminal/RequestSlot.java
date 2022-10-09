@@ -1,13 +1,12 @@
 package com.almostreliable.merequester.terminal;
 
-import appeng.menu.slot.AppEngSlot;
+import appeng.menu.slot.FakeSlot;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.mixin.SlotMixin;
 import com.almostreliable.merequester.requester.RequesterRecord;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-public class RequestSlot extends AppEngSlot {
+public class RequestSlot extends FakeSlot {
 
     private final RequesterRecord host;
     private final int slot;
@@ -21,40 +20,15 @@ public class RequestSlot extends AppEngSlot {
     }
 
     @Override
-    public void onTake(Player player, ItemStack stack) {}
-
-    @Override
-    public final ItemStack remove(int amount) {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public final boolean mayPlace(ItemStack stack) {
-        return false;
-    }
-
-    @Override
-    public final void set(ItemStack stack) {
-        if (!stack.isEmpty()) {
-            stack = stack.copy();
-        }
-
-        super.set(stack);
-    }
-
-    @Override
-    public final boolean mayPickup(Player player) {
-        return false;
-    }
-
-    @Override
-    public void initialize(ItemStack stack) {
-    }
-
-    @Override
     public final int getMaxStackSize() {
         return 0;
     }
+
+    @Override
+    public void increase(ItemStack is) {}
+
+    @Override
+    public void decrease(ItemStack is) {}
 
     public RequesterRecord getHost() {
         return host;

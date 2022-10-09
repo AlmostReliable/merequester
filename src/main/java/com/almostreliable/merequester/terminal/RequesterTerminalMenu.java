@@ -24,6 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -116,31 +117,36 @@ public class RequesterTerminalMenu extends AEBaseMenu {
                 }
                 break;
             case SHIFT_CLICK: {
-                var stack = patternSlot.getStackInSlot(0).copy();
-                if (player.getInventory().add(stack)) {
-                    patternSlot.setItemDirect(0, ItemStack.EMPTY);
-                } else {
-                    patternSlot.setItemDirect(0, stack);
-                }
+                patternSlot.setItemDirect(0, ItemStack.EMPTY);
             }
             break;
-            case MOVE_REGION:
-                for (int x = 0; x < requests.server.size(); x++) {
-                    var stack = requests.server.getStackInSlot(x);
-                    if (player.getInventory().add(stack)) {
-                        patternSlot.setItemDirect(0, ItemStack.EMPTY);
-                    } else {
-                        patternSlot.setItemDirect(0, stack);
-                    }
-                }
-                break;
             case CREATIVE_DUPLICATE:
                 if (player.getAbilities().instabuild && carried.isEmpty()) {
-                    setCarried(request.isEmpty() ? ItemStack.EMPTY : request.copy());
+                    if (request.isEmpty()) {
+                        setCarried(ItemStack.EMPTY);
+                    } else {
+                        var stack = request.copy();
+                        stack.setCount(stack.getMaxStackSize());
+                        setCarried(stack);
+                    }
                 }
                 break;
             default:
         }
+    }
+
+    @Override
+    protected ItemStack transferStackToMenu(ItemStack stack) {
+        var requesters = byRequester.keySet()
+            .stream().sorted(Comparator.comparingLong(RequesterBlockEntity::getSortValue)).toList();
+
+        for (var requester : requesters) {
+            var targetSlot = requester.getRequests().firstAvailableSlot();
+            if (targetSlot == -1) continue;
+            byRequester.get(requester).server.insertItem(targetSlot, stack, false);
+            return stack;
+        }
+        return stack;
     }
 
     private void visitRequesters(IGrid grid, VisitorState state) {

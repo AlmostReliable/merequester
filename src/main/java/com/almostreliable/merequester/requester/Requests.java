@@ -114,8 +114,6 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
         private ItemStack stack = ItemStack.EMPTY;
         private long count;
         private long batch = 1;
-        // TODO: implement syncing for screen rendering
-        // private boolean changed;
 
         private Request(InternalInventory requestHost, int slot) {
             this.requestHost = requestHost;
