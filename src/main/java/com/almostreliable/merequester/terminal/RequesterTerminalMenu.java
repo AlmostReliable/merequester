@@ -77,49 +77,22 @@ public class RequesterTerminalMenu extends AEBaseMenu {
         var patternSlot = requests.server.getSlotInv(slot);
         var carried = getCarried();
 
-        // TODO: check if logic is correct for ghost slot
         switch (action) {
             case PICKUP_OR_SET_DOWN:
+                patternSlot.setItemDirect(0, carried.isEmpty() ? ItemStack.EMPTY : carried.copy());
+                break;
+            case SPLIT_OR_PLACE_SINGLE:
                 if (carried.isEmpty()) {
                     patternSlot.setItemDirect(0, ItemStack.EMPTY);
                 } else {
-                    var inSlot = patternSlot.getStackInSlot(0);
-                    if (inSlot.isEmpty()) {
-                        setCarried(patternSlot.addItems(carried));
-                    } else {
-                        inSlot = inSlot.copy();
-                        var inHand = carried.copy();
-
-                        patternSlot.setItemDirect(0, ItemStack.EMPTY);
-                        setCarried(ItemStack.EMPTY);
-                        setCarried(patternSlot.addItems(inHand.copy()));
-
-                        if (carried.isEmpty()) {
-                            setCarried(inSlot);
-                        } else {
-                            setCarried(inHand);
-                            patternSlot.setItemDirect(0, inSlot);
-                        }
-                    }
+                    var copy = carried.copy();
+                    copy.setCount(1);
+                    patternSlot.setItemDirect(0, copy);
                 }
                 break;
-            case SPLIT_OR_PLACE_SINGLE:
-                if (!carried.isEmpty()) {
-                    ItemStack extra = carried.split(1);
-                    if (!extra.isEmpty()) {
-                        extra = patternSlot.addItems(extra);
-                    }
-                    if (!extra.isEmpty()) {
-                        carried.grow(extra.getCount());
-                    }
-                } else if (!request.isEmpty()) {
-                    setCarried(patternSlot.extractItem(0, (request.getCount() + 1) / 2, false));
-                }
-                break;
-            case SHIFT_CLICK: {
+            case SHIFT_CLICK:
                 patternSlot.setItemDirect(0, ItemStack.EMPTY);
-            }
-            break;
+                break;
             case CREATIVE_DUPLICATE:
                 if (player.getAbilities().instabuild && carried.isEmpty()) {
                     if (request.isEmpty()) {

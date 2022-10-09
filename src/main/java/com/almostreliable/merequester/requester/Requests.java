@@ -54,11 +54,10 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
 
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-        var insertStack = stack.copy();
         if (host == null || host.isClientSide()) {
-            get(slot).updateStackClient(insertStack);
+            get(slot).updateStackClient(stack);
         } else {
-            get(slot).updateStack(insertStack);
+            get(slot).updateStack(stack);
         }
         return stack;
     }
