@@ -15,10 +15,10 @@ import appeng.core.localization.GuiText;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.InventoryActionPacket;
 import appeng.helpers.InventoryAction;
-import appeng.menu.slot.FakeSlot;
 import com.almostreliable.merequester.MERequester;
-import com.almostreliable.merequester.requester.RequesterRecord;
 import com.almostreliable.merequester.Utils;
+import com.almostreliable.merequester.requester.RequesterBlockEntity;
+import com.almostreliable.merequester.requester.RequesterRecord;
 import com.google.common.collect.HashMultimap;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -44,38 +44,33 @@ import java.util.*;
 public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu> {
 
     private static final ResourceLocation TEXTURE = Utils.getRL("textures/gui/" + MERequester.TERMINAL_ID + ".png");
-    private static final int GUI_WIDTH = 195;
 
+    private static final int GUI_WIDTH = 195;
     private static final int GUI_PADDING_X = 8;
     private static final int GUI_PADDING_Y = 6;
+    private static final int GUI_HEADER_HEIGHT = 18;
+    private static final int GUI_FOOTER_HEIGHT = 98;
 
-    private static final int GUI_HEADER_HEIGHT = 17;
-    private static final int GUI_FOOTER_HEIGHT = 97;
+    private static final int TEXT_MARGIN_X = 2;
+    private static final int TEXT_MAX_WIDTH = 156;
 
-    private static final int NAME_MARGIN_X = 2;
-    private static final int TEXT_MAX_WIDTH = 155;
-
-    private static final int ROW_HEIGHT = 18;
-    private static final int DEFAULT_ROW_COUNT = 5;
+    private static final int ROW_HEIGHT = 19;
+    private static final int DEFAULT_ROW_COUNT = RequesterBlockEntity.SLOTS + 1;
     private static final int MIN_ROW_COUNT = 3;
 
     private static final Rect2i HEADER_BBOX = new Rect2i(0, 0, GUI_WIDTH, GUI_HEADER_HEIGHT);
-    private static final Rect2i FOOTER_BBOX = new Rect2i(0, 125, GUI_WIDTH, GUI_FOOTER_HEIGHT);
+    private static final Rect2i FOOTER_BBOX = new Rect2i(0, 132, GUI_WIDTH, GUI_FOOTER_HEIGHT);
 
-    private static final Rect2i ROW_TEXT_TOP_BBOX = new Rect2i(0, 17, GUI_WIDTH, ROW_HEIGHT);
-    private static final Rect2i ROW_TEXT_MIDDLE_BBOX = new Rect2i(0, 53, GUI_WIDTH, ROW_HEIGHT);
-    private static final Rect2i ROW_TEXT_BOTTOM_BBOX = new Rect2i(0, 89, GUI_WIDTH, ROW_HEIGHT);
-
-    private static final Rect2i ROW_INVENTORY_TOP_BBOX = new Rect2i(0, 35, GUI_WIDTH, ROW_HEIGHT);
-    private static final Rect2i ROW_INVENTORY_MIDDLE_BBOX = new Rect2i(0, 71, GUI_WIDTH, ROW_HEIGHT);
-    private static final Rect2i ROW_INVENTORY_BOTTOM_BBOX = new Rect2i(0, 107, GUI_WIDTH, ROW_HEIGHT);
+    private static final Rect2i TEXT_BBOX = new Rect2i(0, 18, GUI_WIDTH, ROW_HEIGHT);
+    private static final Rect2i REQUEST_BBOX = new Rect2i(0, 37, GUI_WIDTH, ROW_HEIGHT);
 
     private final HashMap<Long, RequesterRecord> byId = new HashMap<>();
     private final HashMultimap<String, RequesterRecord> byName = HashMultimap.create();
+
     private final List<String> names = new ArrayList<>();
     private final ArrayList<Object> lines = new ArrayList<>();
+    private final Map<String, Set<Object>> searchCache = new WeakHashMap<>();
 
-    private final Map<String, Set<Object>> cachedSearches = new WeakHashMap<>();
     private final Scrollbar scrollbar;
     private final AETextField searchField;
 
@@ -118,35 +113,34 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
 
     @Override
     public void drawFG(PoseStack poseStack, int pX, int pY, int mX, int mY) {
-        // TODO: check if this is done every render tick and maybe move it to init
-        menu.slots.removeIf(FakeSlot.class::isInstance);
+        menu.slots.removeIf(RequestSlot.class::isInstance);
 
         int textColor = style.getColor(PaletteColor.DEFAULT_TEXT_COLOR).toARGB();
         int scrollLevel = scrollbar.getCurrentScroll();
 
         for (var i = 0; i < rowAmount; ++i) {
-            if (scrollLevel + i < lines.size()) {
-                var lineObj = lines.get(scrollLevel + i);
-                if (lineObj instanceof RequesterRecord host) {
-                    for (int z = 0; z < host.getRequests().size(); z++) {
-                        menu.slots.add(new RequestSlot(host, z, z * ROW_HEIGHT + GUI_PADDING_X, (i + 1) * ROW_HEIGHT));
-                    }
-                } else if (lineObj instanceof String name) {
-                    int rows = byName.get(name).size();
-                    if (rows > 1) {
-                        name = name + " (" + rows + ')';
-                    }
+            if (scrollLevel + i >= lines.size()) continue;
 
-                    name = font.plainSubstrByWidth(name, TEXT_MAX_WIDTH, true);
-
-                    font.draw(
-                        poseStack,
-                        name,
-                        GUI_PADDING_X + NAME_MARGIN_X,
-                        GUI_PADDING_Y + GUI_HEADER_HEIGHT + i * ROW_HEIGHT,
-                        textColor
-                    );
+            var lineObj = lines.get(scrollLevel + i);
+            if (lineObj instanceof RequesterRecord host) {
+                for (int j = 0; j < host.getRequests().size(); j++) {
+                    menu.slots.add(new RequestSlot(host, j, j * ROW_HEIGHT + GUI_PADDING_X, (i + 1) * ROW_HEIGHT));
                 }
+            } else if (lineObj instanceof String name) {
+                int rows = byName.get(name).size();
+                if (rows > 1) {
+                    name = name + " (" + rows + ')';
+                }
+
+                name = font.plainSubstrByWidth(name, TEXT_MAX_WIDTH, true);
+
+                font.draw(
+                    poseStack,
+                    name,
+                    GUI_PADDING_X + TEXT_MARGIN_X,
+                    GUI_PADDING_Y + GUI_HEADER_HEIGHT + i * ROW_HEIGHT,
+                    textColor
+                );
             }
         }
     }
@@ -210,16 +204,13 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         blit(poseStack, pX, currentY + rowAmount * ROW_HEIGHT, FOOTER_BBOX);
 
         for (int i = 0; i < rowAmount; ++i) {
-            boolean firstLine = i == 0;
-            boolean lastLine = i == rowAmount - 1;
-
             var isInvLine = false;
             if (scrollLevel + i < lines.size()) {
                 Object lineObj = lines.get(scrollLevel + i);
                 isInvLine = lineObj instanceof RequesterRecord;
             }
 
-            blit(poseStack, pX, currentY, selectBox(isInvLine, firstLine, lastLine));
+            blit(poseStack, pX, currentY, selectBox(isInvLine));
 
             currentY += ROW_HEIGHT;
         }
@@ -230,16 +221,8 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         return character == ' ' && searchField.getValue().isEmpty() || super.charTyped(character, key);
     }
 
-    private Rect2i selectBox(boolean isInvLine, boolean firstLine, boolean lastLine) {
-        if (isInvLine) {
-            if (firstLine) return ROW_INVENTORY_TOP_BBOX;
-            if (lastLine) return ROW_INVENTORY_BOTTOM_BBOX;
-            return ROW_INVENTORY_MIDDLE_BBOX;
-        }
-
-        if (firstLine) return ROW_TEXT_TOP_BBOX;
-        if (lastLine) return ROW_TEXT_BOTTOM_BBOX;
-        return ROW_TEXT_MIDDLE_BBOX;
+    private Rect2i selectBox(boolean isInvLine) {
+        return isInvLine ? REQUEST_BBOX : TEXT_BBOX;
     }
 
     public void postInventoryUpdate(boolean clearExistingData, long inventoryId, CompoundTag invData) {
@@ -251,17 +234,18 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             if (un == null) return;
             var requester = getById(inventoryId, invData.getLong("sortBy"), un);
 
+            // TODO: debug if this is the correct logic
             for (int i = 0; i < requester.getRequests().size(); i++) {
                 String which = Integer.toString(i);
                 if (invData.contains(which)) {
-                    requester.getRequests().setItemDirect(i, ItemStack.of(invData.getCompound(which)));
+                    requester.getRequests().get(i).deserializeNBT(invData.getCompound(which));
                 }
             }
         }
 
         if (refreshList) {
             refreshList = false;
-            cachedSearches.clear();
+            searchCache.clear();
             refreshList();
         }
     }
@@ -281,49 +265,48 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
     }
 
     private void resetScrollbar() {
-        scrollbar.setHeight(rowAmount * ROW_HEIGHT - 2);
+        scrollbar.setHeight(rowAmount * ROW_HEIGHT);
         scrollbar.setRange(0, lines.size() - rowAmount, 2);
     }
 
     private void refreshList() {
         byName.clear();
 
-        String searchFilterLowerCase = searchField.getValue().toLowerCase();
-        Set<Object> cachedSearch = getCacheForSearchTerm(searchFilterLowerCase);
-        boolean rebuild = cachedSearch.isEmpty();
+        var searchQuery = searchField.getValue().toLowerCase();
+        var cachedSearch = searchByQuery(searchQuery);
+        var rebuild = cachedSearch.isEmpty();
 
-        for (RequesterRecord entry : byId.values()) {
-            if (!rebuild && !cachedSearch.contains(entry)) continue;
+        for (RequesterRecord requester : byId.values()) {
+            if (!rebuild && !cachedSearch.contains(requester)) continue;
 
-            boolean found = searchFilterLowerCase.isEmpty();
+            boolean found = searchQuery.isEmpty();
             if (!found) {
-                for (ItemStack itemStack : entry.getRequests()) {
-                    found = itemStackMatchesSearchTerm(itemStack, searchFilterLowerCase);
+                for (var stack : requester.getRequests()) {
+                    found = stackMatchesSearchQuery(stack, searchQuery);
                     if (found) break;
                 }
             }
 
-            if (found || entry.getSearchName().contains(searchFilterLowerCase)) {
-                byName.put(entry.getDisplayName(), entry);
-                cachedSearch.add(entry);
+            if (found || requester.getSearchName().contains(searchQuery)) {
+                byName.put(requester.getDisplayName(), requester);
+                cachedSearch.add(requester);
             } else {
-                cachedSearch.remove(entry);
+                cachedSearch.remove(requester);
             }
         }
 
         names.clear();
         names.addAll(byName.keySet());
-
         Collections.sort(names);
 
         lines.clear();
         lines.ensureCapacity(names.size() + byId.size());
 
-        for (String n : names) {
-            lines.add(n);
-            List<RequesterRecord> clientInventories = new ArrayList<>(byName.get(n));
-            Collections.sort(clientInventories);
-            lines.addAll(clientInventories);
+        for (var name : names) {
+            lines.add(name);
+            List<RequesterRecord> requesters = new ArrayList<>(byName.get(name));
+            Collections.sort(requesters);
+            lines.addAll(requesters);
         }
 
         resetScrollbar();
@@ -338,7 +321,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         blit(poseStack, pX, pY, srcRect.getX(), srcRect.getY(), srcRect.getWidth(), srcRect.getHeight());
     }
 
-    private boolean itemStackMatchesSearchTerm(ItemStack itemStack, String searchTerm) {
+    private boolean stackMatchesSearchQuery(ItemStack itemStack, String searchTerm) {
         if (itemStack.isEmpty()) return false;
 
         CompoundTag encodedValue = itemStack.getTag();
@@ -368,11 +351,11 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         return o;
     }
 
-    private Set<Object> getCacheForSearchTerm(String searchTerm) {
-        Set<Object> cache = cachedSearches.computeIfAbsent(searchTerm, $ -> new HashSet<>());
+    private Set<Object> searchByQuery(String searchQuery) {
+        Set<Object> cache = searchCache.computeIfAbsent(searchQuery, $ -> new HashSet<>());
 
-        if (cache.isEmpty() && searchTerm.length() > 1) {
-            cache.addAll(getCacheForSearchTerm(searchTerm.substring(0, searchTerm.length() - 1)));
+        if (cache.isEmpty() && searchQuery.length() > 1) {
+            cache.addAll(searchByQuery(searchQuery.substring(0, searchQuery.length() - 1)));
         }
         return cache;
     }
