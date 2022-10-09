@@ -1,6 +1,8 @@
 package com.almostreliable.merequester.terminal;
 
 import appeng.menu.slot.AppEngSlot;
+import com.almostreliable.merequester.Utils;
+import com.almostreliable.merequester.mixin.SlotMixin;
 import com.almostreliable.merequester.requester.RequesterRecord;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -9,19 +11,13 @@ public class RequestSlot extends AppEngSlot {
 
     private final RequesterRecord host;
     private final int slot;
-    private final int x;
-    private final int y;
-
-    public int getSlot() {
-        return slot;
-    }
 
     public RequestSlot(RequesterRecord host, int slot, int x, int y) {
         super(host.getRequests(), slot);
         this.host = host;
         this.slot = slot;
-        this.x = x;
-        this.y = y;
+        Utils.cast(this, SlotMixin.class).merequester$setX(x);
+        Utils.cast(this, SlotMixin.class).merequester$setY(y);
     }
 
     @Override
@@ -60,11 +56,11 @@ public class RequestSlot extends AppEngSlot {
         return 0;
     }
 
-    public boolean canSetFilterTo() {
-        return slot < getInventory().size();
-    }
-
     public RequesterRecord getHost() {
         return host;
+    }
+
+    public int getSlot() {
+        return slot;
     }
 }

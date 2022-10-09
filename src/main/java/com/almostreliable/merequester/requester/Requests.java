@@ -7,6 +7,8 @@ import appeng.api.stacks.GenericStack;
 import appeng.util.inv.InternalInventoryHost;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
@@ -14,6 +16,7 @@ import java.util.Objects;
 
 public class Requests implements InternalInventory, INBTSerializable<CompoundTag> {
 
+    // if null, the inventory is client-side and doesn't need saving
     @Nullable private final InternalInventoryHost host;
     private final Request[] requests;
 
@@ -41,11 +44,7 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
 
     @Override
     public void setItemDirect(int slot, ItemStack stack) {
-        if (host == null || host.isClientSide()) {
-            get(slot).updateStackClient(stack);
-        } else {
-            get(slot).updateStack(stack);
-        }
+        insertItem(slot, stack, false);
     }
 
     @Override
@@ -55,7 +54,13 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
 
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-        throw new UnsupportedOperationException();
+        var insertStack = stack.copy();
+        if (host == null || host.isClientSide()) {
+            get(slot).updateStackClient(insertStack);
+        } else {
+            get(slot).updateStack(insertStack);
+        }
+        return stack;
     }
 
     @Override
@@ -115,6 +120,16 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
         private Request(InternalInventory requestHost, int slot) {
             this.requestHost = requestHost;
             this.slot = slot;
+        }
+
+        public int getSlot() {
+            return slot;
+        }
+
+        @OnlyIn(Dist.CLIENT)
+        public InternalInventoryHost getRequesterRecord() {
+            assert host != null;
+            return host;
         }
 
         public GenericStack toGenericStack(long count) {

@@ -80,7 +80,6 @@ public class RequesterTerminalMenu extends AEBaseMenu {
         switch (action) {
             case PICKUP_OR_SET_DOWN:
                 if (carried.isEmpty()) {
-                    setCarried(patternSlot.getStackInSlot(0));
                     patternSlot.setItemDirect(0, ItemStack.EMPTY);
                 } else {
                     var inSlot = patternSlot.getStackInSlot(0);

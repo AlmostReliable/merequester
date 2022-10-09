@@ -19,6 +19,7 @@ import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.requester.RequesterRecord;
+import com.almostreliable.merequester.requester.Requests;
 import com.google.common.collect.HashMultimap;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -48,7 +49,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
     private static final int GUI_WIDTH = 195;
     private static final int GUI_PADDING_X = 8;
     private static final int GUI_PADDING_Y = 6;
-    private static final int GUI_HEADER_HEIGHT = 18;
+    private static final int GUI_HEADER_HEIGHT = 19;
     private static final int GUI_FOOTER_HEIGHT = 98;
 
     private static final int TEXT_MARGIN_X = 2;
@@ -59,10 +60,10 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
     private static final int MIN_ROW_COUNT = 3;
 
     private static final Rect2i HEADER_BBOX = new Rect2i(0, 0, GUI_WIDTH, GUI_HEADER_HEIGHT);
-    private static final Rect2i FOOTER_BBOX = new Rect2i(0, 132, GUI_WIDTH, GUI_FOOTER_HEIGHT);
+    private static final Rect2i FOOTER_BBOX = new Rect2i(0, 133, GUI_WIDTH, GUI_FOOTER_HEIGHT);
 
-    private static final Rect2i TEXT_BBOX = new Rect2i(0, 18, GUI_WIDTH, ROW_HEIGHT);
-    private static final Rect2i REQUEST_BBOX = new Rect2i(0, 37, GUI_WIDTH, ROW_HEIGHT);
+    private static final Rect2i TEXT_BBOX = new Rect2i(0, 19, GUI_WIDTH, ROW_HEIGHT);
+    private static final Rect2i REQUEST_BBOX = new Rect2i(0, 38, GUI_WIDTH, ROW_HEIGHT);
 
     private final HashMap<Long, RequesterRecord> byId = new HashMap<>();
     private final HashMultimap<String, RequesterRecord> byName = HashMultimap.create();
@@ -122,10 +123,13 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             if (scrollLevel + i >= lines.size()) continue;
 
             var lineObj = lines.get(scrollLevel + i);
-            if (lineObj instanceof RequesterRecord host) {
-                for (int j = 0; j < host.getRequests().size(); j++) {
-                    menu.slots.add(new RequestSlot(host, j, j * ROW_HEIGHT + GUI_PADDING_X, (i + 1) * ROW_HEIGHT));
-                }
+            if (lineObj instanceof Requests.Request request) {
+                menu.slots.add(new RequestSlot(
+                    (RequesterRecord) request.getRequesterRecord(),
+                    request.getSlot(),
+                    ROW_HEIGHT + GUI_PADDING_X,
+                    (i + 1) * ROW_HEIGHT + 1
+                ));
             } else if (lineObj instanceof String name) {
                 int rows = byName.get(name).size();
                 if (rows > 1) {
@@ -207,7 +211,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             var isInvLine = false;
             if (scrollLevel + i < lines.size()) {
                 Object lineObj = lines.get(scrollLevel + i);
-                isInvLine = lineObj instanceof RequesterRecord;
+                isInvLine = lineObj instanceof Requests.Request;
             }
 
             blit(poseStack, pX, currentY, selectBox(isInvLine));
@@ -306,7 +310,13 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             lines.add(name);
             List<RequesterRecord> requesters = new ArrayList<>(byName.get(name));
             Collections.sort(requesters);
-            lines.addAll(requesters);
+            List<Requests.Request> requests = new ArrayList<>();
+            for (var requester : requesters) {
+                for (var i = 0; i < requester.getRequests().size(); i++) {
+                    requests.add(requester.getRequests().get(i));
+                }
+            }
+            lines.addAll(requests);
         }
 
         resetScrollbar();
