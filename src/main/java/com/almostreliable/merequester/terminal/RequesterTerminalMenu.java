@@ -114,6 +114,11 @@ public final class RequesterTerminalMenu extends AEBaseMenu {
         }
     }
 
+    public void updateRequesterState(long requesterId, int requestIndex, boolean state) {
+        var request = byId.get(requesterId).server.get(requestIndex);
+        request.updateState(state);
+    }
+
     @Override
     protected ItemStack transferStackToMenu(ItemStack stack) {
         // sort the requesters like in the screen to refer to the same slots

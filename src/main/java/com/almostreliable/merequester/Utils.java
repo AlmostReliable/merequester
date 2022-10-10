@@ -29,6 +29,11 @@ public final class Utils {
         return Component.translatable(getTranslationKey(type, key)).getString();
     }
 
+    public static <T> T cast(Object o) {
+        //noinspection unchecked
+        return (T) o;
+    }
+
     public static <T> T cast(Object o, Class<T> clazz) {
         return clazz.cast(o);
     }

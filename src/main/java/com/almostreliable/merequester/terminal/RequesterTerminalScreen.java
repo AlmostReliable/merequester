@@ -18,11 +18,14 @@ import appeng.helpers.InventoryAction;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.mixin.WidgetContainerMixin;
+import com.almostreliable.merequester.network.PacketHandler;
+import com.almostreliable.merequester.network.RequestStatePacket;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.requester.Requests.Request;
 import com.google.common.collect.HashMultimap;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -74,7 +77,9 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
 
     private final Scrollbar scrollbar;
     private final AETextField searchField;
-    private final List<AECheckbox> checkboxes = new ArrayList<>();
+
+    private final Map<String, AbstractWidget> stylelessWidgets = new HashMap<>();
+    private final List<AECheckbox> stateBoxes = new ArrayList<>();
 
     private boolean refreshList;
     private int rowAmount;
@@ -121,7 +126,6 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             }
         }
 
-        updateCheckBoxStates();
         if (refreshList) refreshList();
     }
 
@@ -134,25 +138,35 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
 
         imageHeight = GUI_HEADER_HEIGHT + GUI_FOOTER_HEIGHT + rowAmount * ROW_HEIGHT;
 
+        // remove all styleless widgets from the widget container so the super call doesn't throw an error
+        stylelessWidgets.forEach(Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets()::remove);
+
         super.init();
 
-        // check boxes have a dynamic amount depending on the amount of rows
+        // state boxes have a dynamic amount depending on the amount of rows
         // they are not contained in the JSON style sheet, so they have to be
         // added manually to the widget container and the renderable list
         // this has to be done after the super call because of the missing style
-        checkboxes.clear();
+        stateBoxes.clear();
         for (var i = 0; i < rowAmount; i++) {
-            var checkbox = new AECheckbox(GUI_PADDING_X, (i + 1) * ROW_HEIGHT + 1, 14, 14, style, Component.empty());
-            checkbox.setChangeListener(() -> checkBoxChanged(checkbox));
-            Utils.cast(widgets, WidgetContainerMixin.class)
-                .merequester$getWidgets()
-                .put(f("request_state_{}", i), checkbox);
-            addRenderableWidget(checkbox);
-            checkboxes.add(checkbox);
+            var stateBox = new AECheckbox(GUI_PADDING_X, (i + 1) * ROW_HEIGHT + 1, 14, 14, style, Component.empty());
+            var listIndex = i;
+            stateBox.setChangeListener(() -> stateBoxChanged(listIndex, stateBox));
+            addStylelessWidget(f("request_state_{}", i), stateBox, Utils.cast(stateBoxes));
         }
 
         setInitialFocus(searchField);
         resetScrollbar();
+    }
+
+    private void addStylelessWidget(String id, AbstractWidget widget, List<AbstractWidget> widgetList) {
+        if (widget.isFocused()) widget.changeFocus(false);
+        widget.x += leftPos;
+        widget.y += topPos;
+        widgetList.add(widget);
+        stylelessWidgets.put(id, widget);
+        Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets().put(id, widget);
+        addRenderableWidget(widget);
     }
 
     @Override
@@ -165,17 +179,21 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             var text = Utils.translateAsString("gui", "no_requesters");
             var textWidth = font.width(text);
             font.draw(poseStack, text, (GUI_WIDTH - textWidth) / 2f - 10, GUI_PADDING_Y + GUI_HEADER_HEIGHT, textColor);
+            stateBoxes.forEach(c -> c.visible = false);
+            return;
         }
 
         forRelevantLines(
             (i, request) -> {
                 menu.slots.add(new RequestSlot(
-                    (RequesterReference) request.getRequesterRecord(),
+                    (RequesterReference) request.getRequesterReference(),
                     request.getSlot(),
                     ROW_HEIGHT + GUI_PADDING_X,
                     (i + 1) * ROW_HEIGHT + 1
                 ));
-                checkboxes.get(i).visible = true;
+                var stateBox = stateBoxes.get(i);
+                stateBox.visible = true;
+                stateBox.setSelected(request.getState());
             },
             (i, name) -> {
                 var text = name;
@@ -190,7 +208,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
                     GUI_PADDING_Y + GUI_HEADER_HEIGHT + i * ROW_HEIGHT,
                     textColor
                 );
-                checkboxes.get(i).visible = false;
+                stateBoxes.get(i).visible = false;
             }
         );
     }
@@ -198,7 +216,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
     private void forRelevantLines(BiConsumer<Integer, Request> onRequestLine, BiConsumer<Integer, String> onTextLine) {
         int scrollLevel = scrollbar.getCurrentScroll();
 
-        for (var i = 0; i < rowAmount; ++i) {
+        for (var i = 0; i < rowAmount; i++) {
             if (scrollLevel + i >= linesToRender.size()) continue;
 
             var lineElement = linesToRender.get(scrollLevel + i);
@@ -212,16 +230,12 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         }
     }
 
-    private void checkBoxChanged(AECheckbox checkbox) {
-        // TODO
-    }
-
-    private void updateCheckBoxStates() {
-        if (linesToRender.isEmpty()) return;
-        forRelevantLines(
-            (i, request) -> checkboxes.get(i).setSelected(request.getState()),
-            (i, name) -> {}
-        );
+    private void stateBoxChanged(int listIndex, AECheckbox stateBox) {
+        var newState = stateBox.isSelected();
+        var lineElement = linesToRender.get(scrollbar.getCurrentScroll() + listIndex);
+        if (!(lineElement instanceof Request request)) return;
+        var requesterId = ((RequesterReference) request.getRequesterReference()).getRequesterId();
+        PacketHandler.CHANNEL.sendToServer(new RequestStatePacket(requesterId, request.getSlot(), newState));
     }
 
     @Override
@@ -280,7 +294,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
 
         blit(poseStack, pX, currentY + rowAmount * ROW_HEIGHT, FOOTER_BBOX);
 
-        for (int i = 0; i < rowAmount; ++i) {
+        for (int i = 0; i < rowAmount; i++) {
             var isRequestElement = false;
             if (scrollLevel + i < linesToRender.size()) {
                 Object lineElement = linesToRender.get(scrollLevel + i);

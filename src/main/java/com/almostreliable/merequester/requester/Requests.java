@@ -221,7 +221,7 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
         }
 
         @OnlyIn(Dist.CLIENT)
-        public InternalInventoryHost getRequesterRecord() {
+        public InternalInventoryHost getRequesterReference() {
             assert host != null;
             return host;
         }

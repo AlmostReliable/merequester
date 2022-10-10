@@ -22,6 +22,8 @@ public final class PacketHandler {
         var packetId = -1;
         // server to client
         register(++packetId, RequesterTerminalPacket.class, new RequesterTerminalPacket());
+        // client to server
+        register(++packetId, RequestStatePacket.class, new RequestStatePacket());
     }
 
     @SuppressWarnings("SameParameterValue")
