@@ -1,4 +1,4 @@
-package com.almostreliable.merequester.terminal;
+package com.almostreliable.merequester.client;
 
 import appeng.menu.slot.FakeSlot;
 import com.almostreliable.merequester.Utils;

@@ -1,4 +1,4 @@
-package com.almostreliable.merequester.terminal;
+package com.almostreliable.merequester.client;
 
 import appeng.api.inventories.InternalInventory;
 import appeng.client.gui.me.patternaccess.PatternProviderRecord;

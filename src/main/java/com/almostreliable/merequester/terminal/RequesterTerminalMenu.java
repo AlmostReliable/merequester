@@ -37,8 +37,8 @@ public final class RequesterTerminalMenu extends AEBaseMenu {
         .requirePermission(SecurityPermissions.BUILD)
         .build(MERequester.TERMINAL_ID);
 
-    static final String SORT_BY_ID = "sort_by";
-    static final String UNIQUE_NAME_ID = "unique_name";
+    public static final String SORT_BY_ID = "sort_by";
+    public static final String UNIQUE_NAME_ID = "unique_name";
 
     private final Long2ObjectOpenHashMap<RequestTracker> byId = new Long2ObjectOpenHashMap<>();
     private final Map<RequesterBlockEntity, RequestTracker> byRequester = new IdentityHashMap<>();

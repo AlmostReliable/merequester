@@ -1,6 +1,6 @@
 package com.almostreliable.merequester.network;
 
-import com.almostreliable.merequester.terminal.RequesterTerminalScreen;
+import com.almostreliable.merequester.client.RequesterTerminalScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;

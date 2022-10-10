@@ -1,4 +1,4 @@
-package com.almostreliable.merequester.terminal;
+package com.almostreliable.merequester.client;
 
 import appeng.api.config.Settings;
 import appeng.api.config.TerminalStyle;
@@ -6,7 +6,6 @@ import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.me.patternaccess.PatternAccessTermScreen;
 import appeng.client.gui.style.PaletteColor;
 import appeng.client.gui.style.ScreenStyle;
-import appeng.client.gui.widgets.AECheckbox;
 import appeng.client.gui.widgets.AETextField;
 import appeng.client.gui.widgets.Scrollbar;
 import appeng.client.gui.widgets.SettingToggleButton;
@@ -17,11 +16,13 @@ import appeng.core.sync.packets.InventoryActionPacket;
 import appeng.helpers.InventoryAction;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
+import com.almostreliable.merequester.client.widgets.StateBox;
 import com.almostreliable.merequester.mixin.WidgetContainerMixin;
 import com.almostreliable.merequester.network.PacketHandler;
 import com.almostreliable.merequester.network.RequestStatePacket;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.requester.Requests.Request;
+import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
 import com.google.common.collect.HashMultimap;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -79,7 +80,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
     private final AETextField searchField;
 
     private final Map<String, AbstractWidget> stylelessWidgets = new HashMap<>();
-    private final List<AECheckbox> stateBoxes = new ArrayList<>();
+    private final List<StateBox> stateBoxes = new ArrayList<>();
 
     private boolean refreshList;
     private int rowAmount;
@@ -150,7 +151,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         // clear old state boxes because init() is recalled when the terminal resizes
         stateBoxes.clear();
         for (var i = 0; i < rowAmount; i++) {
-            var stateBox = new AECheckbox(GUI_PADDING_X, (i + 1) * ROW_HEIGHT + 1, 14, 14, style, Component.empty());
+            var stateBox = new StateBox(GUI_PADDING_X, (i + 1) * ROW_HEIGHT, style);
             var listIndex = i;
             stateBox.setChangeListener(() -> stateBoxChanged(listIndex, stateBox));
             addStylelessWidget(f("request_state_{}", i), stateBox, Utils.cast(stateBoxes));
@@ -234,10 +235,11 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         }
     }
 
-    private void stateBoxChanged(int listIndex, AECheckbox stateBox) {
+    private void stateBoxChanged(int listIndex, StateBox stateBox) {
         var newState = stateBox.isSelected();
         var lineElement = linesToRender.get(scrollbar.getCurrentScroll() + listIndex);
         if (!(lineElement instanceof Request request)) return;
+        request.updateState(newState); // prevent jittery animation before server information is received
         var requesterId = ((RequesterReference) request.getRequesterReference()).getRequesterId();
         PacketHandler.CHANNEL.sendToServer(new RequestStatePacket(requesterId, request.getSlot(), newState));
     }
