@@ -28,7 +28,7 @@ val jeiVersion: String by project
 
 plugins {
     id("dev.architectury.loom") version "0.12.0-SNAPSHOT"
-    id("io.github.juuxel.loom-quiltflower") version "1.7.3"
+    id("io.github.juuxel.loom-quiltflower") version "1.7.4"
     id("com.github.gmazzo.buildconfig") version "3.0.3"
     java
     idea
