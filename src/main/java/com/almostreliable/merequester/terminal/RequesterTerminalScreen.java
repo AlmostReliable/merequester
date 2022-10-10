@@ -142,6 +142,12 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         int textColor = style.getColor(PaletteColor.DEFAULT_TEXT_COLOR).toARGB();
         int scrollLevel = scrollbar.getCurrentScroll();
 
+        if (linesToRender.isEmpty()) {
+            var text = Utils.translateAsString("gui", "no_requesters");
+            var textWidth = font.width(text);
+            font.draw(poseStack, text, (GUI_WIDTH - textWidth) / 2f - 10, GUI_PADDING_Y + GUI_HEADER_HEIGHT, textColor);
+        }
+
         for (var i = 0; i < rowAmount; ++i) {
             if (scrollLevel + i >= linesToRender.size()) continue;
 
