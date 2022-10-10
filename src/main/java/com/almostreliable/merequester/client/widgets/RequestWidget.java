@@ -4,7 +4,7 @@ import appeng.client.gui.style.ScreenStyle;
 import com.almostreliable.merequester.client.RequestDisplay;
 import com.almostreliable.merequester.client.RequesterReference;
 import com.almostreliable.merequester.network.PacketHandler;
-import com.almostreliable.merequester.network.RequestStatePacket;
+import com.almostreliable.merequester.network.RequestUpdatePacket;
 import com.almostreliable.merequester.requester.Requests.Request;
 import net.minecraft.client.gui.components.AbstractWidget;
 
@@ -81,11 +81,13 @@ public class RequestWidget {
         var newState = stateBox.isSelected();
         request.updateState(newState); // prevent jittery animation before server information is received
         var requesterId = ((RequesterReference) request.getRequesterReference()).getRequesterId();
-        PacketHandler.CHANNEL.sendToServer(new RequestStatePacket(requesterId, request.getSlot(), newState));
+        PacketHandler.CHANNEL.sendToServer(new RequestUpdatePacket(requesterId, request.getSlot(), newState));
     }
 
     private void submitButtonClicked(@Nullable Request request) {
         if (request == null || submitButton == null) return;
-        // TODO
+        // TODO: pull information from textbox widgets when they are implemented
+        var requesterId = ((RequesterReference) request.getRequesterReference()).getRequesterId();
+        PacketHandler.CHANNEL.sendToServer(new RequestUpdatePacket(requesterId, request.getSlot(), request.getCount(), request.getBatch()));
     }
 }

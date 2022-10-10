@@ -238,7 +238,7 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
             return count;
         }
 
-        long getBatch() {
+        public long getBatch() {
             return batch;
         }
 

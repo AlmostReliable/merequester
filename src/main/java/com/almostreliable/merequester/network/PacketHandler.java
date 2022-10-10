@@ -23,7 +23,7 @@ public final class PacketHandler {
         // server to client
         register(++packetId, RequesterTerminalPacket.class, new RequesterTerminalPacket());
         // client to server
-        register(++packetId, RequestStatePacket.class, new RequestStatePacket());
+        register(++packetId, RequestUpdatePacket.class, new RequestUpdatePacket());
     }
 
     @SuppressWarnings("SameParameterValue")
