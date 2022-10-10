@@ -171,6 +171,8 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
                     GUI_PADDING_Y + GUI_HEADER_HEIGHT + i * ROW_HEIGHT,
                     textColor
                 );
+            } else {
+                MERequester.LOGGER.debug("Unknown line element: {}", lineElement);
             }
         }
     }
