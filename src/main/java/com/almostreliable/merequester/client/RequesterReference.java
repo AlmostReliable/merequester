@@ -45,7 +45,7 @@ public class RequesterReference implements InternalInventoryHost, Comparable<Req
         return Long.compare(sortBy, o.sortBy);
     }
 
-    long getRequesterId() {
+    public long getRequesterId() {
         return requesterId;
     }
 

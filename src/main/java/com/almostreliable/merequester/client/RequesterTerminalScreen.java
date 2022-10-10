@@ -16,7 +16,9 @@ import appeng.core.sync.packets.InventoryActionPacket;
 import appeng.helpers.InventoryAction;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
+import com.almostreliable.merequester.client.widgets.RequestWidget;
 import com.almostreliable.merequester.client.widgets.StateBox;
+import com.almostreliable.merequester.client.widgets.SubmitButton;
 import com.almostreliable.merequester.mixin.WidgetContainerMixin;
 import com.almostreliable.merequester.network.PacketHandler;
 import com.almostreliable.merequester.network.RequestStatePacket;
@@ -46,7 +48,7 @@ import static com.almostreliable.merequester.Utils.f;
 /**
  * yoinked from {@link PatternAccessTermScreen}
  */
-public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu> {
+public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu> implements RequestDisplay {
 
     private static final ResourceLocation TEXTURE = Utils.getRL(f("textures/gui/{}.png", MERequester.TERMINAL_ID));
 
@@ -79,8 +81,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
     private final Scrollbar scrollbar;
     private final AETextField searchField;
 
-    private final Map<String, AbstractWidget> stylelessWidgets = new HashMap<>();
-    private final List<StateBox> stateBoxes = new ArrayList<>();
+    private final List<RequestWidget> requestWidgets = new ArrayList<>();
 
     private boolean refreshList;
     private int rowAmount;
@@ -139,34 +140,26 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
 
         imageHeight = GUI_HEADER_HEIGHT + GUI_FOOTER_HEIGHT + rowAmount * ROW_HEIGHT;
 
-        // remove all styleless widgets from the widget container so the super call doesn't throw an error
-        stylelessWidgets.forEach(Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets()::remove);
-
+        requestWidgets.forEach(w -> w.preInit(Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets()));
         super.init();
-
-        // state boxes have a dynamic amount depending on the amount of rows
-        // they are not contained in the JSON style sheet, so they have to be
-        // added manually to the widget container and the renderable list
-        // this has to be done after the super call because of the missing style
-        // clear old state boxes because init() is recalled when the terminal resizes
-        stateBoxes.clear();
+        // clear old widgets because init() is recalled when the terminal resizes
+        requestWidgets.clear();
         for (var i = 0; i < rowAmount; i++) {
-            var stateBox = new StateBox(GUI_PADDING_X, (i + 1) * ROW_HEIGHT, style);
-            var listIndex = i;
-            stateBox.setChangeListener(() -> stateBoxChanged(listIndex, stateBox));
-            addStylelessWidget(f("request_state_{}", i), stateBox, Utils.cast(stateBoxes));
+            var requestWidget = new RequestWidget(this, i, GUI_PADDING_X, (i + 1) * ROW_HEIGHT, style);
+            requestWidget.postInit();
+            requestWidgets.add(requestWidget);
         }
 
         setInitialFocus(searchField);
         resetScrollbar();
     }
 
-    private void addStylelessWidget(String id, AbstractWidget widget, List<AbstractWidget> widgetList) {
+    @Override
+    public void addSubWidget(String id, AbstractWidget widget, Map<String, AbstractWidget> subWidgets) {
         if (widget.isFocused()) widget.changeFocus(false);
         widget.x += leftPos;
         widget.y += topPos;
-        widgetList.add(widget);
-        stylelessWidgets.put(id, widget);
+        subWidgets.put(id, widget);
         Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets().put(id, widget);
         addRenderableWidget(widget);
     }
@@ -181,7 +174,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             var text = Utils.translateAsString("gui", "no_requesters");
             var textWidth = font.width(text);
             font.draw(poseStack, text, (GUI_WIDTH - textWidth) / 2f - 10, GUI_PADDING_Y + GUI_HEADER_HEIGHT, textColor);
-            stateBoxes.forEach(c -> c.visible = false);
+            requestWidgets.forEach(RequestWidget::hide);
             return;
         }
 
@@ -193,9 +186,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
                     ROW_HEIGHT + GUI_PADDING_X,
                     (i + 1) * ROW_HEIGHT + 1
                 ));
-                var stateBox = stateBoxes.get(i);
-                stateBox.visible = true;
-                stateBox.setSelected(request.getState());
+                requestWidgets.get(i).applyRequest(request);
             },
             (i, name) -> {
                 var text = name;
@@ -210,7 +201,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
                     GUI_PADDING_Y + GUI_HEADER_HEIGHT + i * ROW_HEIGHT,
                     textColor
                 );
-                stateBoxes.get(i).visible = false;
+                requestWidgets.get(i).hide();
             }
         );
     }
@@ -220,7 +211,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
 
         for (var i = 0; i < rowAmount; i++) {
             if (scrollLevel + i >= linesToRender.size()) {
-                stateBoxes.get(i).visible = false;
+                requestWidgets.get(i).hide();
                 continue;
             }
 
@@ -235,13 +226,11 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         }
     }
 
-    private void stateBoxChanged(int listIndex, StateBox stateBox) {
-        var newState = stateBox.isSelected();
+    @Nullable
+    @Override
+    public Request getTargetRequest(int listIndex) {
         var lineElement = linesToRender.get(scrollbar.getCurrentScroll() + listIndex);
-        if (!(lineElement instanceof Request request)) return;
-        request.updateState(newState); // prevent jittery animation before server information is received
-        var requesterId = ((RequesterReference) request.getRequesterReference()).getRequesterId();
-        PacketHandler.CHANNEL.sendToServer(new RequestStatePacket(requesterId, request.getSlot(), newState));
+        return lineElement instanceof Request request ? request : null;
     }
 
     @Override

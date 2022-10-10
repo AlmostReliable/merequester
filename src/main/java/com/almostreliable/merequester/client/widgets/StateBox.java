@@ -17,7 +17,7 @@ public class StateBox extends AECheckbox {
     private static final Blitter CHECKED = BLITTER.copy().src(0, SIZE, SIZE, SIZE);
     private static final Blitter CHECKED_FOCUS = BLITTER.copy().src(SIZE, SIZE, SIZE, SIZE);
 
-    public StateBox(int x, int y, ScreenStyle style) {
+    StateBox(int x, int y, ScreenStyle style) {
         // add 2 to the positions to it matches with a slot
         super(x + 2, y + 2, SIZE, SIZE, style, Component.empty());
     }
