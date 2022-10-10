@@ -6,6 +6,7 @@ import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.me.patternaccess.PatternAccessTermScreen;
 import appeng.client.gui.style.PaletteColor;
 import appeng.client.gui.style.ScreenStyle;
+import appeng.client.gui.widgets.AECheckbox;
 import appeng.client.gui.widgets.AETextField;
 import appeng.client.gui.widgets.Scrollbar;
 import appeng.client.gui.widgets.SettingToggleButton;
@@ -16,6 +17,7 @@ import appeng.core.sync.packets.InventoryActionPacket;
 import appeng.helpers.InventoryAction;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
+import com.almostreliable.merequester.mixin.WidgetContainerMixin;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.requester.Requests.Request;
 import com.google.common.collect.HashMultimap;
@@ -33,6 +35,7 @@ import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 import static com.almostreliable.merequester.Utils.f;
 
@@ -71,6 +74,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
 
     private final Scrollbar scrollbar;
     private final AETextField searchField;
+    private final List<AECheckbox> checkboxes = new ArrayList<>();
 
     private boolean refreshList;
     private int rowAmount;
@@ -117,6 +121,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             }
         }
 
+        updateCheckBoxStates();
         if (refreshList) refreshList();
     }
 
@@ -131,6 +136,21 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
 
         super.init();
 
+        // check boxes have a dynamic amount depending on the amount of rows
+        // they are not contained in the JSON style sheet, so they have to be
+        // added manually to the widget container and the renderable list
+        // this has to be done after the super call because of the missing style
+        checkboxes.clear();
+        for (var i = 0; i < rowAmount; i++) {
+            var checkbox = new AECheckbox(GUI_PADDING_X, (i + 1) * ROW_HEIGHT + 1, 14, 14, style, Component.empty());
+            checkbox.setChangeListener(() -> checkBoxChanged(checkbox));
+            Utils.cast(widgets, WidgetContainerMixin.class)
+                .merequester$getWidgets()
+                .put(f("request_state_{}", i), checkbox);
+            addRenderableWidget(checkbox);
+            checkboxes.add(checkbox);
+        }
+
         setInitialFocus(searchField);
         resetScrollbar();
     }
@@ -140,7 +160,6 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         menu.slots.removeIf(RequestSlot.class::isInstance);
 
         int textColor = style.getColor(PaletteColor.DEFAULT_TEXT_COLOR).toARGB();
-        int scrollLevel = scrollbar.getCurrentScroll();
 
         if (linesToRender.isEmpty()) {
             var text = Utils.translateAsString("gui", "no_requesters");
@@ -148,33 +167,61 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             font.draw(poseStack, text, (GUI_WIDTH - textWidth) / 2f - 10, GUI_PADDING_Y + GUI_HEADER_HEIGHT, textColor);
         }
 
-        for (var i = 0; i < rowAmount; ++i) {
-            if (scrollLevel + i >= linesToRender.size()) continue;
-
-            var lineElement = linesToRender.get(scrollLevel + i);
-            if (lineElement instanceof Request request) {
+        forRelevantLines(
+            (i, request) -> {
                 menu.slots.add(new RequestSlot(
                     (RequesterReference) request.getRequesterRecord(),
                     request.getSlot(),
                     ROW_HEIGHT + GUI_PADDING_X,
                     (i + 1) * ROW_HEIGHT + 1
                 ));
-            } else if (lineElement instanceof String name) {
+                checkboxes.get(i).visible = true;
+            },
+            (i, name) -> {
+                var text = name;
                 int rows = byName.get(name).size();
-                if (rows > 1) name = f("{} ({})", name, rows);
-                name = font.plainSubstrByWidth(name, TEXT_MAX_WIDTH, true);
+                if (rows > 1) text = f("{} ({})", text, rows);
+                text = font.plainSubstrByWidth(text, TEXT_MAX_WIDTH, true);
 
                 font.draw(
                     poseStack,
-                    name,
+                    text,
                     GUI_PADDING_X + TEXT_MARGIN_X,
                     GUI_PADDING_Y + GUI_HEADER_HEIGHT + i * ROW_HEIGHT,
                     textColor
                 );
+                checkboxes.get(i).visible = false;
+            }
+        );
+    }
+
+    private void forRelevantLines(BiConsumer<Integer, Request> onRequestLine, BiConsumer<Integer, String> onTextLine) {
+        int scrollLevel = scrollbar.getCurrentScroll();
+
+        for (var i = 0; i < rowAmount; ++i) {
+            if (scrollLevel + i >= linesToRender.size()) continue;
+
+            var lineElement = linesToRender.get(scrollLevel + i);
+            if (lineElement instanceof Request request) {
+                onRequestLine.accept(i, request);
+            } else if (lineElement instanceof String name) {
+                onTextLine.accept(i, name);
             } else {
                 MERequester.LOGGER.debug("Unknown line element: {}", lineElement);
             }
         }
+    }
+
+    private void checkBoxChanged(AECheckbox checkbox) {
+        // TODO
+    }
+
+    private void updateCheckBoxStates() {
+        if (linesToRender.isEmpty()) return;
+        forRelevantLines(
+            (i, request) -> checkboxes.get(i).setSelected(request.getState()),
+            (i, name) -> {}
+        );
     }
 
     @Override

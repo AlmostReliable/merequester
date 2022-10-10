@@ -12,7 +12,8 @@
   ],
   "client": [
     "InitScreensMixin",
-    "SlotMixin"
+    "SlotMixin",
+    "WidgetContainerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
