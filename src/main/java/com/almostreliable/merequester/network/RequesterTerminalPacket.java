@@ -10,23 +10,31 @@ import java.util.Objects;
 
 public class RequesterTerminalPacket extends ServerToClientPacket<RequesterTerminalPacket> {
 
-    private boolean clearExistingData;
-    private long inventoryId;
-    private CompoundTag in;
+    private boolean clearData;
+    private long requesterId;
+    private CompoundTag data;
 
-    private RequesterTerminalPacket(boolean clearExistingData, long inventoryId, CompoundTag in) {
-        this.clearExistingData = clearExistingData;
-        this.inventoryId = inventoryId;
-        this.in = in;
+    private RequesterTerminalPacket(boolean clearData, long requesterId, CompoundTag data) {
+        this.clearData = clearData;
+        this.requesterId = requesterId;
+        this.data = data;
     }
 
     RequesterTerminalPacket() {}
 
+    public static RequesterTerminalPacket clearData() {
+        return new RequesterTerminalPacket(true, -1, new CompoundTag());
+    }
+
+    public static RequesterTerminalPacket inventory(long requesterId, CompoundTag data) {
+        return new RequesterTerminalPacket(false, requesterId, data);
+    }
+
     @Override
     public void encode(RequesterTerminalPacket packet, FriendlyByteBuf buffer) {
-        buffer.writeBoolean(packet.clearExistingData);
-        buffer.writeLong(packet.inventoryId);
-        buffer.writeNbt(packet.in);
+        buffer.writeBoolean(packet.clearData);
+        buffer.writeLong(packet.requesterId);
+        buffer.writeNbt(packet.data);
     }
 
     @Override
@@ -41,15 +49,7 @@ public class RequesterTerminalPacket extends ServerToClientPacket<RequesterTermi
     @Override
     protected void handlePacket(RequesterTerminalPacket packet, ClientLevel level) {
         if (Minecraft.getInstance().screen instanceof RequesterTerminalScreen screen) {
-            screen.postInventoryUpdate(packet.clearExistingData, packet.inventoryId, packet.in);
+            screen.updateFromMenu(packet.clearData, packet.requesterId, packet.data);
         }
-    }
-
-    public static RequesterTerminalPacket clearExistingData() {
-        return new RequesterTerminalPacket(true, -1, new CompoundTag());
-    }
-
-    public static RequesterTerminalPacket inventory(long id, CompoundTag data) {
-        return new RequesterTerminalPacket(false, id, data);
     }
 }

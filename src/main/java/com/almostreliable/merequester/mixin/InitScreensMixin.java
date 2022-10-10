@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class InitScreensMixin {
     @Inject(method = "init", at = @At("TAIL"), remap = false)
     private static void merequester$initScreens(CallbackInfo ci) {
-        // TODO: move this to a client registration class
         InitScreens.register(
             RequesterTerminalMenu.TYPE,
             RequesterTerminalScreen::new,

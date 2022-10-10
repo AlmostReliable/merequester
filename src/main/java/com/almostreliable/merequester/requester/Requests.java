@@ -14,6 +14,8 @@ import net.minecraftforge.common.util.INBTSerializable;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
+import static com.almostreliable.merequester.Utils.f;
+
 public class Requests implements InternalInventory, INBTSerializable<CompoundTag> {
 
     // if null, the inventory is client-side and doesn't need saving
@@ -38,6 +40,11 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
     }
 
     @Override
+    public int getSlotLimit(int slot) {
+        return 1;
+    }
+
+    @Override
     public ItemStack getStackInSlot(int slot) {
         return get(slot).stack;
     }
@@ -45,11 +52,6 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
     @Override
     public void setItemDirect(int slot, ItemStack stack) {
         insertItem(slot, stack, false);
-    }
-
-    @Override
-    public int getSlotLimit(int slot) {
-        return 1;
     }
 
     @Override
@@ -119,16 +121,6 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
             this.slot = slot;
         }
 
-        public int getSlot() {
-            return slot;
-        }
-
-        @OnlyIn(Dist.CLIENT)
-        public InternalInventoryHost getRequesterRecord() {
-            assert host != null;
-            return host;
-        }
-
         public GenericStack toGenericStack(long count) {
             var stackCopy = stack.copy();
             return new GenericStack(Objects.requireNonNull(AEItemKey.of(stackCopy)), count);
@@ -155,10 +147,7 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
         public void updateState(boolean state) {
             if (this.state != state) {
                 this.state = state;
-                if (host != null) {
-                    host.saveChanges();
-                    // changed = true;
-                }
+                if (host != null) host.saveChanges();
             }
         }
 
@@ -171,58 +160,28 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
             } else {
                 this.count = count;
             }
-            if (!oldStack.sameItem(stack) || oldCount != this.count || oldBatch != batch) {
-                if (host != null) {
-                    host.saveChanges();
-                    // changed = true;
-                }
+            if ((!oldStack.sameItem(stack) || oldCount != this.count || oldBatch != batch) && host != null) {
+                host.saveChanges();
             }
         }
 
         public void updateBatch(long batch) {
             var oldBatch = this.batch;
             this.batch = batch <= 0 ? 1 : batch;
-            if (oldBatch != this.batch && host != null) {
-                host.saveChanges();
-                // changed = true;
-            }
+            if (oldBatch != this.batch && host != null) host.saveChanges();
         }
 
         @Override
         public String toString() {
-            return "Request[" + "state=" + state + ", " + "stack=" + stack + ", " + "count=" + count + ", " + "batch=" + batch + ']';
+            return f("Request[state={}, stack={}, count={}, batch={}]", state, stack, count, batch);
         }
 
         public boolean isDifferent(Request other) {
-            return state != other.state || !ItemStack.isSameItemSameTags(stack, other.stack) || count != other.count || batch != other.batch;
+            return state != other.state ||
+                !ItemStack.isSameItemSameTags(stack, other.stack) ||
+                count != other.count ||
+                batch != other.batch;
         }
-
-        // @Override
-        // public void encode(FriendlyByteBuf buffer) {
-        //     buffer.writeInt(slot);
-        //     buffer.writeBoolean(state);
-        //     buffer.writeItemStack(stack, true);
-        //     buffer.writeLong(count);
-        //     buffer.writeLong(batch);
-        //     changed = false;
-        // }
-        //
-        // @Override
-        // public void decode(FriendlyByteBuf buffer) {
-        //     if (slot != buffer.readInt()) {
-        //         throw new IllegalStateException("Slot mismatch");
-        //     }
-        //     state = buffer.readBoolean();
-        //     stack = buffer.readItem();
-        //     count = buffer.readLong();
-        //     batch = buffer.readLong();
-        //     ClientHandler.updateRequestGui(slot);
-        // }
-        //
-        // @Override
-        // public boolean hasChanged() {
-        //     return changed;
-        // }
 
         private void updateStackClient(ItemStack stack) {
             this.stack = stack;
@@ -235,10 +194,7 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
                 return;
             }
             if (oldStack.sameItem(stack)) {
-                if (count != stack.getCount()) {
-                    count = stack.getCount();
-                    // changed = true;
-                }
+                if (count != stack.getCount()) count = stack.getCount();
                 return;
             }
             count = stack.getCount();
@@ -249,10 +205,7 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
         }
 
         private void stackChanged() {
-            if (host != null) {
-                host.onChangeInventory(requestHost, slot);
-                // changed = true;
-            }
+            if (host != null) host.onChangeInventory(requestHost, slot);
         }
 
         private void resetSlot() {
@@ -261,6 +214,16 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
             count = 0;
             batch = 1;
             if (!oldStack.isEmpty()) stackChanged();
+        }
+
+        public int getSlot() {
+            return slot;
+        }
+
+        @OnlyIn(Dist.CLIENT)
+        public InternalInventoryHost getRequesterRecord() {
+            assert host != null;
+            return host;
         }
 
         public boolean getState() {

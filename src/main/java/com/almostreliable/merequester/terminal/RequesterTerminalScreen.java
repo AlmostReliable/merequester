@@ -2,7 +2,6 @@ package com.almostreliable.merequester.terminal;
 
 import appeng.api.config.Settings;
 import appeng.api.config.TerminalStyle;
-import appeng.api.stacks.AEItemKey;
 import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.me.patternaccess.PatternAccessTermScreen;
 import appeng.client.gui.style.PaletteColor;
@@ -18,16 +17,12 @@ import appeng.helpers.InventoryAction;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
-import com.almostreliable.merequester.requester.RequesterRecord;
-import com.almostreliable.merequester.requester.Requests;
+import com.almostreliable.merequester.requester.Requests.Request;
 import com.google.common.collect.HashMultimap;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -39,12 +34,14 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static com.almostreliable.merequester.Utils.f;
+
 /**
  * yoinked from {@link PatternAccessTermScreen}
  */
 public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu> {
 
-    private static final ResourceLocation TEXTURE = Utils.getRL("textures/gui/" + MERequester.TERMINAL_ID + ".png");
+    private static final ResourceLocation TEXTURE = Utils.getRL(f("textures/gui/{}.png", MERequester.TERMINAL_ID));
 
     private static final int GUI_WIDTH = 195;
     private static final int GUI_PADDING_X = 8;
@@ -65,11 +62,11 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
     private static final Rect2i TEXT_BBOX = new Rect2i(0, 19, GUI_WIDTH, ROW_HEIGHT);
     private static final Rect2i REQUEST_BBOX = new Rect2i(0, 38, GUI_WIDTH, ROW_HEIGHT);
 
-    private final HashMap<Long, RequesterRecord> byId = new HashMap<>();
-    private final HashMultimap<String, RequesterRecord> byName = HashMultimap.create();
+    private final HashMap<Long, RequesterReference> byId = new HashMap<>();
+    private final HashMultimap<String, RequesterReference> byName = HashMultimap.create();
 
-    private final List<String> names = new ArrayList<>();
-    private final ArrayList<Object> lines = new ArrayList<>();
+    private final List<String> requesterNames = new ArrayList<>();
+    private final ArrayList<Object> linesToRender = new ArrayList<>();
     private final Map<String, Set<Object>> searchCache = new WeakHashMap<>();
 
     private final Scrollbar scrollbar;
@@ -80,9 +77,9 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
 
     @SuppressWarnings("AssignmentToSuperclassField")
     public RequesterTerminalScreen(
-        RequesterTerminalMenu menu, Inventory playerInventory, Component title, ScreenStyle style
+        RequesterTerminalMenu menu, Inventory playerInventory, Component name, ScreenStyle style
     ) {
-        super(menu, playerInventory, title, style);
+        super(menu, playerInventory, name, style);
         scrollbar = widgets.addScrollBar("scrollbar");
         imageWidth = GUI_WIDTH;
 
@@ -95,6 +92,32 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         searchField = widgets.addTextField("search");
         searchField.setResponder(str -> refreshList());
         searchField.setPlaceholder(GuiText.SearchPlaceholder.text());
+    }
+
+    @Override
+    public boolean charTyped(char character, int key) {
+        return character == ' ' && searchField.getValue().isEmpty() || super.charTyped(character, key);
+    }
+
+    public void updateFromMenu(boolean clearData, long requesterId, CompoundTag data) {
+        if (clearData) {
+            byId.clear();
+            refreshList();
+            return;
+        }
+
+        var name = data.getString(RequesterTerminalMenu.UNIQUE_NAME_ID);
+        var sortBy = data.getLong(RequesterTerminalMenu.SORT_BY_ID);
+        var requests = getById(requesterId, name, sortBy).getRequests();
+
+        for (int i = 0; i < requests.size(); i++) {
+            var requestIndex = String.valueOf(i);
+            if (data.contains(requestIndex)) {
+                requests.get(i).deserializeNBT(data.getCompound(requestIndex));
+            }
+        }
+
+        if (refreshList) refreshList();
     }
 
     @Override
@@ -120,22 +143,19 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         int scrollLevel = scrollbar.getCurrentScroll();
 
         for (var i = 0; i < rowAmount; ++i) {
-            if (scrollLevel + i >= lines.size()) continue;
+            if (scrollLevel + i >= linesToRender.size()) continue;
 
-            var lineObj = lines.get(scrollLevel + i);
-            if (lineObj instanceof Requests.Request request) {
+            var lineElement = linesToRender.get(scrollLevel + i);
+            if (lineElement instanceof Request request) {
                 menu.slots.add(new RequestSlot(
-                    (RequesterRecord) request.getRequesterRecord(),
+                    (RequesterReference) request.getRequesterRecord(),
                     request.getSlot(),
                     ROW_HEIGHT + GUI_PADDING_X,
                     (i + 1) * ROW_HEIGHT + 1
                 ));
-            } else if (lineObj instanceof String name) {
+            } else if (lineElement instanceof String name) {
                 int rows = byName.get(name).size();
-                if (rows > 1) {
-                    name = name + " (" + rows + ')';
-                }
-
+                if (rows > 1) name = f("{} ({})", name, rows);
                 name = font.plainSubstrByWidth(name, TEXT_MAX_WIDTH, true);
 
                 font.draw(
@@ -150,50 +170,48 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
     }
 
     @Override
-    protected void slotClicked(@Nullable Slot slot, int slotId, int mouseButton, ClickType clickType) {
-        if (slot instanceof RequestSlot requestSlot) {
-            InventoryAction action = null;
-
-            switch (clickType) {
-                case PICKUP:
-                    action = mouseButton == 1 ?
-                        InventoryAction.SPLIT_OR_PLACE_SINGLE :
-                        InventoryAction.PICKUP_OR_SET_DOWN;
-                    break;
-                case QUICK_MOVE:
-                    action = mouseButton == 1 ?
-                        InventoryAction.PICKUP_SINGLE :
-                        InventoryAction.SHIFT_CLICK;
-                    break;
-                case CLONE:
-                    if (getPlayer().getAbilities().instabuild) {
-                        action = InventoryAction.CREATIVE_DUPLICATE;
-                    }
-                    break;
-                case THROW:
-                default:
-            }
-
-            if (action != null) {
-                InventoryActionPacket p = new InventoryActionPacket(
-                    action,
-                    requestSlot.getSlot(),
-                    requestSlot.getHost().getServerId()
-                );
-                NetworkHandler.instance().sendToServer(p);
-            }
-            return;
-        }
-
-        super.slotClicked(slot, slotId, mouseButton, clickType);
-    }
-
-    @Override
     public boolean mouseClicked(double mX, double mY, int button) {
         if (button == 1 && searchField.isMouseOver(mX, mY)) {
             searchField.setValue("");
         }
         return super.mouseClicked(mX, mY, button);
+    }
+
+    @Override
+    protected void slotClicked(@Nullable Slot slot, int slotIndex, int mouseButton, ClickType clickType) {
+        if (!(slot instanceof RequestSlot requestSlot)) {
+            super.slotClicked(slot, slotIndex, mouseButton, clickType);
+            return;
+        }
+
+        InventoryAction action = null;
+        switch (clickType) {
+            case PICKUP:
+                action = mouseButton == 1 ?
+                    InventoryAction.SPLIT_OR_PLACE_SINGLE :
+                    InventoryAction.PICKUP_OR_SET_DOWN;
+                break;
+            case QUICK_MOVE:
+                action = mouseButton == 1 ?
+                    InventoryAction.PICKUP_SINGLE :
+                    InventoryAction.SHIFT_CLICK;
+                break;
+            case CLONE:
+                if (getPlayer().getAbilities().instabuild) {
+                    action = InventoryAction.CREATIVE_DUPLICATE;
+                }
+                break;
+            default:
+        }
+
+        if (action != null) {
+            InventoryActionPacket packet = new InventoryActionPacket(
+                action,
+                requestSlot.getSlot(),
+                requestSlot.getHost().getRequesterId()
+            );
+            NetworkHandler.instance().sendToServer(packet);
+        }
     }
 
     @Override
@@ -208,49 +226,15 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         blit(poseStack, pX, currentY + rowAmount * ROW_HEIGHT, FOOTER_BBOX);
 
         for (int i = 0; i < rowAmount; ++i) {
-            var isInvLine = false;
-            if (scrollLevel + i < lines.size()) {
-                Object lineObj = lines.get(scrollLevel + i);
-                isInvLine = lineObj instanceof Requests.Request;
+            var isRequestElement = false;
+            if (scrollLevel + i < linesToRender.size()) {
+                Object lineElement = linesToRender.get(scrollLevel + i);
+                isRequestElement = lineElement instanceof Request;
             }
 
-            blit(poseStack, pX, currentY, selectBox(isInvLine));
+            blit(poseStack, pX, currentY, isRequestElement ? REQUEST_BBOX : TEXT_BBOX);
 
             currentY += ROW_HEIGHT;
-        }
-    }
-
-    @Override
-    public boolean charTyped(char character, int key) {
-        return character == ' ' && searchField.getValue().isEmpty() || super.charTyped(character, key);
-    }
-
-    private Rect2i selectBox(boolean isInvLine) {
-        return isInvLine ? REQUEST_BBOX : TEXT_BBOX;
-    }
-
-    public void postInventoryUpdate(boolean clearExistingData, long inventoryId, CompoundTag invData) {
-        if (clearExistingData) {
-            byId.clear();
-            refreshList = true;
-        } else {
-            var un = Component.Serializer.fromJson(invData.getString("un"));
-            if (un == null) return;
-            var requester = getById(inventoryId, invData.getLong("sortBy"), un);
-
-            // TODO: debug if this is the correct logic
-            for (int i = 0; i < requester.getRequests().size(); i++) {
-                String which = Integer.toString(i);
-                if (invData.contains(which)) {
-                    requester.getRequests().get(i).deserializeNBT(invData.getCompound(which));
-                }
-            }
-        }
-
-        if (refreshList) {
-            refreshList = false;
-            searchCache.clear();
-            refreshList();
         }
     }
 
@@ -269,24 +253,26 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
     }
 
     private void resetScrollbar() {
-        scrollbar.setHeight(rowAmount * ROW_HEIGHT);
-        scrollbar.setRange(0, lines.size() - rowAmount, 2);
+        scrollbar.setHeight(rowAmount * ROW_HEIGHT + 1);
+        scrollbar.setRange(0, linesToRender.size() - rowAmount, 2);
     }
 
     private void refreshList() {
+        refreshList = false;
+        searchCache.clear();
         byName.clear();
 
         var searchQuery = searchField.getValue().toLowerCase();
         var cachedSearch = searchByQuery(searchQuery);
         var rebuild = cachedSearch.isEmpty();
 
-        for (RequesterRecord requester : byId.values()) {
+        for (RequesterReference requester : byId.values()) {
             if (!rebuild && !cachedSearch.contains(requester)) continue;
 
             boolean found = searchQuery.isEmpty();
             if (!found) {
-                for (var stack : requester.getRequests()) {
-                    found = stackMatchesSearchQuery(stack, searchQuery);
+                for (var requestStack : requester.getRequests()) {
+                    found = stackMatchesSearchQuery(requestStack, searchQuery);
                     if (found) break;
                 }
             }
@@ -299,66 +285,45 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             }
         }
 
-        names.clear();
-        names.addAll(byName.keySet());
-        Collections.sort(names);
+        requesterNames.clear();
+        requesterNames.addAll(byName.keySet());
+        Collections.sort(requesterNames);
 
-        lines.clear();
-        lines.ensureCapacity(names.size() + byId.size());
+        linesToRender.clear();
+        linesToRender.ensureCapacity(requesterNames.size() + byId.size() * RequesterBlockEntity.SLOTS);
 
-        for (var name : names) {
-            lines.add(name);
-            List<RequesterRecord> requesters = new ArrayList<>(byName.get(name));
+        for (var name : requesterNames) {
+            linesToRender.add(name);
+            List<RequesterReference> requesters = new ArrayList<>(byName.get(name));
             Collections.sort(requesters);
-            List<Requests.Request> requests = new ArrayList<>();
+            List<Request> requests = new ArrayList<>();
             for (var requester : requesters) {
                 for (var i = 0; i < requester.getRequests().size(); i++) {
                     requests.add(requester.getRequests().get(i));
                 }
             }
-            lines.addAll(requests);
+            linesToRender.addAll(requests);
         }
 
         resetScrollbar();
     }
 
-    /**
-     * A version of blit that accepts a source rectangle.
-     *
-     * @see GuiComponent#blit(PoseStack, int, int, int, int, int, int)
-     */
     private void blit(PoseStack poseStack, int pX, int pY, Rect2i srcRect) {
         blit(poseStack, pX, pY, srcRect.getX(), srcRect.getY(), srcRect.getWidth(), srcRect.getHeight());
     }
 
-    private boolean stackMatchesSearchQuery(ItemStack itemStack, String searchTerm) {
-        if (itemStack.isEmpty()) return false;
-
-        CompoundTag encodedValue = itemStack.getTag();
-        if (encodedValue == null) return false;
-
-        ListTag outTag = encodedValue.getList("out", Tag.TAG_COMPOUND);
-        for (int i = 0; i < outTag.size(); i++) {
-            var parsedItemStack = ItemStack.of(outTag.getCompound(i));
-            var itemKey = AEItemKey.of(parsedItemStack);
-            if (itemKey != null) {
-                var displayName = itemKey.getDisplayName().getString().toLowerCase();
-                if (displayName.contains(searchTerm)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    private boolean stackMatchesSearchQuery(ItemStack requestStack, String searchTerm) {
+        return !requestStack.isEmpty() && requestStack.getDisplayName().getString().toLowerCase().contains(searchTerm);
     }
 
-    private RequesterRecord getById(long id, long sortBy, Component name) {
-        RequesterRecord o = byId.get(id);
-        if (o == null) {
-            o = new RequesterRecord(id, sortBy, name);
-            byId.put(id, o);
+    private RequesterReference getById(long requesterId, String name, long sortBy) {
+        RequesterReference requester = byId.get(requesterId);
+        if (requester == null) {
+            requester = new RequesterReference(requesterId, name, sortBy);
+            byId.put(requesterId, requester);
             refreshList = true;
         }
-        return o;
+        return requester;
     }
 
     private Set<Object> searchByQuery(String searchQuery) {

@@ -11,8 +11,8 @@
     "InitMenuTypesMixin"
   ],
   "client": [
-    "SlotMixin",
-    "InitScreensMixin"
+    "InitScreensMixin",
+    "SlotMixin"
   ],
   "injectors": {
     "defaultRequire": 1

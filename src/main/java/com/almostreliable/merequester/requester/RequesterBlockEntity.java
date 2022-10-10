@@ -16,13 +16,14 @@ import appeng.api.stacks.AEKey;
 import appeng.blockentity.grid.AENetworkBlockEntity;
 import appeng.me.helpers.MachineSource;
 import appeng.util.inv.InternalInventoryHost;
+import com.almostreliable.merequester.MERequester;
+import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.progression.CraftingLinkState;
 import com.almostreliable.merequester.requester.progression.IProgressionState;
 import com.almostreliable.merequester.requester.progression.ProgressionType;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -32,7 +33,7 @@ import java.util.Objects;
 
 public class RequesterBlockEntity extends AENetworkBlockEntity implements InternalInventoryHost, IGridTickable, ICraftingRequester {
 
-    public static final int SLOTS = 5; // TODO: make configurable
+    public static final int SLOTS = 5;
 
     private final Requests requests;
     private final IProgressionState[] progressions;
@@ -68,14 +69,45 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
         return currentTickRate;
     }
 
-    public Requests getRequests() {
-        return requests;
-    }
-
     @Override
     public void onChangeInventory(InternalInventory inv, int slot) {
         storageManager.clear(slot);
         saveChanges();
+    }
+
+    private boolean handleProgression() {
+        var changed = false;
+
+        var tickRateModulation = TickRateModulation.IDLE;
+        for (var slot = 0; slot < progressions.length; slot++) {
+            var state = progressions[slot];
+            var result = handleProgression(slot);
+            if (!Objects.equals(state, result)) {
+                changed = true;
+            }
+            var resultTickRateModulation = result.getTickRateModulation();
+            if (resultTickRateModulation.ordinal() > tickRateModulation.ordinal()) {
+                tickRateModulation = resultTickRateModulation;
+            }
+
+            progressions[slot] = result;
+        }
+        currentTickRate = tickRateModulation;
+        return changed;
+    }
+
+    private IProgressionState handleProgression(int slot) {
+        var state = progressions[slot];
+        progressions[slot] = state.handle(this, slot);
+        if (progressions[slot].type() != ProgressionType.IDLE && !Objects.equals(progressions[slot], state)) {
+            return handleProgression(slot);
+        }
+
+        return progressions[slot];
+    }
+
+    public Requests getRequests() {
+        return requests;
     }
 
     public IGrid getMainNodeGrid() {
@@ -124,39 +156,9 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
             entity.getBlockPos().getY();
     }
 
-    private boolean handleProgression() {
-        var changed = false;
-
-        var tickRateModulation = TickRateModulation.IDLE;
-        for (var slot = 0; slot < progressions.length; slot++) {
-            var state = progressions[slot];
-            var result = handleProgression(slot);
-            if (!Objects.equals(state, result)) {
-                changed = true;
-            }
-            var resultTickRateModulation = result.getTickRateModulation();
-            if (resultTickRateModulation.ordinal() > tickRateModulation.ordinal()) {
-                tickRateModulation = resultTickRateModulation;
-            }
-
-            progressions[slot] = result;
-        }
-        currentTickRate = tickRateModulation;
-        return changed;
-    }
-
-    private IProgressionState handleProgression(int slot) {
-        var state = progressions[slot];
-        progressions[slot] = state.handle(this, slot);
-        if (progressions[slot].type() != ProgressionType.IDLE && !Objects.equals(progressions[slot], state)) {
-            return handleProgression(slot);
-        }
-
-        return progressions[slot];
-    }
-
-    public Component getTermName() {
-        if (hasCustomInventoryName()) return getCustomInventoryName();
-        return Component.literal("Requester");
+    public String getTermName() {
+        return hasCustomInventoryName() ?
+            getCustomInventoryName().getString() :
+            Utils.translateAsString("block", MERequester.REQUESTER_ID);
     }
 }

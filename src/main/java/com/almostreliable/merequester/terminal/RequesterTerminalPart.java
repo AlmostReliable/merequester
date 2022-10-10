@@ -15,17 +15,23 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
+import static com.almostreliable.merequester.Utils.f;
+
 /**
  * yoinked from {@link PatternAccessTerminalPart}
  */
 public class RequesterTerminalPart extends AbstractDisplayPart {
 
-    @PartModels public static final ResourceLocation MODEL_OFF = Utils.getRL("part/" + MERequester.TERMINAL_ID + "_off");
-    @PartModels public static final ResourceLocation MODEL_ON = Utils.getRL("part/" + MERequester.TERMINAL_ID + "_on");
+    @PartModels private static final ResourceLocation MODEL_OFF = Utils.getRL(
+        f("part/{}_off", MERequester.TERMINAL_ID)
+    );
+    @PartModels private static final ResourceLocation MODEL_ON = Utils.getRL(
+        f("part/{}_on", MERequester.TERMINAL_ID)
+    );
 
-    public static final IPartModel MODELS_OFF = new PartModel(MODEL_BASE, MODEL_OFF, MODEL_STATUS_OFF);
-    public static final IPartModel MODELS_ON = new PartModel(MODEL_BASE, MODEL_ON, MODEL_STATUS_ON);
-    public static final IPartModel MODELS_HAS_CHANNEL = new PartModel(MODEL_BASE, MODEL_ON, MODEL_STATUS_HAS_CHANNEL);
+    private static final IPartModel MODELS_OFF = new PartModel(MODEL_BASE, MODEL_OFF, MODEL_STATUS_OFF);
+    private static final IPartModel MODELS_ON = new PartModel(MODEL_BASE, MODEL_ON, MODEL_STATUS_ON);
+    private static final IPartModel MODELS_HAS_CHANNEL = new PartModel(MODEL_BASE, MODEL_ON, MODEL_STATUS_HAS_CHANNEL);
 
     public RequesterTerminalPart(IPartItem<?> partItem) {
         super(partItem, true);

@@ -16,7 +16,6 @@ import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.requester.Requests;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
@@ -31,19 +30,23 @@ import java.util.Map;
 /**
  * yoinked from {@link PatternAccessTermMenu}
  */
-public class RequesterTerminalMenu extends AEBaseMenu {
+public final class RequesterTerminalMenu extends AEBaseMenu {
 
     public static final MenuType<RequesterTerminalMenu> TYPE = MenuTypeBuilder
         .create(RequesterTerminalMenu::new, RequesterTerminalPart.class)
         .requirePermission(SecurityPermissions.BUILD)
         .build(MERequester.TERMINAL_ID);
 
-    private final Map<RequesterBlockEntity, RequestTracker> byRequester = new IdentityHashMap<>();
+    static final String SORT_BY_ID = "sort_by";
+    static final String UNIQUE_NAME_ID = "unique_name";
+
     private final Long2ObjectOpenHashMap<RequestTracker> byId = new Long2ObjectOpenHashMap<>();
+    private final Map<RequesterBlockEntity, RequestTracker> byRequester = new IdentityHashMap<>();
 
-    private long inventorySerial = Long.MIN_VALUE;
+    // used to give requesters unique IDs
+    private long idSerial = Long.MIN_VALUE;
 
-    public RequesterTerminalMenu(int id, Inventory playerInventory, RequesterTerminalPart host) {
+    private RequesterTerminalMenu(int id, Inventory playerInventory, RequesterTerminalPart host) {
         super(TYPE, id, playerInventory, host);
         createPlayerInventorySlots(playerInventory);
     }
@@ -54,9 +57,9 @@ public class RequesterTerminalMenu extends AEBaseMenu {
         super.broadcastChanges();
 
         IGrid grid = getGrid();
-        VisitorState state = new VisitorState();
-        if (grid != null) visitRequesters(grid, state);
+        if (grid == null) return;
 
+        VisitorState state = visitRequesters(grid);
         if (state.forceFullUpdate || state.total != byRequester.size()) {
             sendFullUpdate(grid);
         } else {
@@ -66,53 +69,58 @@ public class RequesterTerminalMenu extends AEBaseMenu {
 
     @Override
     public void doAction(ServerPlayer player, InventoryAction action, int slot, long id) {
-        RequestTracker requests = byId.get(id);
-        if (requests == null) return;
-        if (slot < 0 || slot >= requests.server.size()) {
-            MERequester.LOGGER.warn("Client refers to invalid slot {} of {}", slot, requests.name.getString());
+        RequestTracker requestTracker = byId.get(id);
+        if (requestTracker == null) return;
+
+        if (slot < 0 || slot >= requestTracker.server.size()) {
+            MERequester.LOGGER.warn("Requester Terminal refers to invalid slot {} of {}", slot, requestTracker.name);
             return;
         }
 
-        var request = requests.server.getStackInSlot(slot);
-        var patternSlot = requests.server.getSlotInv(slot);
-        var carried = getCarried();
+        var requestSlot = requestTracker.server.getSlotInv(slot);
+        var requestStack = requestSlot.getStackInSlot(0);
+        var carriedStack = getCarried();
 
+        // the screen only has fake slots, so don't transfer anything to the player's inventory
         switch (action) {
             case PICKUP_OR_SET_DOWN:
-                patternSlot.setItemDirect(0, carried.isEmpty() ? ItemStack.EMPTY : carried.copy());
+                requestSlot.setItemDirect(0, carriedStack.isEmpty() ? ItemStack.EMPTY : carriedStack.copy());
                 break;
             case SPLIT_OR_PLACE_SINGLE:
-                if (carried.isEmpty()) {
-                    patternSlot.setItemDirect(0, ItemStack.EMPTY);
+                if (carriedStack.isEmpty()) {
+                    requestSlot.setItemDirect(0, ItemStack.EMPTY);
                 } else {
-                    var copy = carried.copy();
+                    var copy = carriedStack.copy();
                     copy.setCount(1);
-                    patternSlot.setItemDirect(0, copy);
+                    requestSlot.setItemDirect(0, copy);
                 }
                 break;
             case SHIFT_CLICK:
-                patternSlot.setItemDirect(0, ItemStack.EMPTY);
+                requestSlot.setItemDirect(0, ItemStack.EMPTY);
                 break;
             case CREATIVE_DUPLICATE:
-                if (player.getAbilities().instabuild && carried.isEmpty()) {
-                    if (request.isEmpty()) {
+                if (player.getAbilities().instabuild && carriedStack.isEmpty()) {
+                    if (requestStack.isEmpty()) {
                         setCarried(ItemStack.EMPTY);
                     } else {
-                        var stack = request.copy();
+                        var stack = requestStack.copy();
                         stack.setCount(stack.getMaxStackSize());
                         setCarried(stack);
                     }
                 }
                 break;
             default:
+                MERequester.LOGGER.debug("Unsupported action {} in Requester Terminal", action);
         }
     }
 
     @Override
     protected ItemStack transferStackToMenu(ItemStack stack) {
+        // sort the requesters like in the screen to refer to the same slots
         var requesters = byRequester.keySet()
             .stream().sorted(Comparator.comparingLong(RequesterBlockEntity::getSortValue)).toList();
 
+        // find the first available slot and put the stack there
         for (var requester : requesters) {
             var targetSlot = requester.getRequests().firstAvailableSlot();
             if (targetSlot == -1) continue;
@@ -122,42 +130,47 @@ public class RequesterTerminalMenu extends AEBaseMenu {
         return stack;
     }
 
-    private void visitRequesters(IGrid grid, VisitorState state) {
+    private VisitorState visitRequesters(IGrid grid) {
+        VisitorState state = new VisitorState();
         for (var requester : grid.getActiveMachines(RequesterBlockEntity.class)) {
             RequestTracker requestTracker = byRequester.get(requester);
             if (requestTracker == null || !requestTracker.name.equals(requester.getTermName())) {
                 state.forceFullUpdate = true;
+                return state;
             }
             state.total++;
         }
+        return state;
     }
 
-    private void sendFullUpdate(@Nullable IGrid grid) {
-        // clear caches and existing data on the client
+    private void sendFullUpdate(IGrid grid) {
         byId.clear();
         byRequester.clear();
-        sendClientPacket(RequesterTerminalPacket.clearExistingData());
 
-        if (grid == null) return;
+        // clear the current data on the client
+        sendClientPacket(RequesterTerminalPacket.clearData());
 
         for (var requester : grid.getActiveMachines(RequesterBlockEntity.class)) {
             byRequester.put(requester, new RequestTracker(requester));
         }
 
         for (var requestTracker : byRequester.values()) {
-            byId.put(requestTracker.serverId, requestTracker);
+            byId.put(requestTracker.id, requestTracker);
 
             var server = requestTracker.server;
             var client = requestTracker.client;
 
-            // get the data from the server requests
+            // get the requests from the server
             var tag = server.serializeNBT();
-            // synchronize the client data for later difference checks on partial updates
+            // store the information in the client tracker to
+            // check for differences on partial updates later
+            // tag serialization is used to avoid references to the original data
             client.deserializeNBT(tag);
 
-            tag.putLong("sortBy", requestTracker.sortBy);
-            tag.putString("un", Component.Serializer.toJson(requestTracker.name));
-            sendClientPacket(RequesterTerminalPacket.inventory(requestTracker.serverId, tag));
+            // send relevant data to the client
+            tag.putString(UNIQUE_NAME_ID, requestTracker.name);
+            tag.putLong(SORT_BY_ID, requestTracker.sortBy);
+            sendClientPacket(RequesterTerminalPacket.inventory(requestTracker.id, tag));
         }
     }
 
@@ -167,24 +180,36 @@ public class RequesterTerminalMenu extends AEBaseMenu {
             var client = requestTracker.client;
 
             CompoundTag tag = null;
+            // iterate through the server data and check for differences
             for (var i = 0; i < server.size(); i++) {
                 var serverRequest = server.get(i);
                 var clientRequest = client.get(i);
+
                 if (serverRequest.isDifferent(clientRequest)) {
+                    // write initial data as soon as something is different
                     if (tag == null) {
                         tag = new CompoundTag();
-                        tag.putLong("sortBy", requestTracker.sortBy);
-                        tag.putString("un", Component.Serializer.toJson(requestTracker.name));
+                        tag.putString(UNIQUE_NAME_ID, requestTracker.name);
+                        tag.putLong(SORT_BY_ID, requestTracker.sortBy);
                     }
+
                     var serverData = serverRequest.serializeNBT();
                     tag.put(String.valueOf(i), serverData);
+                    // update the client information for future difference checks
                     clientRequest.deserializeNBT(serverData);
                 }
             }
 
+            // only send an update if something changed
             if (tag != null) {
-                sendClientPacket(RequesterTerminalPacket.inventory(requestTracker.serverId, tag));
+                sendClientPacket(RequesterTerminalPacket.inventory(requestTracker.id, tag));
             }
+        }
+    }
+
+    private void sendClientPacket(ServerToClientPacket<?> packet) {
+        if (getPlayer() instanceof ServerPlayer serverPlayer) {
+            PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), packet);
         }
     }
 
@@ -200,12 +225,6 @@ public class RequesterTerminalMenu extends AEBaseMenu {
         return null;
     }
 
-    private void sendClientPacket(ServerToClientPacket<?> packet) {
-        if (getPlayer() instanceof ServerPlayer serverPlayer) {
-            PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), packet);
-        }
-    }
-
     private static class VisitorState {
         private int total;
         private boolean forceFullUpdate;
@@ -213,9 +232,9 @@ public class RequesterTerminalMenu extends AEBaseMenu {
 
     private final class RequestTracker {
 
-        private final long serverId = inventorySerial++;
+        private final long id = idSerial++;
         private final long sortBy;
-        private final Component name;
+        private final String name;
         private final Requests server;
         private final Requests client;
 

@@ -12,6 +12,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
+@SuppressWarnings("UtilityClassWithPublicConstructor")
 @Mod(BuildConfig.MOD_ID)
 public final class MERequester {
 

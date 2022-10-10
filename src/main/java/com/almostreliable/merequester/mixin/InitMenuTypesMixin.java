@@ -12,10 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @SuppressWarnings("ALL")
 @Mixin(InitMenuTypes.class)
-public abstract class InitMenuTypesMixin {
+public class InitMenuTypesMixin {
     @Inject(method = "init", at = @At("TAIL"), remap = false)
     private static void merequester$initMenuTypes(IForgeRegistry<MenuType<?>> registry, CallbackInfo ci) {
-        // TODO: move this to a client registration class
         merequester$registerAll(
             registry,
             RequesterTerminalMenu.TYPE

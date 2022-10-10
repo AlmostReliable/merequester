@@ -25,11 +25,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public final class Registration {
 
-    private Registration() {}
-
     private static final Tab TAB = new Tab();
 
-    public static ItemDefinition<PartItem<RequesterTerminalPart>> setupTerminal() {
+    private Registration() {}
+
+    static ItemDefinition<PartItem<RequesterTerminalPart>> setupTerminal() {
         PartModels.registerModels(PartModelsHelper.createModels(RequesterTerminalPart.class));
         return AEItemsMixin.merequester$partItem(
             "",
@@ -39,24 +39,29 @@ public final class Registration {
         );
     }
 
-    public static BlockDefinition<RequesterBlock> setupRequester() {
+    static BlockDefinition<RequesterBlock> setupRequester() {
         var blockDef = AEBlocksMixin.merequester$aeBlock(
             "",
             Utils.getRL(MERequester.REQUESTER_ID),
             RequesterBlock::new,
             (block, properties) -> new AEBaseBlockItem(block, properties.tab(TAB))
         );
-        setupRequesterEntity(blockDef);
+        registerRequesterEntity(blockDef);
         return blockDef;
     }
 
     /**
-     * logic taken from {@link AEBlockEntities}
+     * yoinked from {@link AEBlockEntities}
      */
     @SuppressWarnings("CastToIncompatibleInterface")
-    private static void setupRequesterEntity(BlockDefinition<RequesterBlock> block) {
+    private static void registerRequesterEntity(BlockDefinition<RequesterBlock> block) {
         AtomicReference<BlockEntityType<RequesterBlockEntity>> typeHolder = new AtomicReference<>();
-        BlockEntityType.BlockEntitySupplier<RequesterBlockEntity> supplier = (blockPos, blockState) -> new RequesterBlockEntity(typeHolder.get(), blockPos, blockState);
+        BlockEntityType.BlockEntitySupplier<RequesterBlockEntity> supplier = (blockPos, blockState) ->
+            new RequesterBlockEntity(
+                typeHolder.get(),
+                blockPos,
+                blockState
+            );
 
         @SuppressWarnings("ConstantConditions")
         var type = BlockEntityType.Builder.of(supplier, block.block()).build(null);
@@ -67,15 +72,11 @@ public final class Registration {
 
         BlockEntityTicker<RequesterBlockEntity> serverTicker = null;
         if (ServerTickingBlockEntity.class.isAssignableFrom(RequesterBlockEntity.class)) {
-            serverTicker = (level, pos, state, entity) -> {
-                ((ServerTickingBlockEntity) entity).serverTick();
-            };
+            serverTicker = (level, pos, state, entity) -> ((ServerTickingBlockEntity) entity).serverTick();
         }
         BlockEntityTicker<RequesterBlockEntity> clientTicker = null;
         if (ClientTickingBlockEntity.class.isAssignableFrom(RequesterBlockEntity.class)) {
-            clientTicker = (level, pos, state, entity) -> {
-                ((ClientTickingBlockEntity) entity).clientTick();
-            };
+            clientTicker = (level, pos, state, entity) -> ((ClientTickingBlockEntity) entity).clientTick();
         }
 
         block.block().setBlockEntity(RequesterBlockEntity.class, type, clientTicker, serverTicker);

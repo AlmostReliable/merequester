@@ -11,7 +11,7 @@ public interface IProgressionState {
 
     /**
      * @param host the entity that is hosting the progression.
-     * @param slot  the slot of the progression.
+     * @param slot the slot of the progression.
      * @return the next state, self, or idle if the progression is complete.
      */
     IProgressionState handle(RequesterBlockEntity host, int slot);
