@@ -147,6 +147,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         // they are not contained in the JSON style sheet, so they have to be
         // added manually to the widget container and the renderable list
         // this has to be done after the super call because of the missing style
+        // clear old state boxes because init() is recalled when the terminal resizes
         stateBoxes.clear();
         for (var i = 0; i < rowAmount; i++) {
             var stateBox = new AECheckbox(GUI_PADDING_X, (i + 1) * ROW_HEIGHT + 1, 14, 14, style, Component.empty());
@@ -217,7 +218,10 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         int scrollLevel = scrollbar.getCurrentScroll();
 
         for (var i = 0; i < rowAmount; i++) {
-            if (scrollLevel + i >= linesToRender.size()) continue;
+            if (scrollLevel + i >= linesToRender.size()) {
+                stateBoxes.get(i).visible = false;
+                continue;
+            }
 
             var lineElement = linesToRender.get(scrollLevel + i);
             if (lineElement instanceof Request request) {
