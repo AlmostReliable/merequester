@@ -11,7 +11,9 @@ public class StateBox extends AECheckbox {
 
     private static final int SIZE = 14;
 
-    private static final Blitter BLITTER = Blitter.texture(Utils.getRL("textures/gui/state_box.png"), SIZE * 2, SIZE * 2);
+    private static final Blitter BLITTER = Blitter.texture(
+        Utils.getRL("textures/gui/state_box.png"), SIZE * 2, SIZE * 2
+    );
     private static final Blitter UNCHECKED = BLITTER.copy().src(0, 0, SIZE, SIZE);
     private static final Blitter UNCHECKED_FOCUS = BLITTER.copy().src(SIZE, 0, SIZE, SIZE);
     private static final Blitter CHECKED = BLITTER.copy().src(0, SIZE, SIZE, SIZE);

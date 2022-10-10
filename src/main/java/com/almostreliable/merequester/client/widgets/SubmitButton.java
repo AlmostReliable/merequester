@@ -11,7 +11,9 @@ public class SubmitButton extends AECheckbox {
 
     private static final int SIZE = 12;
 
-    private static final Blitter BLITTER = Blitter.texture(Utils.getRL("textures/gui/submit_button.png"), SIZE * 2, SIZE);
+    private static final Blitter BLITTER = Blitter.texture(
+        Utils.getRL("textures/gui/submit_button.png"), SIZE * 2, SIZE
+    );
     private static final Blitter UNFOCUSED = BLITTER.copy().src(0, 0, SIZE, SIZE);
     private static final Blitter FOCUSED = BLITTER.copy().src(SIZE, SIZE, SIZE, SIZE);
 

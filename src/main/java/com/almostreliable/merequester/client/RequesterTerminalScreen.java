@@ -17,11 +17,7 @@ import appeng.helpers.InventoryAction;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.widgets.RequestWidget;
-import com.almostreliable.merequester.client.widgets.StateBox;
-import com.almostreliable.merequester.client.widgets.SubmitButton;
 import com.almostreliable.merequester.mixin.WidgetContainerMixin;
-import com.almostreliable.merequester.network.PacketHandler;
-import com.almostreliable.merequester.network.RequestStatePacket;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.requester.Requests.Request;
 import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
@@ -140,7 +136,9 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
 
         imageHeight = GUI_HEADER_HEIGHT + GUI_FOOTER_HEIGHT + rowAmount * ROW_HEIGHT;
 
-        requestWidgets.forEach(w -> w.preInit(Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets()));
+        requestWidgets.forEach(
+            w -> w.preInit(Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets())
+        );
         super.init();
         // clear old widgets because init() is recalled when the terminal resizes
         requestWidgets.clear();

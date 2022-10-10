@@ -10,7 +10,7 @@ public class RequestSlot extends FakeSlot {
     private final RequesterReference host;
     private final int slot;
 
-    public RequestSlot(RequesterReference host, int slot, int x, int y) {
+    RequestSlot(RequesterReference host, int slot, int x, int y) {
         super(host.getRequests(), slot);
         this.host = host;
         this.slot = slot;
