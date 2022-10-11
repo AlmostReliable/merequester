@@ -1,0 +1,7 @@
+{
+  "parent": "merequester:block/requester",
+  "textures": {
+    "wall": "merequester:block/wall_active",
+    "face": "merequester:block/requester_active"
+  }
+}

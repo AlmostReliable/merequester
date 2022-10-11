@@ -1,7 +1,10 @@
 {
   "variants": {
-    "": {
+    "active=false": {
       "model": "merequester:block/requester"
+    },
+    "active=true": {
+      "model": "merequester:block/requester_active"
     }
   }
 }

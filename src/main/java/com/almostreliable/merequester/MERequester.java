@@ -22,7 +22,6 @@ public final class MERequester {
         - fix requester not detecting changes to the network
         - add drops
         - add recipes
-        - give requester a proper model and texture
         - add screen to the requester block
         - fluid support
      */

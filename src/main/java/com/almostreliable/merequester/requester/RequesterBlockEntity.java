@@ -75,6 +75,10 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
         saveChanges();
     }
 
+    boolean isActive() {
+        return Arrays.stream(progressions).anyMatch(p -> p.type() != RequestStatus.IDLE);
+    }
+
     private boolean handleProgression() {
         var changed = false;
 
@@ -109,6 +113,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
     private void updateProgression(int slot, ProgressionState state) {
         progressions[slot] = state;
         requests.get(slot).setClientStatus(state.type());
+        markForUpdate();
     }
 
     public Requests getRequests() {
