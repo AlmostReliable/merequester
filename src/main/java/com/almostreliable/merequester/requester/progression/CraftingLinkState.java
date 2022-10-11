@@ -4,24 +4,24 @@ import appeng.api.networking.crafting.ICraftingLink;
 import appeng.api.networking.ticking.TickRateModulation;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 
-public record CraftingLinkState(ICraftingLink link) implements IProgressionState {
+public record CraftingLinkState(ICraftingLink link) implements ProgressionState {
 
     @Override
-    public IProgressionState handle(RequesterBlockEntity host, int slot) {
+    public ProgressionState handle(RequesterBlockEntity host, int slot) {
         if (link.isDone()) {
-            return IProgressionState.EXPORT;
+            return ProgressionState.EXPORT;
         }
 
         if (link.isCanceled()) {
-            return IProgressionState.IDLE;
+            return ProgressionState.IDLE;
         }
 
         return this;
     }
 
     @Override
-    public ProgressionType type() {
-        return ProgressionType.LINK;
+    public RequestStatus type() {
+        return RequestStatus.LINK;
     }
 
     @Override

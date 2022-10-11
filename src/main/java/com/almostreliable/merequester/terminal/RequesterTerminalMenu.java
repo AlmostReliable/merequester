@@ -114,17 +114,6 @@ public final class RequesterTerminalMenu extends AEBaseMenu {
         }
     }
 
-    public void updateRequesterState(long requesterId, int requestIndex, boolean state) {
-        var request = byId.get(requesterId).server.get(requestIndex);
-        request.updateState(state);
-    }
-
-    public void updateRequesterNumbers(long requesterId, int requestIndex, long count, long batch) {
-        var request = byId.get(requesterId).server.get(requestIndex);
-        request.updateCount(count);
-        request.updateBatch(batch);
-    }
-
     @Override
     protected ItemStack transferStackToMenu(ItemStack stack) {
         // sort the requesters like in the screen to refer to the same slots
@@ -222,6 +211,17 @@ public final class RequesterTerminalMenu extends AEBaseMenu {
         if (getPlayer() instanceof ServerPlayer serverPlayer) {
             PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), packet);
         }
+    }
+
+    public void updateRequesterState(long requesterId, int requestIndex, boolean state) {
+        var request = byId.get(requesterId).server.get(requestIndex);
+        request.updateState(state);
+    }
+
+    public void updateRequesterNumbers(long requesterId, int requestIndex, long count, long batch) {
+        var request = byId.get(requesterId).server.get(requestIndex);
+        request.updateCount(count);
+        request.updateBatch(batch);
     }
 
     @Nullable

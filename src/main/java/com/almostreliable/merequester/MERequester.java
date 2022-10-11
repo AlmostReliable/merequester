@@ -16,6 +16,17 @@ import org.slf4j.Logger;
 @Mod(BuildConfig.MOD_ID)
 public final class MERequester {
 
+    /*
+        TODO:
+        - add tooltip to text boxes to submit with enter
+        - add serialization for requesters
+        - fix requester not detecting changes to the network
+        - add drops
+        - add recipes
+        - give requester a proper model and texture
+        - add screen to the requester block
+     */
+
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final String TERMINAL_ID = "requester_terminal";

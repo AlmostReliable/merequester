@@ -227,6 +227,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
     @Nullable
     @Override
     public Request getTargetRequest(int listIndex) {
+        if (listIndex >= linesToRender.size()) return null;
         var lineElement = linesToRender.get(scrollbar.getCurrentScroll() + listIndex);
         return lineElement instanceof Request request ? request : null;
     }

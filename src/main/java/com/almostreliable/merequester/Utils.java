@@ -1,6 +1,8 @@
 package com.almostreliable.merequester;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.regex.Pattern;
@@ -25,8 +27,17 @@ public final class Utils {
         return input;
     }
 
+    public static int fillColorAlpha(ChatFormatting color) {
+        //noinspection ConstantConditions
+        return 0xFF << 3 * 8 | color.getColor();
+    }
+
+    public static MutableComponent translate(String type, String key, Object... args) {
+        return Component.translatable(getTranslationKey(type, key), args);
+    }
+
     public static String translateAsString(String type, String key) {
-        return Component.translatable(getTranslationKey(type, key)).getString();
+        return translate(type, key).getString();
     }
 
     public static <T> T cast(Object o, Class<T> clazz) {

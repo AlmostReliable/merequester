@@ -5,6 +5,7 @@ import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.GenericStack;
 import appeng.util.inv.InternalInventoryHost;
+import com.almostreliable.merequester.requester.progression.RequestStatus;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -57,7 +58,7 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         if (host == null || host.isClientSide()) {
-            get(slot).updateStackClient(stack);
+            get(slot).setClientStack(stack);
         } else {
             get(slot).updateStack(stack);
         }
@@ -108,6 +109,7 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
         private static final String STACK_ID = "stack";
         private static final String COUNT_ID = "count";
         private static final String BATCH_ID = "batch";
+        private static final String STATUS_ID = "status";
 
         private final InternalInventory requestHost;
         private final int slot;
@@ -115,6 +117,7 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
         private ItemStack stack = ItemStack.EMPTY;
         private long count;
         private long batch = 1;
+        private RequestStatus clientStatus;
 
         private Request(InternalInventory requestHost, int slot) {
             this.requestHost = requestHost;
@@ -133,6 +136,7 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
             tag.put(STACK_ID, stack.serializeNBT());
             tag.putLong(COUNT_ID, count);
             tag.putLong(BATCH_ID, batch);
+            tag.putInt(STATUS_ID, clientStatus.ordinal());
             return tag;
         }
 
@@ -142,6 +146,7 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
             stack = ItemStack.of(tag.getCompound(STACK_ID));
             count = tag.getLong(COUNT_ID);
             batch = tag.getLong(BATCH_ID);
+            clientStatus = RequestStatus.values()[tag.getInt(STATUS_ID)];
         }
 
         public void updateState(boolean state) {
@@ -173,17 +178,22 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
 
         @Override
         public String toString() {
-            return f("Request[state={}, stack={}, count={}, batch={}]", state, stack, count, batch);
+            return f(
+                "Request[state={}, stack={}, count={}, batch={}, status={}]",
+                state, stack, count, batch,
+                clientStatus
+            );
         }
 
-        public boolean isDifferent(Request other) {
-            return state != other.state ||
-                !ItemStack.isSameItemSameTags(stack, other.stack) ||
-                count != other.count ||
-                batch != other.batch;
+        public boolean isDifferent(Request clientRequest) {
+            return state != clientRequest.state ||
+                !ItemStack.isSameItemSameTags(stack, clientRequest.stack) ||
+                count != clientRequest.count ||
+                batch != clientRequest.batch ||
+                clientStatus != clientRequest.clientStatus;
         }
 
-        private void updateStackClient(ItemStack stack) {
+        private void setClientStack(ItemStack stack) {
             this.stack = stack;
         }
 
@@ -226,6 +236,10 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
             return host;
         }
 
+        public void setClientStatus(RequestStatus clientStatus) {
+            this.clientStatus = clientStatus.translateToClient();
+        }
+
         public boolean getState() {
             return state;
         }
@@ -240,6 +254,11 @@ public class Requests implements InternalInventory, INBTSerializable<CompoundTag
 
         public long getBatch() {
             return batch;
+        }
+
+        @OnlyIn(Dist.CLIENT)
+        public RequestStatus getClientStatus() {
+            return clientStatus;
         }
 
         public boolean isRequesting() {

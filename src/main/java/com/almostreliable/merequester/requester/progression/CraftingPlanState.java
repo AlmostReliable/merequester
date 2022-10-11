@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public final class CraftingPlanState implements IProgressionState {
+public final class CraftingPlanState implements ProgressionState {
 
     private final Future<? extends ICraftingPlan> future;
 
@@ -17,13 +17,13 @@ public final class CraftingPlanState implements IProgressionState {
     }
 
     @Override
-    public IProgressionState handle(RequesterBlockEntity host, int slot) {
+    public ProgressionState handle(RequesterBlockEntity host, int slot) {
         if (!future.isDone()) {
             return this;
         }
 
         if (future.isCancelled()) {
-            return IProgressionState.IDLE;
+            return ProgressionState.IDLE;
         }
 
         try {
@@ -33,18 +33,18 @@ public final class CraftingPlanState implements IProgressionState {
                 .submitJob(plan, host, null, false, host.getActionSource());
 
             if (!submitResult.successful() || submitResult.link() == null) {
-                return IProgressionState.IDLE;
+                return ProgressionState.IDLE;
             }
 
             return new CraftingLinkState(Objects.requireNonNull(submitResult.link()));
         } catch (InterruptedException | ExecutionException e) {
-            return IProgressionState.IDLE;
+            return ProgressionState.IDLE;
         }
     }
 
     @Override
-    public ProgressionType type() {
-        return ProgressionType.PLAN;
+    public RequestStatus type() {
+        return RequestStatus.PLAN;
     }
 
     @Override

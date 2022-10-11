@@ -19,8 +19,8 @@ import appeng.util.inv.InternalInventoryHost;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.progression.CraftingLinkState;
-import com.almostreliable.merequester.requester.progression.IProgressionState;
-import com.almostreliable.merequester.requester.progression.ProgressionType;
+import com.almostreliable.merequester.requester.progression.ProgressionState;
+import com.almostreliable.merequester.requester.progression.RequestStatus;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -36,7 +36,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
     public static final int SLOTS = 5;
 
     private final Requests requests;
-    private final IProgressionState[] progressions;
+    private final ProgressionState[] progressions;
     private final StorageManager storageManager;
     private final IActionSource actionSource;
 
@@ -45,8 +45,8 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
     public RequesterBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
         requests = new Requests(this);
-        progressions = new IProgressionState[SLOTS];
-        Arrays.fill(progressions, IProgressionState.IDLE);
+        progressions = new ProgressionState[SLOTS];
+        Arrays.fill(progressions, ProgressionState.IDLE);
         storageManager = new StorageManager(this);
         actionSource = new MachineSource(this);
         getMainNode().setFlags(GridFlags.REQUIRE_CHANNEL) // TODO: make configurable
@@ -90,20 +90,25 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
                 tickRateModulation = resultTickRateModulation;
             }
 
-            progressions[slot] = result;
+            updateProgression(slot, result);
         }
         currentTickRate = tickRateModulation;
         return changed;
     }
 
-    private IProgressionState handleProgression(int slot) {
+    private ProgressionState handleProgression(int slot) {
         var state = progressions[slot];
-        progressions[slot] = state.handle(this, slot);
-        if (progressions[slot].type() != ProgressionType.IDLE && !Objects.equals(progressions[slot], state)) {
+        updateProgression(slot, state.handle(this, slot));
+        if (progressions[slot].type() != RequestStatus.IDLE && !Objects.equals(progressions[slot], state)) {
             return handleProgression(slot);
         }
 
         return progressions[slot];
+    }
+
+    private void updateProgression(int slot, ProgressionState state) {
+        progressions[slot] = state;
+        requests.get(slot).setClientStatus(state.type());
     }
 
     public Requests getRequests() {

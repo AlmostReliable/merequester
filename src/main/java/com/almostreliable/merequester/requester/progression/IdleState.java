@@ -3,27 +3,27 @@ package com.almostreliable.merequester.requester.progression;
 import appeng.api.networking.ticking.TickRateModulation;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 
-public class IdleState implements IProgressionState {
+public class IdleState implements ProgressionState {
 
     IdleState() {}
 
     @Override
-    public IProgressionState handle(RequesterBlockEntity host, int slot) {
+    public ProgressionState handle(RequesterBlockEntity host, int slot) {
         if (host.getStorageManager().get(slot).getBufferAmount() > 0) {
-            return IProgressionState.EXPORT;
+            return ProgressionState.EXPORT;
         }
 
         var request = host.getRequests().get(slot);
         if (request.isRequesting() && request.getCount() > host.getStorageManager().get(slot).getKnownAmount()) {
-            return IProgressionState.REQUEST;
+            return ProgressionState.REQUEST;
         }
 
         return this;
     }
 
     @Override
-    public ProgressionType type() {
-        return ProgressionType.IDLE;
+    public RequestStatus type() {
+        return RequestStatus.IDLE;
     }
 
     @Override

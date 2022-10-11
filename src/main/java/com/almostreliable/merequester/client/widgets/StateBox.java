@@ -3,11 +3,15 @@ package com.almostreliable.merequester.client.widgets;
 import appeng.client.gui.style.Blitter;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.AECheckbox;
+import appeng.client.gui.widgets.ITooltip;
 import com.almostreliable.merequester.Utils;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
-public class StateBox extends AECheckbox {
+import java.util.List;
+
+public class StateBox extends AECheckbox implements ITooltip {
 
     private static final int SIZE = 14;
 
@@ -19,9 +23,10 @@ public class StateBox extends AECheckbox {
     private static final Blitter CHECKED = BLITTER.copy().src(0, SIZE, SIZE, SIZE);
     private static final Blitter CHECKED_FOCUS = BLITTER.copy().src(SIZE, SIZE, SIZE, SIZE);
 
-    StateBox(int x, int y, ScreenStyle style) {
-        // add 2 to the positions to it matches with a slot
+    StateBox(int x, int y, ScreenStyle style, Runnable changeListener) {
+        // add 2 to the positions, so it matches with a slot
         super(x + 2, y + 2, SIZE, SIZE, style, Component.empty());
+        setChangeListener(changeListener);
     }
 
     @Override
@@ -34,5 +39,20 @@ public class StateBox extends AECheckbox {
         }
         var opacity = isActive() ? 1 : 0.5f;
         icon.dest(x, y).opacity(opacity).blit(poseStack, getBlitOffset());
+    }
+
+    @Override
+    public Rect2i getTooltipArea() {
+        return new Rect2i(x, y, width, height);
+    }
+
+    @Override
+    public boolean isTooltipAreaVisible() {
+        return visible;
+    }
+
+    @Override
+    public List<Component> getTooltipMessage() {
+        return List.of(Utils.translate("tooltip", "toggle"));
     }
 }

@@ -3,10 +3,10 @@ package com.almostreliable.merequester.requester.progression;
 import appeng.api.networking.ticking.TickRateModulation;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 
-public record ClientState(ProgressionType type) implements IProgressionState {
+public record ClientState(RequestStatus type) implements ProgressionState {
 
     @Override
-    public IProgressionState handle(RequesterBlockEntity host, int slot) {
+    public ProgressionState handle(RequesterBlockEntity host, int slot) {
         throw new UnsupportedOperationException();
     }
 

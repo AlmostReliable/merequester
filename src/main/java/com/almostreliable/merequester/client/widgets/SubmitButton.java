@@ -3,11 +3,15 @@ package com.almostreliable.merequester.client.widgets;
 import appeng.client.gui.style.Blitter;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.AECheckbox;
+import appeng.client.gui.widgets.ITooltip;
 import com.almostreliable.merequester.Utils;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
-public class SubmitButton extends AECheckbox {
+import java.util.List;
+
+public class SubmitButton extends AECheckbox implements ITooltip {
 
     private static final int SIZE = 12;
 
@@ -17,8 +21,9 @@ public class SubmitButton extends AECheckbox {
     private static final Blitter UNFOCUSED = BLITTER.copy().src(0, 0, SIZE, SIZE);
     private static final Blitter FOCUSED = BLITTER.copy().src(SIZE, SIZE, SIZE, SIZE);
 
-    SubmitButton(int x, int y, ScreenStyle style) {
+    SubmitButton(int x, int y, ScreenStyle style, Runnable changeListener) {
         super(x, y, SIZE, SIZE, style, Component.empty());
+        setChangeListener(changeListener);
     }
 
     @Override
@@ -26,5 +31,20 @@ public class SubmitButton extends AECheckbox {
         Blitter icon = isFocused() || isMouseOver(mX, mY) ? FOCUSED : UNFOCUSED;
         var opacity = isActive() ? 1 : 0.5f;
         icon.dest(x, y).opacity(opacity).blit(poseStack, getBlitOffset());
+    }
+
+    @Override
+    public Rect2i getTooltipArea() {
+        return new Rect2i(x, y, width, height);
+    }
+
+    @Override
+    public boolean isTooltipAreaVisible() {
+        return visible;
+    }
+
+    @Override
+    public List<Component> getTooltipMessage() {
+        return List.of(Utils.translate("tooltip", "submit"));
     }
 }

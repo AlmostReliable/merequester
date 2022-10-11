@@ -1,9 +1,9 @@
 package com.almostreliable.merequester.requester.progression;
 
-public enum ProgressionType {
+public enum RequestStatus {
     LINK, PLAN, EXPORT, IDLE, REQUEST;
 
-    public ProgressionType translateToClient() {
+    public RequestStatus translateToClient() {
         if (this == REQUEST || this == PLAN) return IDLE;
         return this;
     }

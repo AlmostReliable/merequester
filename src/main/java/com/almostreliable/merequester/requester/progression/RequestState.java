@@ -4,18 +4,18 @@ import appeng.api.networking.crafting.CalculationStrategy;
 import appeng.api.networking.ticking.TickRateModulation;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 
-public class RequestState implements IProgressionState {
+public class RequestState implements ProgressionState {
 
     RequestState() {}
 
     @Override
-    public IProgressionState handle(RequesterBlockEntity owner, int slot) {
+    public ProgressionState handle(RequesterBlockEntity owner, int slot) {
 
         var craftRequests = owner.getRequests();
 
         var toCraft = owner.getStorageManager().computeDelta(slot);
         if (toCraft <= 0) {
-            return IProgressionState.IDLE;
+            return ProgressionState.IDLE;
         }
 
         var stack = craftRequests.get(slot).toGenericStack(toCraft);
@@ -33,8 +33,8 @@ public class RequestState implements IProgressionState {
     }
 
     @Override
-    public ProgressionType type() {
-        return ProgressionType.REQUEST;
+    public RequestStatus type() {
+        return RequestStatus.REQUEST;
     }
 
     @Override
