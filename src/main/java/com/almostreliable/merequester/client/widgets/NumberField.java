@@ -7,6 +7,8 @@ import appeng.client.gui.widgets.ConfirmableTextField;
 import appeng.client.gui.widgets.NumberEntryWidget;
 import appeng.core.localization.GuiText;
 import com.almostreliable.merequester.Utils;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
@@ -64,6 +66,13 @@ public class NumberField extends ConfirmableTextField {
     public void setTooltipMessage(List<Component> tooltipMessage) {
         tooltipMessage.add(0, Utils.translate("tooltip", name));
         super.setTooltipMessage(tooltipMessage);
+        if (!isFocused() || (tooltipMessage.size() > 1 && !tooltipMessage.get(1).getString().startsWith("="))) return;
+        tooltipMessage.add(Component.literal("» ").withStyle(ChatFormatting.AQUA)
+            .append(Utils.translate(
+                "tooltip",
+                "enter_to_submit",
+                InputConstants.getKey("key.keyboard.enter").getDisplayName()
+            ).withStyle(ChatFormatting.GRAY)));
     }
 
     @Override

@@ -8,6 +8,7 @@
   "gui.merequester.no_requesters": "No ME Requesters found!",
 
   "tooltip.merequester.shift_for_more": "%s for more",
+  "tooltip.merequester.enter_to_submit": "%s to submit",
   "tooltip.merequester.toggle": "Toggle Request",
   "tooltip.merequester.count": "Stock Count",
   "tooltip.merequester.batch": "Batch Size",
