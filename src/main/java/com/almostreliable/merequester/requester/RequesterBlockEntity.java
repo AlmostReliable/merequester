@@ -54,7 +54,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
             .addService(ICraftingRequester.class, this)
             .addService(IStorageWatcherNode.class, storageManager)
             .setIdlePowerUsage(5) // TODO: make configurable
-            .setExposedOnSides(EnumSet.allOf(Direction.class));
+            .setExposedOnSides(getExposedSides());
     }
 
     @Override
@@ -69,6 +69,12 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
         return currentTickRate;
     }
 
+    private EnumSet<Direction> getExposedSides() {
+        var exposedSides = EnumSet.allOf(Direction.class);
+        exposedSides.remove(getForward());
+        return exposedSides;
+    }
+
     @Override
     public void onChangeInventory(InternalInventory inv, int slot) {
         storageManager.clear(slot);
@@ -77,6 +83,12 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
 
     boolean isActive() {
         return Arrays.stream(progressions).anyMatch(p -> p.type() != RequestStatus.IDLE);
+    }
+
+    @Override
+    public void setOrientation(Direction inForward, Direction inUp) {
+        super.setOrientation(inForward, inUp);
+        getMainNode().setExposedOnSides(getExposedSides());
     }
 
     private boolean handleProgression() {
