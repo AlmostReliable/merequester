@@ -82,7 +82,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
     }
 
     boolean isActive() {
-        return Arrays.stream(progressions).anyMatch(p -> p.type() != RequestStatus.IDLE);
+        return Arrays.stream(progressions).anyMatch(p -> p.type().translateToClient() != RequestStatus.IDLE);
     }
 
     @Override
