@@ -63,11 +63,13 @@ public class RequestWidget {
         host.addSubWidget(f("request_state_{}", index), stateBox, subWidgets);
 
         amountField = new NumberField(x + 38, y, "amount", style,
-            amount -> amountFieldSubmitted(host.getTargetRequest(index), amount));
+            amount -> amountFieldSubmitted(host.getTargetRequest(index), amount)
+        );
         host.addSubWidget(f("request_amount_{}", index), amountField, subWidgets);
 
         batchField = new NumberField(x + 92, y, "batch", style,
-            amount -> batchFieldSubmitted(host.getTargetRequest(index), amount));
+            amount -> batchFieldSubmitted(host.getTargetRequest(index), amount)
+        );
         host.addSubWidget(f("request_batch_{}", index), batchField, subWidgets);
 
         submitButton = new SubmitButton(x + 146, y, style, () -> submitButtonClicked(host.getTargetRequest(index)));

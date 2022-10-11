@@ -34,6 +34,11 @@ public class SubmitButton extends AECheckbox implements ITooltip {
     }
 
     @Override
+    public List<Component> getTooltipMessage() {
+        return List.of(Utils.translate("tooltip", "submit"));
+    }
+
+    @Override
     public Rect2i getTooltipArea() {
         return new Rect2i(x, y, width, height);
     }
@@ -41,10 +46,5 @@ public class SubmitButton extends AECheckbox implements ITooltip {
     @Override
     public boolean isTooltipAreaVisible() {
         return visible;
-    }
-
-    @Override
-    public List<Component> getTooltipMessage() {
-        return List.of(Utils.translate("tooltip", "submit"));
     }
 }

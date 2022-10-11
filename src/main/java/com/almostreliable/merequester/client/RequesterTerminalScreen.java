@@ -135,6 +135,32 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
     }
 
     @Override
+    public void addSubWidget(String id, AbstractWidget widget, Map<String, AbstractWidget> subWidgets) {
+        if (widget.isFocused()) widget.changeFocus(false);
+        widget.x += leftPos;
+        widget.y += topPos;
+        subWidgets.put(id, widget);
+        Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets().put(id, widget);
+        addRenderableWidget(widget);
+    }
+
+    @Nullable
+    @Override
+    public Request getTargetRequest(int listIndex) {
+        if (listIndex >= linesToRender.size()) return null;
+        var lineElement = linesToRender.get(scrollbar.getCurrentScroll() + listIndex);
+        return lineElement instanceof Request request ? request : null;
+    }
+
+    @Nullable
+    @Override
+    public List<Component> getEmptyingTooltip(RequestSlot slot, ItemStack carried) {
+        var emptyingAction = getEmptyingAction(slot, carried);
+        if (emptyingAction == null) return null;
+        return Tooltips.getEmptyingTooltip(ButtonToolTips.SetAction, carried, emptyingAction);
+    }
+
+    @Override
     protected void init() {
         TerminalStyle terminalStyle = AEConfig.instance().getTerminalStyle();
         var maxRows = terminalStyle == TerminalStyle.SMALL ? DEFAULT_ROW_COUNT : Integer.MAX_VALUE;
@@ -159,14 +185,20 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         resetScrollbar();
     }
 
+    // avoid having to use a ConfigMenuInventory
+    @Nullable
     @Override
-    public void addSubWidget(String id, AbstractWidget widget, Map<String, AbstractWidget> subWidgets) {
-        if (widget.isFocused()) widget.changeFocus(false);
-        widget.x += leftPos;
-        widget.y += topPos;
-        subWidgets.put(id, widget);
-        Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets().put(id, widget);
-        addRenderableWidget(widget);
+    protected EmptyingAction getEmptyingAction(Slot slot, ItemStack carried) {
+        if (slot instanceof RequestSlot requestSlot) {
+            var emptyingAction = StackInteractions.getEmptyingAction(carried);
+            if (emptyingAction == null) return null;
+
+            var wrappedStack = GenericStack.wrapInItemStack(new GenericStack(emptyingAction.what(), 1));
+            if (!requestSlot.getInventory().isItemValid(requestSlot.getSlot(), wrappedStack)) return null;
+
+            return emptyingAction;
+        }
+        return super.getEmptyingAction(slot, carried);
     }
 
     @Override
@@ -210,34 +242,6 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
                 requestWidgets.get(i).hide();
             }
         );
-    }
-
-    private void forRelevantLines(BiConsumer<Integer, Request> onRequestLine, BiConsumer<Integer, String> onTextLine) {
-        int scrollLevel = scrollbar.getCurrentScroll();
-
-        for (var i = 0; i < rowAmount; i++) {
-            if (scrollLevel + i >= linesToRender.size()) {
-                requestWidgets.get(i).hide();
-                continue;
-            }
-
-            var lineElement = linesToRender.get(scrollLevel + i);
-            if (lineElement instanceof Request request) {
-                onRequestLine.accept(i, request);
-            } else if (lineElement instanceof String name) {
-                onTextLine.accept(i, name);
-            } else {
-                MERequester.LOGGER.debug("Unknown line element: {}", lineElement);
-            }
-        }
-    }
-
-    @Nullable
-    @Override
-    public Request getTargetRequest(int listIndex) {
-        if (listIndex >= linesToRender.size()) return null;
-        var lineElement = linesToRender.get(scrollbar.getCurrentScroll() + listIndex);
-        return lineElement instanceof Request request ? request : null;
     }
 
     @Override
@@ -317,6 +321,26 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             blit(poseStack, pX, currentY, isRequestElement ? REQUEST_BBOX : TEXT_BBOX);
 
             currentY += ROW_HEIGHT;
+        }
+    }
+
+    private void forRelevantLines(BiConsumer<Integer, Request> onRequestLine, BiConsumer<Integer, String> onTextLine) {
+        int scrollLevel = scrollbar.getCurrentScroll();
+
+        for (var i = 0; i < rowAmount; i++) {
+            if (scrollLevel + i >= linesToRender.size()) {
+                requestWidgets.get(i).hide();
+                continue;
+            }
+
+            var lineElement = linesToRender.get(scrollLevel + i);
+            if (lineElement instanceof Request request) {
+                onRequestLine.accept(i, request);
+            } else if (lineElement instanceof String name) {
+                onTextLine.accept(i, name);
+            } else {
+                MERequester.LOGGER.debug("Unknown line element: {}", lineElement);
+            }
         }
     }
 
@@ -416,29 +440,5 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             cache.addAll(searchByQuery(searchQuery.substring(0, searchQuery.length() - 1)));
         }
         return cache;
-    }
-
-    @Nullable
-    @Override
-    public List<Component> getEmptyingTooltip(RequestSlot slot, ItemStack carried) {
-        var emptyingAction = getEmptyingAction(slot, carried);
-        if (emptyingAction == null) return null;
-        return Tooltips.getEmptyingTooltip(ButtonToolTips.SetAction, carried, emptyingAction);
-    }
-
-    // avoid having to use a ConfigMenuInventory
-    @Nullable
-    @Override
-    protected EmptyingAction getEmptyingAction(Slot slot, ItemStack carried) {
-        if (slot instanceof RequestSlot requestSlot) {
-            var emptyingAction = StackInteractions.getEmptyingAction(carried);
-            if (emptyingAction == null) return null;
-
-            var wrappedStack = GenericStack.wrapInItemStack(new GenericStack(emptyingAction.what(), 1));
-            if (!requestSlot.getInventory().isItemValid(requestSlot.getSlot(), wrappedStack)) return null;
-
-            return emptyingAction;
-        }
-        return super.getEmptyingAction(slot, carried);
     }
 }

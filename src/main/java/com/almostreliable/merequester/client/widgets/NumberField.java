@@ -62,19 +62,6 @@ public class NumberField extends ConfirmableTextField {
         validate();
     }
 
-    @Override
-    public void setTooltipMessage(List<Component> tooltipMessage) {
-        tooltipMessage.add(0, Utils.translate("tooltip", name));
-        super.setTooltipMessage(tooltipMessage);
-        if (!isFocused() || (tooltipMessage.size() > 1 && !tooltipMessage.get(1).getString().startsWith("="))) return;
-        tooltipMessage.add(Component.literal("» ").withStyle(ChatFormatting.AQUA)
-            .append(Utils.translate(
-                "tooltip",
-                "enter_to_submit",
-                InputConstants.getKey("key.keyboard.enter").getDisplayName()
-            ).withStyle(ChatFormatting.GRAY)));
-    }
-
     private void validate() {
         List<Component> validationErrors = new ArrayList<>();
         List<Component> infoMessages = new ArrayList<>();
@@ -100,6 +87,18 @@ public class NumberField extends ConfirmableTextField {
         var tooltip = valid ? infoMessages : validationErrors;
         setTextColor(valid ? TEXT_COLOR : ERROR_COLOR);
         setTooltipMessage(tooltip);
+    }
+
+    private long convertToExternalValue(BigDecimal internalValue) {
+        var multiplicand = BigDecimal.valueOf(TYPE.amountPerUnit());
+        var value = internalValue.multiply(multiplicand, MathContext.DECIMAL128);
+        value = value.setScale(0, RoundingMode.UP);
+        return value.longValue();
+    }
+
+    private BigDecimal convertToInternalValue(long externalValue) {
+        var divisor = BigDecimal.valueOf(TYPE.amountPerUnit());
+        return BigDecimal.valueOf(externalValue).divide(divisor, MathContext.DECIMAL128);
     }
 
     OptionalLong getLongValue() {
@@ -129,19 +128,20 @@ public class NumberField extends ConfirmableTextField {
         return position.getErrorIndex() == -1 && position.getIndex() == textValue.length();
     }
 
-    private long convertToExternalValue(BigDecimal internalValue) {
-        var multiplicand = BigDecimal.valueOf(TYPE.amountPerUnit());
-        var value = internalValue.multiply(multiplicand, MathContext.DECIMAL128);
-        value = value.setScale(0, RoundingMode.UP);
-        return value.longValue();
-    }
-
-    private BigDecimal convertToInternalValue(long externalValue) {
-        var divisor = BigDecimal.valueOf(TYPE.amountPerUnit());
-        return BigDecimal.valueOf(externalValue).divide(divisor, MathContext.DECIMAL128);
-    }
-
     private Optional<BigDecimal> getValueInternal() {
         return MathExpressionParser.parse(getValue(), decimalFormat);
+    }
+
+    @Override
+    public void setTooltipMessage(List<Component> tooltipMessage) {
+        tooltipMessage.add(0, Utils.translate("tooltip", name));
+        super.setTooltipMessage(tooltipMessage);
+        if (!isFocused() || (tooltipMessage.size() > 1 && !tooltipMessage.get(1).getString().startsWith("="))) return;
+        tooltipMessage.add(Component.literal("» ").withStyle(ChatFormatting.AQUA)
+            .append(Utils.translate(
+                "tooltip",
+                "enter_to_submit",
+                InputConstants.getKey("key.keyboard.enter").getDisplayName()
+            ).withStyle(ChatFormatting.GRAY)));
     }
 }

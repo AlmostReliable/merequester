@@ -28,7 +28,7 @@ public final class Utils {
     }
 
     public static int fillColorAlpha(ChatFormatting color) {
-        //noinspection ConstantConditions
+        // noinspection ConstantConditions
         return 0xFF << 3 * 8 | color.getColor();
     }
 

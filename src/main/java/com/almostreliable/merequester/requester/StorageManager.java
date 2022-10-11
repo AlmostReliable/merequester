@@ -149,7 +149,7 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
 
         @Override
         public void deserializeNBT(CompoundTag tag) {
-            if (tag.contains(KEY_ID)) key = AEKey.fromTagGeneric(tag.getCompound(KEY_ID));
+            key = tag.contains(KEY_ID) ? AEKey.fromTagGeneric(tag.getCompound(KEY_ID)) : null;
             bufferAmount = tag.getLong(BUFFER_AMOUNT_ID);
             pendingAmount = tag.getLong(PENDING_AMOUNT_ID);
             knownAmount = tag.getLong(KNOWN_AMOUNT_ID);

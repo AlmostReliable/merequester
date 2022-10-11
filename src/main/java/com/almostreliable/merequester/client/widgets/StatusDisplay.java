@@ -47,6 +47,15 @@ public class StatusDisplay extends AbstractWidget implements ITooltip {
         return false;
     }
 
+    private ChatFormatting getStatusColor(RequestStatus requestStatus) {
+        return switch (requestStatus) {
+            case IDLE -> ChatFormatting.DARK_GREEN;
+            case LINK -> ChatFormatting.YELLOW;
+            case EXPORT -> ChatFormatting.DARK_PURPLE;
+            default -> throw new IllegalStateException("Impossible client state: " + requestStatus);
+        };
+    }
+
     @Override
     public List<Component> getTooltipMessage() {
         List<Component> tooltip = new ArrayList<>();
@@ -87,21 +96,12 @@ public class StatusDisplay extends AbstractWidget implements ITooltip {
         return visible;
     }
 
-    void setStatus(RequestStatus status) {
-        this.status = status;
-    }
-
-    private ChatFormatting getStatusColor(RequestStatus requestStatus) {
-        return switch (requestStatus) {
-            case IDLE -> ChatFormatting.DARK_GREEN;
-            case LINK -> ChatFormatting.YELLOW;
-            case EXPORT -> ChatFormatting.DARK_PURPLE;
-            default -> throw new IllegalStateException("Impossible client state: " + requestStatus);
-        };
-    }
-
     private ChatFormatting getStatusColor() {
         if (isInactive.getAsBoolean()) return ChatFormatting.DARK_GRAY;
         return getStatusColor(status);
+    }
+
+    void setStatus(RequestStatus status) {
+        this.status = status;
     }
 }

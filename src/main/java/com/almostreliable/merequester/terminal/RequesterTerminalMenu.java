@@ -142,6 +142,17 @@ public final class RequesterTerminalMenu extends AEBaseMenu {
         return stack;
     }
 
+    public void updateRequesterState(long requesterId, int requestIndex, boolean state) {
+        var request = byId.get(requesterId).server.get(requestIndex);
+        request.updateState(state);
+    }
+
+    public void updateRequesterNumbers(long requesterId, int requestIndex, long amount, long batch) {
+        var request = byId.get(requesterId).server.get(requestIndex);
+        request.updateAmount(amount);
+        request.updateBatch(batch);
+    }
+
     private VisitorState visitRequesters(IGrid grid) {
         VisitorState state = new VisitorState();
         for (var requester : grid.getActiveMachines(RequesterBlockEntity.class)) {
@@ -223,17 +234,6 @@ public final class RequesterTerminalMenu extends AEBaseMenu {
         if (getPlayer() instanceof ServerPlayer serverPlayer) {
             PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), packet);
         }
-    }
-
-    public void updateRequesterState(long requesterId, int requestIndex, boolean state) {
-        var request = byId.get(requesterId).server.get(requestIndex);
-        request.updateState(state);
-    }
-
-    public void updateRequesterNumbers(long requesterId, int requestIndex, long amount, long batch) {
-        var request = byId.get(requesterId).server.get(requestIndex);
-        request.updateAmount(amount);
-        request.updateBatch(batch);
     }
 
     @Nullable

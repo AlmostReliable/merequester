@@ -68,20 +68,22 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
         return currentTickRate;
     }
 
-    private EnumSet<Direction> getExposedSides() {
-        var exposedSides = EnumSet.allOf(Direction.class);
-        exposedSides.remove(getForward());
-        return exposedSides;
-    }
-
     @Override
     public void requestChanged(int index) {
         storageManager.clear(index);
         saveChanges();
     }
 
-    boolean isActive() {
-        return Arrays.stream(progressions).anyMatch(p -> p.type().translateToClient() != RequestStatus.IDLE);
+    @Override
+    public Requests getRequests() {
+        return requests;
+    }
+
+    @Override
+    public Component getTerminalName() {
+        return hasCustomInventoryName() ?
+            getCustomInventoryName() :
+            Utils.translate("block", MERequester.REQUESTER_ID);
     }
 
     @Override
@@ -127,9 +129,14 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
         markForUpdate();
     }
 
-    @Override
-    public Requests getRequests() {
-        return requests;
+    private EnumSet<Direction> getExposedSides() {
+        var exposedSides = EnumSet.allOf(Direction.class);
+        exposedSides.remove(getForward());
+        return exposedSides;
+    }
+
+    boolean isActive() {
+        return Arrays.stream(progressions).anyMatch(p -> p.type().translateToClient() != RequestStatus.IDLE);
     }
 
     public IGrid getMainNodeGrid() {
@@ -176,12 +183,5 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
         return (long) entity.getBlockPos().getZ() << 24 ^
             (long) entity.getBlockPos().getX() << 8 ^
             entity.getBlockPos().getY();
-    }
-
-    @Override
-    public Component getTerminalName() {
-        return hasCustomInventoryName() ?
-            getCustomInventoryName() :
-            Utils.translate("block", MERequester.REQUESTER_ID);
     }
 }

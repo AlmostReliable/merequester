@@ -142,17 +142,17 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
         }
     }
 
-    @Override
-    public Component getDescription() {
-        if (host == null) return Component.empty();
-        return host.getTerminalName();
-    }
-
     public int firstAvailableIndex() {
         for (var i = 0; i < size(); i++) {
             if (getKey(i) == null) return i;
         }
         return -1;
+    }
+
+    @Override
+    public Component getDescription() {
+        if (host == null) return Component.empty();
+        return host.getTerminalName();
     }
 
     // <editor-fold defaultstate="collapsed" desc="Not required for requests.">
@@ -259,32 +259,11 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
             clientStatus = RequestStatus.values()[tag.getInt(STATUS_ID)];
         }
 
-        @Nullable
-        private GenericStack toGenericStack() {
-            if (key == null) return null;
-            return new GenericStack(key, amount);
-        }
-
         public void updateState(boolean state) {
             if (this.state != state) {
                 this.state = state;
                 if (host != null) host.saveChanges();
             }
-        }
-
-        private void updateKey(@Nullable GenericStack stack) {
-            if (stack == null) {
-                if (key != null) resetSlot();
-                return;
-            }
-            if (key != null && key.matches(stack)) {
-                if (amount != stack.amount()) updateAmount(stack.amount());
-                return;
-            }
-            key = stack.what();
-            amount = stack.amount();
-            batch = 1;
-            keyChanged();
         }
 
         public void updateAmount(long amount) {
@@ -318,6 +297,27 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
                 amount != clientRequest.amount ||
                 batch != clientRequest.batch ||
                 clientStatus != clientRequest.clientStatus;
+        }
+
+        @Nullable
+        private GenericStack toGenericStack() {
+            if (key == null) return null;
+            return new GenericStack(key, amount);
+        }
+
+        private void updateKey(@Nullable GenericStack stack) {
+            if (stack == null) {
+                if (key != null) resetSlot();
+                return;
+            }
+            if (key != null && key.matches(stack)) {
+                if (amount != stack.amount()) updateAmount(stack.amount());
+                return;
+            }
+            key = stack.what();
+            amount = stack.amount();
+            batch = 1;
+            keyChanged();
         }
 
         private void setClientKey(AEKey key, long amount) {
@@ -364,13 +364,13 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
             return host;
         }
 
-        void setClientStatus(RequestStatus clientStatus) {
-            this.clientStatus = clientStatus.translateToClient();
-        }
-
         @OnlyIn(Dist.CLIENT)
         public RequestStatus getClientStatus() {
             return clientStatus;
+        }
+
+        void setClientStatus(RequestStatus clientStatus) {
+            this.clientStatus = clientStatus.translateToClient();
         }
 
         public boolean isRequesting() {

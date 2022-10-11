@@ -31,6 +31,15 @@ public class RequestSlot extends FakeSlot {
     @Override
     public void decrease(ItemStack is) {}
 
+    // render custom tooltip for fluid containers
+    @Nullable
+    @Override
+    public List<Component> getCustomTooltip(Function<ItemStack, List<Component>> getItemTooltip, ItemStack carried) {
+        var emptyingTooltip = host.getEmptyingTooltip(this, carried);
+        if (emptyingTooltip == null) return super.getCustomTooltip(getItemTooltip, carried);
+        return emptyingTooltip;
+    }
+
     @Override
     public final int getMaxStackSize() {
         return 0;
@@ -42,14 +51,5 @@ public class RequestSlot extends FakeSlot {
 
     public int getSlot() {
         return slot;
-    }
-
-    // render custom tooltip for fluid containers
-    @Nullable
-    @Override
-    public List<Component> getCustomTooltip(Function<ItemStack, List<Component>> getItemTooltip, ItemStack carried) {
-        var emptyingTooltip = host.getEmptyingTooltip(this, carried);
-        if (emptyingTooltip == null) return super.getCustomTooltip(getItemTooltip, carried);
-        return emptyingTooltip;
     }
 }

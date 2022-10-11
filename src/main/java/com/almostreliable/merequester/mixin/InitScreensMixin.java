@@ -1,8 +1,8 @@
 package com.almostreliable.merequester.mixin;
 
 import appeng.init.client.InitScreens;
-import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
 import com.almostreliable.merequester.client.RequesterTerminalScreen;
+import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

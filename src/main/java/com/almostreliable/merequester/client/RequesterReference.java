@@ -48,6 +48,11 @@ public class RequesterReference implements RequestHost, Comparable<RequesterRefe
     // </editor-fold>
 
     @Override
+    public Requests getRequests() {
+        return requests;
+    }
+
+    @Override
     public int compareTo(RequesterReference o) {
         return Long.compare(sortBy, o.sortBy);
     }
@@ -62,10 +67,5 @@ public class RequesterReference implements RequestHost, Comparable<RequesterRefe
 
     String getSearchName() {
         return searchName;
-    }
-
-    @Override
-    public Requests getRequests() {
-        return requests;
     }
 }
