@@ -4,10 +4,12 @@ import appeng.api.config.SecurityPermissions;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
+import appeng.api.stacks.GenericStack;
 import appeng.helpers.InventoryAction;
 import appeng.menu.AEBaseMenu;
 import appeng.menu.implementations.MenuTypeBuilder;
 import appeng.menu.implementations.PatternAccessTermMenu;
+import appeng.menu.me.interaction.StackInteractions;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.network.PacketHandler;
 import com.almostreliable.merequester.network.RequesterTerminalPacket;
@@ -98,6 +100,16 @@ public final class RequesterTerminalMenu extends AEBaseMenu {
             case SHIFT_CLICK:
                 requestSlot.setItemDirect(0, ItemStack.EMPTY);
                 break;
+            case EMPTY_ITEM:
+                var emptyingAction = StackInteractions.getEmptyingAction(carriedStack);
+                if (emptyingAction != null) {
+                    requestSlot.insertItem(
+                        0,
+                        GenericStack.wrapInItemStack(emptyingAction.what(), emptyingAction.maxAmount()),
+                        false
+                    );
+                }
+                break;
             case CREATIVE_DUPLICATE:
                 if (player.getAbilities().instabuild && carriedStack.isEmpty()) {
                     if (requestStack.isEmpty()) {
@@ -122,7 +134,7 @@ public final class RequesterTerminalMenu extends AEBaseMenu {
 
         // find the first available slot and put the stack there
         for (var requester : requesters) {
-            var targetSlot = requester.getRequests().firstAvailableSlot();
+            var targetSlot = requester.getRequests().firstAvailableIndex();
             if (targetSlot == -1) continue;
             byRequester.get(requester).server.insertItem(targetSlot, stack, false);
             return stack;
@@ -134,7 +146,7 @@ public final class RequesterTerminalMenu extends AEBaseMenu {
         VisitorState state = new VisitorState();
         for (var requester : grid.getActiveMachines(RequesterBlockEntity.class)) {
             RequestTracker requestTracker = byRequester.get(requester);
-            if (requestTracker == null || !requestTracker.name.equals(requester.getTermName())) {
+            if (requestTracker == null || !requestTracker.name.equals(requester.getTerminalName().getString())) {
                 state.forceFullUpdate = true;
                 return state;
             }
@@ -218,9 +230,9 @@ public final class RequesterTerminalMenu extends AEBaseMenu {
         request.updateState(state);
     }
 
-    public void updateRequesterNumbers(long requesterId, int requestIndex, long count, long batch) {
+    public void updateRequesterNumbers(long requesterId, int requestIndex, long amount, long batch) {
         var request = byId.get(requesterId).server.get(requestIndex);
-        request.updateCount(count);
+        request.updateAmount(amount);
         request.updateBatch(batch);
     }
 
@@ -251,7 +263,7 @@ public final class RequesterTerminalMenu extends AEBaseMenu {
 
         private RequestTracker(RequesterBlockEntity requester) {
             this.sortBy = requester.getSortValue();
-            this.name = requester.getTermName();
+            this.name = requester.getTerminalName().getString();
             this.server = requester.getRequests();
             this.client = new Requests();
         }

@@ -17,14 +17,9 @@ public final class CraftingPlanState implements ProgressionState {
     }
 
     @Override
-    public ProgressionState handle(RequesterBlockEntity host, int slot) {
-        if (!future.isDone()) {
-            return this;
-        }
-
-        if (future.isCancelled()) {
-            return ProgressionState.IDLE;
-        }
+    public ProgressionState handle(RequesterBlockEntity host, int index) {
+        if (!future.isDone()) return this;
+        if (future.isCancelled()) return ProgressionState.IDLE;
 
         try {
             var plan = future.get();

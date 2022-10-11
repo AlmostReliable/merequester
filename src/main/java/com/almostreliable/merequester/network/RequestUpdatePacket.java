@@ -11,7 +11,7 @@ public class RequestUpdatePacket extends ClientToServerPacket<RequestUpdatePacke
     private int requestIndex;
 
     private boolean state;
-    private long count;
+    private long amount;
     private long batch;
 
     private UpdateType updateType;
@@ -23,10 +23,10 @@ public class RequestUpdatePacket extends ClientToServerPacket<RequestUpdatePacke
         this.updateType = UpdateType.STATE;
     }
 
-    public RequestUpdatePacket(long requesterId, int requestIndex, long count, long batch) {
+    public RequestUpdatePacket(long requesterId, int requestIndex, long amount, long batch) {
         this.requesterId = requesterId;
         this.requestIndex = requestIndex;
-        this.count = count;
+        this.amount = amount;
         this.batch = batch;
         this.updateType = UpdateType.NUMBERS;
     }
@@ -42,7 +42,7 @@ public class RequestUpdatePacket extends ClientToServerPacket<RequestUpdatePacke
         if (packet.updateType == UpdateType.STATE) {
             buffer.writeBoolean(packet.state);
         } else if (packet.updateType == UpdateType.NUMBERS) {
-            buffer.writeLong(packet.count);
+            buffer.writeLong(packet.amount);
             buffer.writeLong(packet.batch);
         } else {
             throw new IllegalStateException("Unknown update type: " + packet.updateType);
@@ -70,7 +70,7 @@ public class RequestUpdatePacket extends ClientToServerPacket<RequestUpdatePacke
             if (packet.updateType == UpdateType.STATE) {
                 terminal.updateRequesterState(packet.requesterId, packet.requestIndex, packet.state);
             } else if (packet.updateType == UpdateType.NUMBERS) {
-                terminal.updateRequesterNumbers(packet.requesterId, packet.requestIndex, packet.count, packet.batch);
+                terminal.updateRequesterNumbers(packet.requesterId, packet.requestIndex, packet.amount, packet.batch);
             }
         }
     }

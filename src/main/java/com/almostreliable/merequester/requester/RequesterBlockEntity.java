@@ -1,7 +1,6 @@
 package com.almostreliable.merequester.requester;
 
 import appeng.api.config.Actionable;
-import appeng.api.inventories.InternalInventory;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
@@ -15,7 +14,6 @@ import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.stacks.AEKey;
 import appeng.blockentity.grid.AENetworkBlockEntity;
 import appeng.me.helpers.MachineSource;
-import appeng.util.inv.InternalInventoryHost;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.progression.CraftingLinkState;
@@ -24,6 +22,7 @@ import com.almostreliable.merequester.requester.progression.RequestStatus;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -31,9 +30,9 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Objects;
 
-public class RequesterBlockEntity extends AENetworkBlockEntity implements InternalInventoryHost, IGridTickable, ICraftingRequester {
+public class RequesterBlockEntity extends AENetworkBlockEntity implements RequestHost, IGridTickable, ICraftingRequester {
 
-    public static final int SLOTS = 5;
+    public static final int SIZE = 5;
 
     private final Requests requests;
     private final ProgressionState[] progressions;
@@ -45,7 +44,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
     public RequesterBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
         requests = new Requests(this);
-        progressions = new ProgressionState[SLOTS];
+        progressions = new ProgressionState[SIZE];
         Arrays.fill(progressions, ProgressionState.IDLE);
         storageManager = new StorageManager(this);
         actionSource = new MachineSource(this);
@@ -76,8 +75,8 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
     }
 
     @Override
-    public void onChangeInventory(InternalInventory inv, int slot) {
-        storageManager.clear(slot);
+    public void requestChanged(int index) {
+        storageManager.clear(index);
         saveChanges();
     }
 
@@ -128,6 +127,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
         markForUpdate();
     }
 
+    @Override
     public Requests getRequests() {
         return requests;
     }
@@ -178,9 +178,10 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Intern
             entity.getBlockPos().getY();
     }
 
-    public String getTermName() {
+    @Override
+    public Component getTerminalName() {
         return hasCustomInventoryName() ?
-            getCustomInventoryName().getString() :
-            Utils.translateAsString("block", MERequester.REQUESTER_ID);
+            getCustomInventoryName() :
+            Utils.translate("block", MERequester.REQUESTER_ID);
     }
 }

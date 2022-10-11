@@ -1,9 +1,9 @@
 package com.almostreliable.merequester.client;
 
-import appeng.api.inventories.InternalInventory;
 import appeng.client.gui.me.patternaccess.PatternProviderRecord;
-import appeng.util.inv.InternalInventoryHost;
+import com.almostreliable.merequester.requester.RequestHost;
 import com.almostreliable.merequester.requester.Requests;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -13,7 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  * Note: this class has a natural ordering that is inconsistent with equals.
  */
 @OnlyIn(Dist.CLIENT)
-public class RequesterReference implements InternalInventoryHost, Comparable<RequesterReference> {
+public class RequesterReference implements RequestHost, Comparable<RequesterReference> {
 
     private final long requesterId;
     private final String displayName;
@@ -29,16 +29,23 @@ public class RequesterReference implements InternalInventoryHost, Comparable<Req
         requests = new Requests(this);
     }
 
+    // <editor-fold defaultstate="collapsed" desc="Not important for a reference.">
     @Override
     public void saveChanges() {}
 
     @Override
-    public void onChangeInventory(InternalInventory inv, int slot) {}
+    public void requestChanged(int index) {}
 
     @Override
     public boolean isClientSide() {
         return true;
     }
+
+    @Override
+    public Component getTerminalName() {
+        return Component.empty();
+    }
+    // </editor-fold>
 
     @Override
     public int compareTo(RequesterReference o) {
@@ -57,7 +64,8 @@ public class RequesterReference implements InternalInventoryHost, Comparable<Req
         return searchName;
     }
 
-    Requests getRequests() {
+    @Override
+    public Requests getRequests() {
         return requests;
     }
 }

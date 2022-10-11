@@ -8,13 +8,13 @@ public class IdleState implements ProgressionState {
     IdleState() {}
 
     @Override
-    public ProgressionState handle(RequesterBlockEntity host, int slot) {
-        if (host.getStorageManager().get(slot).getBufferAmount() > 0) {
+    public ProgressionState handle(RequesterBlockEntity host, int index) {
+        if (host.getStorageManager().get(index).getBufferAmount() > 0) {
             return ProgressionState.EXPORT;
         }
 
-        var request = host.getRequests().get(slot);
-        if (request.isRequesting() && request.getCount() > host.getStorageManager().get(slot).getKnownAmount()) {
+        var request = host.getRequests().get(index);
+        if (request.isRequesting() && request.getAmount() > host.getStorageManager().get(index).getKnownAmount()) {
             return ProgressionState.REQUEST;
         }
 

@@ -34,7 +34,7 @@ public final class MERequester {
         - add drops
         - add recipes
         - add screen to the requester block
-        - fluid support
+        - implement JEI/REI drag and drop
      */
 
     public static final Logger LOGGER = LogUtils.getLogger();
@@ -54,7 +54,10 @@ public final class MERequester {
     @OnlyIn(Dist.CLIENT)
     private static void onModelBake(ModelEvent.BakingCompleted event) {
         Map<ResourceLocation, BakedModel> modelRegistry = event.getModels();
-        List<ModelResourceLocation> locations = List.of(new ModelResourceLocation(BuildConfig.MOD_ID, REQUESTER_ID, "active=true"), new ModelResourceLocation(BuildConfig.MOD_ID, REQUESTER_ID, "active=false"));
+        List<ModelResourceLocation> locations = List.of(
+            new ModelResourceLocation(BuildConfig.MOD_ID, REQUESTER_ID, "active=true"),
+            new ModelResourceLocation(BuildConfig.MOD_ID, REQUESTER_ID, "active=false")
+        );
         locations.forEach(l -> {
             var model = modelRegistry.get(l);
             if (model == null || model.equals(modelRegistry.get(ModelBakery.MISSING_MODEL_LOCATION))) return;

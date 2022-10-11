@@ -10,16 +10,16 @@ public class ExportState implements ProgressionState {
     ExportState() {}
 
     @Override
-    public ProgressionState handle(RequesterBlockEntity host, int slot) {
-        var storageManager = host.getStorageManager().get(slot);
-        if (storageManager.getItemType() == null) {
+    public ProgressionState handle(RequesterBlockEntity host, int index) {
+        var storageManager = host.getStorageManager().get(index);
+        if (storageManager.getKey() == null) {
             return ProgressionState.IDLE;
         }
 
         var inserted = StorageHelper.poweredInsert(
             host.getMainNodeGrid().getEnergyService(),
             host.getMainNodeGrid().getStorageService().getInventory(),
-            storageManager.getItemType(),
+            storageManager.getKey(),
             storageManager.getBufferAmount(),
             host.getActionSource(),
             Actionable.MODULATE

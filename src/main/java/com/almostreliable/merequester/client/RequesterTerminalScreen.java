@@ -2,6 +2,8 @@ package com.almostreliable.merequester.client;
 
 import appeng.api.config.Settings;
 import appeng.api.config.TerminalStyle;
+import appeng.api.stacks.AEKey;
+import appeng.api.stacks.GenericStack;
 import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.me.patternaccess.PatternAccessTermScreen;
 import appeng.client.gui.style.PaletteColor;
@@ -10,10 +12,14 @@ import appeng.client.gui.widgets.AETextField;
 import appeng.client.gui.widgets.Scrollbar;
 import appeng.client.gui.widgets.SettingToggleButton;
 import appeng.core.AEConfig;
+import appeng.core.localization.ButtonToolTips;
 import appeng.core.localization.GuiText;
+import appeng.core.localization.Tooltips;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.InventoryActionPacket;
 import appeng.helpers.InventoryAction;
+import appeng.menu.me.interaction.EmptyingAction;
+import appeng.menu.me.interaction.StackInteractions;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.widgets.RequestWidget;
@@ -22,6 +28,7 @@ import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.requester.Requests.Request;
 import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
 import com.google.common.collect.HashMultimap;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -58,7 +65,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
     private static final int TEXT_MAX_WIDTH = 156;
 
     private static final int ROW_HEIGHT = 19;
-    private static final int DEFAULT_ROW_COUNT = RequesterBlockEntity.SLOTS + 1;
+    private static final int DEFAULT_ROW_COUNT = RequesterBlockEntity.SIZE + 1;
     private static final int MIN_ROW_COUNT = 3;
 
     private static final Rect2i HEADER_BBOX = new Rect2i(0, 0, GUI_WIDTH, GUI_HEADER_HEIGHT);
@@ -179,8 +186,9 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         forRelevantLines(
             (i, request) -> {
                 menu.slots.add(new RequestSlot(
+                    this,
                     (RequesterReference) request.getRequesterReference(),
-                    request.getSlot(),
+                    request.getIndex(),
                     ROW_HEIGHT + GUI_PADDING_X,
                     (i + 1) * ROW_HEIGHT + 1
                 ));
@@ -247,6 +255,17 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             return;
         }
 
+        // fluid container handler
+        if (mouseButton == InputConstants.MOUSE_BUTTON_RIGHT && getEmptyingAction(slot, menu.getCarried()) != null) {
+            var packet = new InventoryActionPacket(
+                InventoryAction.EMPTY_ITEM,
+                requestSlot.getSlot(),
+                requestSlot.getRequesterReference().getRequesterId()
+            );
+            NetworkHandler.instance().sendToServer(packet);
+            return;
+        }
+
         InventoryAction action = null;
         switch (clickType) {
             case PICKUP:
@@ -271,7 +290,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             InventoryActionPacket packet = new InventoryActionPacket(
                 action,
                 requestSlot.getSlot(),
-                requestSlot.getHost().getRequesterId()
+                requestSlot.getRequesterReference().getRequesterId()
             );
             NetworkHandler.instance().sendToServer(packet);
         }
@@ -334,8 +353,9 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
 
             boolean found = searchQuery.isEmpty();
             if (!found) {
-                for (var requestStack : requester.getRequests()) {
-                    found = stackMatchesSearchQuery(requestStack, searchQuery);
+                var requests = requester.getRequests();
+                for (var i = 0; i < requests.size(); i++) {
+                    found = keyMatchesSearchQuery(requests.getKey(i), searchQuery);
                     if (found) break;
                 }
             }
@@ -353,7 +373,7 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         Collections.sort(requesterNames);
 
         linesToRender.clear();
-        linesToRender.ensureCapacity(requesterNames.size() + byId.size() * RequesterBlockEntity.SLOTS);
+        linesToRender.ensureCapacity(requesterNames.size() + byId.size() * RequesterBlockEntity.SIZE);
 
         for (var name : requesterNames) {
             linesToRender.add(name);
@@ -375,8 +395,8 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
         blit(poseStack, pX, pY, srcRect.getX(), srcRect.getY(), srcRect.getWidth(), srcRect.getHeight());
     }
 
-    private boolean stackMatchesSearchQuery(ItemStack requestStack, String searchTerm) {
-        return !requestStack.isEmpty() && requestStack.getDisplayName().getString().toLowerCase().contains(searchTerm);
+    private boolean keyMatchesSearchQuery(@Nullable AEKey key, String searchTerm) {
+        return key != null && key.getDisplayName().getString().toLowerCase().contains(searchTerm);
     }
 
     private RequesterReference getById(long requesterId, String name, long sortBy) {
@@ -396,5 +416,29 @@ public class RequesterTerminalScreen extends AEBaseScreen<RequesterTerminalMenu>
             cache.addAll(searchByQuery(searchQuery.substring(0, searchQuery.length() - 1)));
         }
         return cache;
+    }
+
+    @Nullable
+    @Override
+    public List<Component> getEmptyingTooltip(RequestSlot slot, ItemStack carried) {
+        var emptyingAction = getEmptyingAction(slot, carried);
+        if (emptyingAction == null) return null;
+        return Tooltips.getEmptyingTooltip(ButtonToolTips.SetAction, carried, emptyingAction);
+    }
+
+    // avoid having to use a ConfigMenuInventory
+    @Nullable
+    @Override
+    protected EmptyingAction getEmptyingAction(Slot slot, ItemStack carried) {
+        if (slot instanceof RequestSlot requestSlot) {
+            var emptyingAction = StackInteractions.getEmptyingAction(carried);
+            if (emptyingAction == null) return null;
+
+            var wrappedStack = GenericStack.wrapInItemStack(new GenericStack(emptyingAction.what(), 1));
+            if (!requestSlot.getInventory().isItemValid(requestSlot.getSlot(), wrappedStack)) return null;
+
+            return emptyingAction;
+        }
+        return super.getEmptyingAction(slot, carried);
     }
 }

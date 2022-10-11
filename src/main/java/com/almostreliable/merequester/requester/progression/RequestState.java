@@ -9,23 +9,20 @@ public class RequestState implements ProgressionState {
     RequestState() {}
 
     @Override
-    public ProgressionState handle(RequesterBlockEntity owner, int slot) {
+    public ProgressionState handle(RequesterBlockEntity owner, int index) {
+        var requests = owner.getRequests();
 
-        var craftRequests = owner.getRequests();
+        var amountToCraft = owner.getStorageManager().computeAmountToCraft(index);
+        if (amountToCraft <= 0) return ProgressionState.IDLE;
+        var key = requests.getKey(index);
 
-        var toCraft = owner.getStorageManager().computeDelta(slot);
-        if (toCraft <= 0) {
-            return ProgressionState.IDLE;
-        }
-
-        var stack = craftRequests.get(slot).toGenericStack(toCraft);
         var future = owner.getMainNodeGrid()
             .getCraftingService()
             .beginCraftingCalculation(
                 owner.getLevel(),
                 owner::getActionSource,
-                stack.what(),
-                stack.amount(),
+                key,
+                amountToCraft,
                 CalculationStrategy.CRAFT_LESS
             );
 

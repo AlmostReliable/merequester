@@ -3,9 +3,7 @@ package com.almostreliable.merequester.requester;
 import appeng.api.config.FuzzyMode;
 import appeng.api.networking.IStackWatcher;
 import appeng.api.networking.storage.IStorageWatcherNode;
-import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.AEKey;
-import appeng.api.stacks.GenericStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -19,14 +17,14 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
 
     public StorageManager(RequesterBlockEntity host) {
         this.host = host;
-        storages = new Storage[RequesterBlockEntity.SLOTS];
+        storages = new Storage[RequesterBlockEntity.SIZE];
     }
 
-    public Storage get(int slot) {
-        if (storages[slot] == null) {
-            storages[slot] = new Storage();
+    public Storage get(int index) {
+        if (storages[index] == null) {
+            storages[index] = new Storage();
         }
-        return storages[slot];
+        return storages[index];
     }
 
     @Override
@@ -36,25 +34,23 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
     }
 
     @Override
-    public void onStackChange(AEKey what, long amount) {
+    public void onStackChange(AEKey key, long amount) {
         if (amount == 0) return;
-        for (var slot = 0; slot < storages.length; slot++) {
-            if (host.getRequests().matches(slot, what)) {
-                get(slot).knownAmount = amount;
-                get(slot).pendingAmount = 0;
+        for (var index = 0; index < storages.length; index++) {
+            if (key.equals(host.getRequests().getKey(index))) {
+                get(index).knownAmount = amount;
+                get(index).pendingAmount = 0;
             }
         }
     }
 
-    public long computeDelta(int slot) {
-        var request = host.getRequests().get(slot);
-        if (request.getStack().isEmpty()) {
-            return 0;
-        }
+    public long computeAmountToCraft(int index) {
+        var requests = host.getRequests();
+        if (requests.getKey(index) == null) return 0;
 
-        var storedAmount = get(slot).knownAmount + get(slot).pendingAmount;
-        if (storedAmount < request.getCount()) {
-            return request.getBatch();
+        var storedAmount = get(index).knownAmount + get(index).pendingAmount;
+        if (storedAmount < requests.getAmount(index)) {
+            return requests.get(index).getBatch();
         }
         return 0;
     }
@@ -62,16 +58,16 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
     @Override
     public CompoundTag serializeNBT() {
         var tag = new CompoundTag();
-        for (var slot = 0; slot < storages.length; slot++) {
-            tag.put(String.valueOf(slot), get(slot).serializeNBT());
+        for (var index = 0; index < storages.length; index++) {
+            tag.put(String.valueOf(index), get(index).serializeNBT());
         }
         return tag;
     }
 
     @Override
     public void deserializeNBT(CompoundTag tag) {
-        for (var slot = 0; slot < storages.length; slot++) {
-            get(slot).deserializeNBT(tag.getCompound(String.valueOf(slot)));
+        for (var index = 0; index < storages.length; index++) {
+            get(index).deserializeNBT(tag.getCompound(String.valueOf(index)));
         }
     }
 
@@ -97,16 +93,16 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
     //     }
     // }
 
-    void clear(int slot) {
-        get(slot).knownAmount = -1;
-        calcSlotAmount(slot);
+    void clear(int index) {
+        get(index).knownAmount = -1;
+        computeKnownAmount(index);
         resetWatcher();
     }
 
     private void populateWatcher(IStackWatcher watcher) {
-        for (var slot = 0; slot < storages.length; slot++) {
-            if (!host.getRequests().get(slot).getStack().isEmpty()) {
-                watcher.add(AEItemKey.of(host.getRequests().get(slot).getStack()));
+        for (var index = 0; index < storages.length; index++) {
+            if (host.getRequests().getKey(index) != null) {
+                watcher.add(host.getRequests().getKey(index));
             }
         }
     }
@@ -118,31 +114,25 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
         }
     }
 
-    private void calcSlotAmount(int slot) {
-        var request = host.getRequests().get(slot);
-        if (request.getStack().isEmpty()) {
-            return;
-        }
-        var genericStack = GenericStack.fromItemStack(request.getStack());
-        if (genericStack == null) {
-            return;
-        }
-        get(slot).knownAmount = host.getMainNodeGrid()
+    private void computeKnownAmount(int index) {
+        var key = host.getRequests().getKey(index);
+        if (key == null) return;
+        get(index).knownAmount = host.getMainNodeGrid()
             .getStorageService()
             .getInventory()
             .getAvailableStacks()
-            .get(genericStack.what());
+            .get(key);
     }
 
     public static class Storage implements INBTSerializable<CompoundTag> {
 
         // serialization IDs
-        private static final String ITEM_TYPE_ID = "item_type";
+        private static final String KEY_ID = "key";
         private static final String BUFFER_AMOUNT_ID = "buffer_amount";
         private static final String PENDING_AMOUNT_ID = "pending_amount";
         private static final String KNOWN_AMOUNT_ID = "known_amount";
 
-        @Nullable private AEKey itemType;
+        @Nullable private AEKey key;
         private long bufferAmount;
         private long pendingAmount;
         private long knownAmount = -1;
@@ -150,7 +140,7 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
         @Override
         public CompoundTag serializeNBT() {
             var tag = new CompoundTag();
-            if (itemType != null) tag.put(ITEM_TYPE_ID, itemType.toTagGeneric());
+            if (key != null) tag.put(KEY_ID, key.toTagGeneric());
             tag.putLong(BUFFER_AMOUNT_ID, bufferAmount);
             tag.putLong(PENDING_AMOUNT_ID, pendingAmount);
             tag.putLong(KNOWN_AMOUNT_ID, knownAmount);
@@ -159,40 +149,40 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
 
         @Override
         public void deserializeNBT(CompoundTag tag) {
-            if (tag.contains(ITEM_TYPE_ID)) itemType = AEKey.fromTagGeneric(tag.getCompound(ITEM_TYPE_ID));
+            if (tag.contains(KEY_ID)) key = AEKey.fromTagGeneric(tag.getCompound(KEY_ID));
             bufferAmount = tag.getLong(BUFFER_AMOUNT_ID);
             pendingAmount = tag.getLong(PENDING_AMOUNT_ID);
             knownAmount = tag.getLong(KNOWN_AMOUNT_ID);
         }
 
         /**
-         * @param inserted amount of items inserted into the system
+         * @param inserted amount of items or fluid inserted into the system
          * @return true if the buffer is not empty
          */
         public boolean compute(long inserted) {
             pendingAmount = inserted;
             bufferAmount = getBufferAmount() - inserted;
             if (bufferAmount == 0) {
-                itemType = null;
+                key = null;
             }
             return bufferAmount > 0;
         }
 
-        void update(AEKey itemType, long bufferAmount) {
-            if (this.itemType != null && !itemType.fuzzyEquals(this.itemType, FuzzyMode.IGNORE_ALL)) {
-                throw new IllegalArgumentException("itemType mismatch");
+        void update(AEKey key, long bufferAmount) {
+            if (this.key != null && !key.fuzzyEquals(this.key, FuzzyMode.PERCENT_99)) {
+                throw new IllegalArgumentException("storage key mismatch");
             }
-            this.itemType = itemType;
+            this.key = key;
             this.bufferAmount += bufferAmount;
         }
 
         @Nullable
-        public AEKey getItemType() {
-            return itemType;
+        public AEKey getKey() {
+            return key;
         }
 
         public long getBufferAmount() {
-            return itemType == null ? 0 : bufferAmount;
+            return key == null ? 0 : bufferAmount;
         }
 
         public long getKnownAmount() {

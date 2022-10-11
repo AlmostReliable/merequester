@@ -75,15 +75,6 @@ public class NumberField extends ConfirmableTextField {
             ).withStyle(ChatFormatting.GRAY)));
     }
 
-    @Override
-    public boolean mouseClicked(double mX, double mY, int button) {
-        if (button == 1) {
-            //isMouseOver(mX, mY)
-            setValue("");
-        }
-        return super.mouseClicked(mX, mY, button);
-    }
-
     private void validate() {
         List<Component> validationErrors = new ArrayList<>();
         List<Component> infoMessages = new ArrayList<>();
@@ -91,7 +82,7 @@ public class NumberField extends ConfirmableTextField {
         var possibleValue = getValueInternal();
         if (possibleValue.isPresent()) {
             if (possibleValue.get().scale() > 0) {
-                validationErrors.add(Component.literal("Must be whole number!"));
+                validationErrors.add(Utils.translate("tooltip", "whole_number"));
             } else {
                 var value = convertToExternalValue(possibleValue.get());
                 if (value < MIN_VALUE) {

@@ -24,7 +24,7 @@ public class RequestWidget {
     private final Map<String, AbstractWidget> subWidgets;
 
     private StateBox stateBox;
-    private NumberField countField;
+    private NumberField amountField;
     private NumberField batchField;
     private SubmitButton submitButton;
     private StatusDisplay statusDisplay;
@@ -62,9 +62,9 @@ public class RequestWidget {
         stateBox = new StateBox(x, y, style, () -> stateBoxChanged(host.getTargetRequest(index)));
         host.addSubWidget(f("request_state_{}", index), stateBox, subWidgets);
 
-        countField = new NumberField(x + 38, y, "count", style,
-            amount -> countFieldSubmitted(host.getTargetRequest(index), amount));
-        host.addSubWidget(f("request_count_{}", index), countField, subWidgets);
+        amountField = new NumberField(x + 38, y, "amount", style,
+            amount -> amountFieldSubmitted(host.getTargetRequest(index), amount));
+        host.addSubWidget(f("request_amount_{}", index), amountField, subWidgets);
 
         batchField = new NumberField(x + 92, y, "batch", style,
             amount -> batchFieldSubmitted(host.getTargetRequest(index), amount));
@@ -85,8 +85,8 @@ public class RequestWidget {
         subWidgets.values().forEach(w -> w.visible = true);
         stateBox.setSelected(request.getState());
         statusDisplay.setStatus(request.getClientStatus());
-        if (countField.isFocused() || batchField.isFocused() || submitButton.isFocused()) return;
-        countField.setLongValue(request.getCount());
+        if (amountField.isFocused() || batchField.isFocused() || submitButton.isFocused()) return;
+        amountField.setLongValue(request.getAmount());
         batchField.setLongValue(request.getBatch());
     }
 
@@ -95,15 +95,15 @@ public class RequestWidget {
         var newState = stateBox.isSelected();
         request.updateState(newState); // prevent jittery animation before server information is received
         var requesterId = ((RequesterReference) request.getRequesterReference()).getRequesterId();
-        PacketHandler.CHANNEL.sendToServer(new RequestUpdatePacket(requesterId, request.getSlot(), newState));
+        PacketHandler.CHANNEL.sendToServer(new RequestUpdatePacket(requesterId, request.getIndex(), newState));
     }
 
-    private void countFieldSubmitted(@Nullable Request request, long count) {
+    private void amountFieldSubmitted(@Nullable Request request, long amount) {
         if (request == null) return;
-        var oldValue = request.getCount();
-        request.updateCount(count);
-        if (oldValue == request.getCount()) {
-            countField.setLongValue(oldValue);
+        var oldValue = request.getAmount();
+        request.updateAmount(amount);
+        if (oldValue == request.getAmount()) {
+            amountField.setLongValue(oldValue);
         } else {
             submitButtonClicked(request);
         }
@@ -122,13 +122,13 @@ public class RequestWidget {
 
     private void submitButtonClicked(@Nullable Request request) {
         if (request == null) return;
-        long count = countField.getLongValue().orElse(0);
+        long amount = amountField.getLongValue().orElse(0);
         long batch = batchField.getLongValue().orElse(1);
         var requesterId = ((RequesterReference) request.getRequesterReference()).getRequesterId();
-        PacketHandler.CHANNEL.sendToServer(new RequestUpdatePacket(requesterId, request.getSlot(), count, batch));
+        PacketHandler.CHANNEL.sendToServer(new RequestUpdatePacket(requesterId, request.getIndex(), amount, batch));
     }
 
     private boolean isInactive(@Nullable Request request) {
-        return request == null || !request.isRequesting() || request.getCount() == 0;
+        return request == null || !request.isRequesting() || request.getAmount() == 0;
     }
 }

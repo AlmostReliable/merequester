@@ -9,15 +9,19 @@
 
   "tooltip.merequester.shift_for_more": "%s for more",
   "tooltip.merequester.enter_to_submit": "%s to submit",
+
+  "tooltip.merequester.whole_number": "Must be whole number!",
+
   "tooltip.merequester.toggle": "Toggle Request",
-  "tooltip.merequester.count": "Stock Count",
+  "tooltip.merequester.amount": "Stock Amount",
   "tooltip.merequester.batch": "Batch Size",
   "tooltip.merequester.submit": "Submit Changes",
   "tooltip.merequester.status": "Request Status",
+
   "tooltip.merequester.idle": "Idling",
-  "tooltip.merequester.idle_desc": "The Requester is idling when the requested amount is already reached, there is no crafting pattern for this item or if there are not enough ingredients to request more crafts.",
+  "tooltip.merequester.idle_desc": "The Requester is idling when the requested amount is already reached, there is no crafting pattern for this item or fluid or if there are not enough ingredients to request more crafts.",
   "tooltip.merequester.link": "Crafting",
-  "tooltip.merequester.link_desc": "The system is currently crafting the requested item.",
+  "tooltip.merequester.link_desc": "The system is currently crafting the requested item or fluid.",
   "tooltip.merequester.export": "Exporting",
   "tooltip.merequester.export_desc": "The Requester is trying to export the crafting results to the system. If the Requester has this status for a long time, there is no available space for the export."
 }

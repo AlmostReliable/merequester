@@ -2,8 +2,11 @@ package com.almostreliable.merequester.client;
 
 import com.almostreliable.merequester.requester.Requests.Request;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 
 public interface RequestDisplay {
@@ -11,4 +14,7 @@ public interface RequestDisplay {
 
     @Nullable
     Request getTargetRequest(int listIndex);
+
+    @Nullable
+    List<Component> getEmptyingTooltip(RequestSlot slot, ItemStack carried);
 }
