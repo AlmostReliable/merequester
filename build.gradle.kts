@@ -60,6 +60,10 @@ loom {
     forge {
         mixinConfig("$modId.mixins.json")
     }
+
+    mixin {
+        defaultRefmapName.set("$modId.refmap.json")
+    }
 }
 
 repositories {
