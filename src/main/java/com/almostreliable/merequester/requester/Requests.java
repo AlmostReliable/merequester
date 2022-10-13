@@ -233,7 +233,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
 
         // this status is only relevant for the client
         // the actual request status is stored in the BlockEntity
-        private RequestStatus clientStatus;
+        private RequestStatus clientStatus = RequestStatus.IDLE;
 
         private Request(int index) {
             this.index = index;
