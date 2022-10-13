@@ -10,7 +10,7 @@ import appeng.api.stacks.GenericStack;
 import appeng.api.storage.MEStorage;
 import appeng.helpers.externalstorage.GenericStackInv;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
-import com.almostreliable.merequester.requester.progression.RequestStatus;
+import com.almostreliable.merequester.requester.status.RequestStatus;
 import com.google.common.primitives.Ints;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;

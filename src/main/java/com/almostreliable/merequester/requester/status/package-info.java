@@ -1,5 +1,5 @@
 @ParametersAreNonnullByDefault @MethodsReturnNonnullByDefault
-package com.almostreliable.merequester.requester.progression;
+package com.almostreliable.merequester.requester.status;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

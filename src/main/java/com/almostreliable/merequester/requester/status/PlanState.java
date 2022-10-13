@@ -1,4 +1,4 @@
-package com.almostreliable.merequester.requester.progression;
+package com.almostreliable.merequester.requester.status;
 
 import appeng.api.networking.crafting.ICraftingPlan;
 import appeng.api.networking.ticking.TickRateModulation;
@@ -8,18 +8,18 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public final class CraftingPlanState implements ProgressionState {
+public final class PlanState implements StatusState {
 
     private final Future<? extends ICraftingPlan> future;
 
-    CraftingPlanState(Future<? extends ICraftingPlan> future) {
+    PlanState(Future<? extends ICraftingPlan> future) {
         this.future = future;
     }
 
     @Override
-    public ProgressionState handle(RequesterBlockEntity host, int index) {
+    public StatusState handle(RequesterBlockEntity host, int index) {
         if (!future.isDone()) return this;
-        if (future.isCancelled()) return ProgressionState.IDLE;
+        if (future.isCancelled()) return StatusState.IDLE;
 
         try {
             var plan = future.get();
@@ -28,12 +28,12 @@ public final class CraftingPlanState implements ProgressionState {
                 .submitJob(plan, host, null, false, host.getActionSource());
 
             if (!submitResult.successful() || submitResult.link() == null) {
-                return ProgressionState.IDLE;
+                return StatusState.IDLE;
             }
 
-            return new CraftingLinkState(Objects.requireNonNull(submitResult.link()));
+            return new LinkState(Objects.requireNonNull(submitResult.link()));
         } catch (InterruptedException | ExecutionException e) {
-            return ProgressionState.IDLE;
+            return StatusState.IDLE;
         }
     }
 

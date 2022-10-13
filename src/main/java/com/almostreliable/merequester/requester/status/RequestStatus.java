@@ -1,4 +1,4 @@
-package com.almostreliable.merequester.requester.progression;
+package com.almostreliable.merequester.requester.status;
 
 public enum RequestStatus {
     LINK, PLAN, EXPORT, IDLE, REQUEST;

@@ -2,7 +2,7 @@ package com.almostreliable.merequester.client.widgets;
 
 import appeng.client.gui.widgets.ITooltip;
 import com.almostreliable.merequester.Utils;
-import com.almostreliable.merequester.requester.progression.RequestStatus;
+import com.almostreliable.merequester.requester.status.RequestStatus;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;

@@ -1,19 +1,19 @@
-package com.almostreliable.merequester.requester.progression;
+package com.almostreliable.merequester.requester.status;
 
 import appeng.api.config.Actionable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.storage.StorageHelper;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 
-public class ExportState implements ProgressionState {
+public class ExportState implements StatusState {
 
     ExportState() {}
 
     @Override
-    public ProgressionState handle(RequesterBlockEntity host, int index) {
+    public StatusState handle(RequesterBlockEntity host, int index) {
         var storageManager = host.getStorageManager().get(index);
         if (storageManager.getKey() == null) {
-            return ProgressionState.IDLE;
+            return StatusState.IDLE;
         }
 
         var inserted = StorageHelper.poweredInsert(
@@ -29,9 +29,9 @@ public class ExportState implements ProgressionState {
             return this;
         }
         if (inserted > 0) {
-            return ProgressionState.REQUEST;
+            return StatusState.REQUEST;
         }
-        return ProgressionState.IDLE;
+        return StatusState.IDLE;
     }
 
     @Override

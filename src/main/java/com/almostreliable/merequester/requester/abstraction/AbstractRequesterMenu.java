@@ -85,7 +85,6 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
                 }
                 break;
             default:
-                MERequester.LOGGER.debug("Unsupported action {} in Requester Menu", action);
         }
     }
 

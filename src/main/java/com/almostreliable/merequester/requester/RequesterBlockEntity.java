@@ -17,9 +17,9 @@ import appeng.me.helpers.MachineSource;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
-import com.almostreliable.merequester.requester.progression.CraftingLinkState;
-import com.almostreliable.merequester.requester.progression.ProgressionState;
-import com.almostreliable.merequester.requester.progression.RequestStatus;
+import com.almostreliable.merequester.requester.status.LinkState;
+import com.almostreliable.merequester.requester.status.StatusState;
+import com.almostreliable.merequester.requester.status.RequestStatus;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -36,7 +36,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
     public static final int SIZE = 5;
 
     private final Requests requests;
-    private final ProgressionState[] progressions;
+    private final StatusState[] requestStatus;
     private final StorageManager storageManager;
     private final IActionSource actionSource;
 
@@ -45,8 +45,8 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
     public RequesterBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
         requests = new Requests(this);
-        progressions = new ProgressionState[SIZE];
-        Arrays.fill(progressions, ProgressionState.IDLE);
+        requestStatus = new StatusState[SIZE];
+        Arrays.fill(requestStatus, StatusState.IDLE);
         storageManager = new StorageManager(this);
         actionSource = new MachineSource(this);
         getMainNode().setFlags(GridFlags.REQUIRE_CHANNEL) // TODO: make configurable
@@ -65,7 +65,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
     @Override
     public TickRateModulation tickingRequest(IGridNode node, int ticksSinceLastCall) {
         if (level == null || level.isClientSide || !getMainNode().isActive()) return TickRateModulation.IDLE;
-        if (handleProgression()) setChanged();
+        if (handleRequests()) setChanged();
         return currentTickRate;
     }
 
@@ -93,13 +93,13 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
         getMainNode().setExposedOnSides(getExposedSides());
     }
 
-    private boolean handleProgression() {
+    private boolean handleRequests() {
         var changed = false;
 
         var tickRateModulation = TickRateModulation.IDLE;
-        for (var slot = 0; slot < progressions.length; slot++) {
-            var state = progressions[slot];
-            var result = handleProgression(slot);
+        for (var slot = 0; slot < requestStatus.length; slot++) {
+            var state = requestStatus[slot];
+            var result = handleRequest(slot);
             if (!Objects.equals(state, result)) {
                 changed = true;
             }
@@ -108,24 +108,24 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
                 tickRateModulation = resultTickRateModulation;
             }
 
-            updateProgression(slot, result);
+            updateRequestStatus(slot, result);
         }
         currentTickRate = tickRateModulation;
         return changed;
     }
 
-    private ProgressionState handleProgression(int slot) {
-        var state = progressions[slot];
-        updateProgression(slot, state.handle(this, slot));
-        if (progressions[slot].type() != RequestStatus.IDLE && !Objects.equals(progressions[slot], state)) {
-            return handleProgression(slot);
+    private StatusState handleRequest(int slot) {
+        var state = requestStatus[slot];
+        updateRequestStatus(slot, state.handle(this, slot));
+        if (requestStatus[slot].type() != RequestStatus.IDLE && !Objects.equals(requestStatus[slot], state)) {
+            return handleRequest(slot);
         }
 
-        return progressions[slot];
+        return requestStatus[slot];
     }
 
-    private void updateProgression(int slot, ProgressionState state) {
-        progressions[slot] = state;
+    private void updateRequestStatus(int slot, StatusState state) {
+        requestStatus[slot] = state;
         requests.get(slot).setClientStatus(state.type());
         markForUpdate();
     }
@@ -137,7 +137,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
     }
 
     boolean isActive() {
-        return Arrays.stream(progressions).anyMatch(p -> p.type().translateToClient() != RequestStatus.IDLE);
+        return Arrays.stream(requestStatus).anyMatch(p -> p.type().translateToClient() != RequestStatus.IDLE);
     }
 
     public IGrid getMainNodeGrid() {
@@ -156,17 +156,17 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
 
     @Override
     public ImmutableSet<ICraftingLink> getRequestedJobs() {
-        return Arrays.stream(progressions)
-            .filter(CraftingLinkState.class::isInstance)
-            .map(state -> ((CraftingLinkState) state).link())
+        return Arrays.stream(requestStatus)
+            .filter(LinkState.class::isInstance)
+            .map(state -> ((LinkState) state).link())
             .collect(ImmutableSet.toImmutableSet());
     }
 
     @Override
     public long insertCraftedItems(ICraftingLink link, AEKey what, long amount, Actionable mode) {
-        for (var slot = 0; slot < progressions.length; slot++) {
-            var state = progressions[slot];
-            if (state instanceof CraftingLinkState cls && cls.link().equals(link)) {
+        for (var slot = 0; slot < requestStatus.length; slot++) {
+            var state = requestStatus[slot];
+            if (state instanceof LinkState cls && cls.link().equals(link)) {
                 if (!mode.isSimulate()) storageManager.get(slot).update(what, amount);
                 return amount;
             }
@@ -176,13 +176,10 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
 
     @Override
     public void jobStateChange(ICraftingLink link) {
-        // handled by progression states
+        // tracked by request status
     }
 
     public long getSortValue() {
-        var entity = getBlockEntity();
-        return (long) entity.getBlockPos().getZ() << 24 ^
-            (long) entity.getBlockPos().getX() << 8 ^
-            entity.getBlockPos().getY();
+        return (long) worldPosition.getZ() << 24 ^ (long) worldPosition.getX() << 8 ^ worldPosition.getY();
     }
 }

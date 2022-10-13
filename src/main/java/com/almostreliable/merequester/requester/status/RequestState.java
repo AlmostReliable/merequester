@@ -1,19 +1,19 @@
-package com.almostreliable.merequester.requester.progression;
+package com.almostreliable.merequester.requester.status;
 
 import appeng.api.networking.crafting.CalculationStrategy;
 import appeng.api.networking.ticking.TickRateModulation;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 
-public class RequestState implements ProgressionState {
+public class RequestState implements StatusState {
 
     RequestState() {}
 
     @Override
-    public ProgressionState handle(RequesterBlockEntity owner, int index) {
+    public StatusState handle(RequesterBlockEntity owner, int index) {
         var requests = owner.getRequests();
 
         var amountToCraft = owner.getStorageManager().computeAmountToCraft(index);
-        if (amountToCraft <= 0) return ProgressionState.IDLE;
+        if (amountToCraft <= 0) return StatusState.IDLE;
         var key = requests.getKey(index);
 
         var future = owner.getMainNodeGrid()
@@ -26,7 +26,7 @@ public class RequestState implements ProgressionState {
                 CalculationStrategy.CRAFT_LESS
             );
 
-        return new CraftingPlanState(future);
+        return new PlanState(future);
     }
 
     @Override
