@@ -13,7 +13,7 @@
   "tooltip.merequester.whole_number": "Must be whole number!",
 
   "tooltip.merequester.toggle": "Toggle Request",
-  "tooltip.merequester.amount": "Stock Amount",
+  "tooltip.merequester.amount": "Amount to Stock",
   "tooltip.merequester.batch": "Batch Size",
   "tooltip.merequester.submit": "Submit Changes",
   "tooltip.merequester.status": "Request Status",
