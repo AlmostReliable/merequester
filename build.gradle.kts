@@ -71,6 +71,7 @@ repositories {
     maven("https://modmaven.dev/")
     maven("https://maven.shedaniel.me/")
     maven("https://dvs1.progwml6.com/files/maven/")
+    maven("https://api.modrinth.com/maven/") // temporary location for latest AE2 version
     flatDir {
         name = extraModsDirectory
         dir(file("$extraModsDirectory-$mcVersion"))
@@ -86,7 +87,8 @@ dependencies {
         parchment("org.parchmentmc.data:$mappingsChannel-$mcVersion:$mappingsVersion@zip")
     })
 
-    modCompileOnly(modLocalRuntime("appeng:appliedenergistics2:$aeVersion")!!)
+    // modCompileOnly(modLocalRuntime("appeng:appliedenergistics2:$aeVersion")!!)
+    modCompileOnly(modLocalRuntime("maven.modrinth:ae2:forge-$aeVersion")!!) // temporary location for latest AE2 version
 
     when (recipeViewer) {
         "rei" -> modLocalRuntime("me.shedaniel:RoughlyEnoughItems-forge:$reiVersion")
