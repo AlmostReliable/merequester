@@ -5,9 +5,11 @@ import appeng.api.networking.IStackWatcher;
 import appeng.api.networking.storage.IStorageWatcherNode;
 import appeng.api.stacks.AEKey;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class StorageManager implements IStorageWatcherNode, INBTSerializable<CompoundTag> {
 
@@ -71,27 +73,17 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
         }
     }
 
-    // TODO: implement this AE-like
-    // void dropContents() {
-    //     assert owner.getLevel() != null;
-    //     for (var storage : storages) {
-    //         if (storage == null) continue;
-    //         var itemType = storage.getItemType();
-    //         if (!(itemType instanceof AEItemKey aeItem)) continue;
-    //         var amount = storage.getBufferAmount() + storage.pendingAmount;
-    //         if (amount <= 0) continue;
-    //         for (var i = amount; i > 0; i -= 64) {
-    //             var stack = aeItem.toStack((int) Math.min(i, 64));
-    //             owner.getLevel().addFreshEntity(new ItemEntity(
-    //                 owner.getLevel(),
-    //                 owner.getBlockPos().getX() + 0.5,
-    //                 owner.getBlockPos().getY() + 0.5,
-    //                 owner.getBlockPos().getZ() + 0.5,
-    //                 stack
-    //             ));
-    //         }
-    //     }
-    // }
+    void addDrops(List<ItemStack> drops) {
+        for (var storage : storages) {
+            if (storage == null || storage.key == null) continue;
+            storage.key.addDrops(
+                storage.getBufferAmount() + storage.pendingAmount,
+                drops,
+                host.getLevel(),
+                host.getBlockPos()
+            );
+        }
+    }
 
     void clear(int index) {
         get(index).knownAmount = -1;

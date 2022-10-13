@@ -30,7 +30,6 @@ public final class MERequester {
     /*
         TODO:
         - fix requester not detecting changes to the network
-        - add drops
         - add recipes
         - test if the REI drag and drop works when the AE2 commit is released and the REI plugin is loaded
         https://github.com/AppliedEnergistics/Applied-Energistics-2/commit/6c825cc00e228b54d5bc318b24de1a841a2b59b0
