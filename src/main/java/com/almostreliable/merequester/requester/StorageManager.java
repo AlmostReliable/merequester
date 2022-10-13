@@ -15,7 +15,7 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
     private final Storage[] storages;
     @Nullable private IStackWatcher stackWatcher;
 
-    public StorageManager(RequesterBlockEntity host) {
+    StorageManager(RequesterBlockEntity host) {
         this.host = host;
         storages = new Storage[RequesterBlockEntity.SIZE];
     }

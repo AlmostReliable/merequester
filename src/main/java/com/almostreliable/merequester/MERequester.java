@@ -29,7 +29,6 @@ public final class MERequester {
 
     /*
         TODO:
-        - add serialization for requesters
         - fix requester not detecting changes to the network
         - add drops
         - add recipes

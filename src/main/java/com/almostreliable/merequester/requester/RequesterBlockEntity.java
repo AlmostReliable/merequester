@@ -12,17 +12,19 @@ import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.stacks.AEKey;
+import appeng.api.storage.StorageHelper;
 import appeng.blockentity.grid.AENetworkBlockEntity;
 import appeng.me.helpers.MachineSource;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
 import com.almostreliable.merequester.requester.status.LinkState;
-import com.almostreliable.merequester.requester.status.StatusState;
 import com.almostreliable.merequester.requester.status.RequestStatus;
+import com.almostreliable.merequester.requester.status.StatusState;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,6 +34,11 @@ import java.util.EnumSet;
 import java.util.Objects;
 
 public class RequesterBlockEntity extends AENetworkBlockEntity implements RequestHost, IGridTickable, ICraftingRequester {
+
+    // serialization IDs
+    private static final String REQUESTS_ID = "requests";
+    private static final String REQUEST_STATUS_ID = "request_status";
+    private static final String STORAGE_MANAGER_ID = "storage_manager";
 
     public static final int SIZE = 5;
 
@@ -55,6 +62,45 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
             .addService(IStorageWatcherNode.class, storageManager)
             .setIdlePowerUsage(5) // TODO: make configurable
             .setExposedOnSides(getExposedSides());
+    }
+
+    @Override
+    public void loadTag(CompoundTag tag) {
+        super.loadTag(tag);
+        if (tag.contains(REQUESTS_ID)) requests.deserializeNBT(tag.getCompound(REQUESTS_ID));
+        if (tag.contains(REQUEST_STATUS_ID)) deserializeStatus(tag.getCompound(REQUEST_STATUS_ID));
+        if (tag.contains(STORAGE_MANAGER_ID)) storageManager.deserializeNBT(tag.getCompound(STORAGE_MANAGER_ID));
+    }
+
+    @Override
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.put(REQUESTS_ID, requests.serializeNBT());
+        tag.put(REQUEST_STATUS_ID, serializeStatus());
+        tag.put(STORAGE_MANAGER_ID, storageManager.serializeNBT());
+    }
+
+    private void deserializeStatus(CompoundTag tag) {
+        for (var i = 0; i < requestStatus.length; i++) {
+            if (tag.contains(String.valueOf(i))) {
+                var stateTag = tag.getCompound(String.valueOf(i));
+                var link = StorageHelper.loadCraftingLink(stateTag, this);
+                requestStatus[i] = new LinkState(link);
+            }
+        }
+    }
+
+    private CompoundTag serializeStatus() {
+        var tag = new CompoundTag();
+        for (var i = 0; i < requestStatus.length; i++) {
+            var state = requestStatus[i];
+            if (state instanceof LinkState cls) {
+                var stateTag = new CompoundTag();
+                cls.link().writeToNBT(stateTag);
+                tag.put(String.valueOf(i), stateTag);
+            }
+        }
+        return tag;
     }
 
     @Override
