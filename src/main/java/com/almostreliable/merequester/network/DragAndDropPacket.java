@@ -46,7 +46,9 @@ public class DragAndDropPacket extends ClientToServerPacket<DragAndDropPacket> {
     protected void handlePacket(DragAndDropPacket packet, @Nullable ServerPlayer player) {
         if (player == null ||
             !(player.containerMenu instanceof RequesterTerminalMenu requester) ||
-            packet.action != InventoryAction.SET_FILTER) return;
+            packet.action != InventoryAction.SET_FILTER) {
+            return;
+        }
         requester.applyDragAndDrop(player, packet.requestIndex, packet.requesterId, packet.item);
     }
 }

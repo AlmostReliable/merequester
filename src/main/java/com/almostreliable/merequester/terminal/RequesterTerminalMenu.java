@@ -126,12 +126,6 @@ public final class RequesterTerminalMenu extends AEBaseMenu {
         }
     }
 
-    public void applyDragAndDrop(ServerPlayer player, int requestIndex, long requesterId, ItemStack item) {
-        setCarried(item);
-        doAction(player, InventoryAction.PICKUP_OR_SET_DOWN, requestIndex, requesterId);
-        setCarried(ItemStack.EMPTY);
-    }
-
     @Override
     protected ItemStack transferStackToMenu(ItemStack stack) {
         // sort the requesters like in the screen to refer to the same slots
@@ -146,6 +140,12 @@ public final class RequesterTerminalMenu extends AEBaseMenu {
             return stack;
         }
         return stack;
+    }
+
+    public void applyDragAndDrop(ServerPlayer player, int requestIndex, long requesterId, ItemStack item) {
+        setCarried(item);
+        doAction(player, InventoryAction.PICKUP_OR_SET_DOWN, requestIndex, requesterId);
+        setCarried(ItemStack.EMPTY);
     }
 
     public void updateRequesterState(long requesterId, int requestIndex, boolean state) {

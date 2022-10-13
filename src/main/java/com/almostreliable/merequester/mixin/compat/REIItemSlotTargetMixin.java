@@ -20,12 +20,21 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @SuppressWarnings("ALL")
 @Mixin(targets = "appeng.integration.modules.rei.GhostIngredientHandler$ItemSlotTarget")
 public class REIItemSlotTargetMixin {
+
     @Shadow(remap = false)
     @Final
     private AppEngSlot slot;
 
-    @Inject(method = "accept", at = @At(value = "INVOKE", target = "Lappeng/core/sync/network/NetworkHandler;instance()Lappeng/core/sync/network/NetworkHandler;"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true, remap = false)
-    private void merequester$acceptItem(DraggableStack ingredient, CallbackInfoReturnable<Boolean> ci, EntryStack<?> entryStack, ItemStack itemStack) {
+    @Inject(
+        method = "accept",
+        at = @At(value = "INVOKE", target = "Lappeng/core/sync/network/NetworkHandler;instance()Lappeng/core/sync/network/NetworkHandler;"),
+        locals = LocalCapture.CAPTURE_FAILHARD,
+        cancellable = true,
+        remap = false
+    )
+    private void merequester$acceptItem(
+        DraggableStack ingredient, CallbackInfoReturnable<Boolean> ci, EntryStack<?> entryStack, ItemStack itemStack
+    ) {
         if (slot instanceof RequestSlot requestSlot) {
             PacketHandler.CHANNEL.sendToServer(new DragAndDropPacket(
                 requestSlot.getRequesterReference().getRequesterId(),
@@ -37,8 +46,17 @@ public class REIItemSlotTargetMixin {
         }
     }
 
-    @Inject(method = "accept", at = @At(value = "INVOKE", target = "Lappeng/core/sync/network/NetworkHandler;instance()Lappeng/core/sync/network/NetworkHandler;", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true, remap = false)
-    private void merequester$acceptFluid(DraggableStack ingredient, CallbackInfoReturnable<Boolean> ci, EntryStack<?> entryStack, FluidStack fluidStack, ItemStack wrappedFluid) {
+    @Inject(
+        method = "accept",
+        at = @At(value = "INVOKE", target = "Lappeng/core/sync/network/NetworkHandler;instance()Lappeng/core/sync/network/NetworkHandler;", ordinal = 1),
+        locals = LocalCapture.CAPTURE_FAILHARD,
+        cancellable = true,
+        remap = false
+    )
+    private void merequester$acceptFluid(
+        DraggableStack ingredient, CallbackInfoReturnable<Boolean> ci, EntryStack<?> entryStack, FluidStack fluidStack,
+        ItemStack wrappedFluid
+    ) {
         if (slot instanceof RequestSlot requestSlot) {
             PacketHandler.CHANNEL.sendToServer(new DragAndDropPacket(
                 requestSlot.getRequesterReference().getRequesterId(),
