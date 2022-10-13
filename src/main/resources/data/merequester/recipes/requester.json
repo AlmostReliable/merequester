@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "eie",
+    "apa",
+    "csc"
+  ],
+  "key": {
+    "e": {
+      "tag": "forge:ingots/iron"
+    },
+    "i": {
+      "tag": "ae2:interface"
+    },
+    "a": {
+      "item": "ae2:crafting_accelerator"
+    },
+    "p": {
+      "item": "ae2:engineering_processor"
+    },
+    "c": {
+      "tag": "forge:ingots/copper"
+    },
+    "s": {
+      "item": "minecraft:amethyst_shard"
+    }
+  },
+  "result": {
+    "item": "merequester:requester"
+  }
+}
