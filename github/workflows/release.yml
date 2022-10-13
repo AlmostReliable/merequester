@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v1.18-*.*.*'
+      - 'v1.19-*.*.*-forge'
 
 env:
   JAVA_DIST: 'zulu'
