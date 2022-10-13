@@ -57,6 +57,7 @@ public class NumberField extends ConfirmableTextField {
         setOnConfirm(() -> {
             if (getLongValue().isPresent()) {
                 onConfirm.accept(getLongValue().getAsLong());
+                setFocus(false);
             }
         });
         validate();
