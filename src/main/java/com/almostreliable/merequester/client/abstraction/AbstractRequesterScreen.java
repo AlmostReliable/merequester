@@ -117,7 +117,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
         var sortBy = data.getLong(AbstractRequesterMenu.SORT_BY_ID);
         var requests = getById(requesterId, name, sortBy).getRequests();
 
-        for (int i = 0; i < requests.size(); i++) {
+        for (var i = 0; i < requests.size(); i++) {
             var requestIndex = String.valueOf(i);
             if (data.contains(requestIndex)) {
                 requests.get(i).deserializeNBT(data.getCompound(requestIndex));
@@ -269,7 +269,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
 
         blit(poseStack, pX, currentY + rowAmount * ROW_HEIGHT, getFooterBbox());
 
-        for (int i = 0; i < rowAmount; i++) {
+        for (var i = 0; i < rowAmount; i++) {
             var isRequestElement = false;
             if (scrollLevel + i < lines.size()) {
                 Object lineElement = lines.get(scrollLevel + i);

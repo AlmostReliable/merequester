@@ -83,34 +83,6 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
         tag.put(STORAGE_MANAGER_ID, storageManager.serializeNBT());
     }
 
-    private void deserializeStatus(CompoundTag tag) {
-        for (var i = 0; i < requestStatus.length; i++) {
-            if (tag.contains(String.valueOf(i))) {
-                var stateTag = tag.getCompound(String.valueOf(i));
-                var link = StorageHelper.loadCraftingLink(stateTag, this);
-                requestStatus[i] = new LinkState(link);
-            }
-        }
-    }
-
-    private CompoundTag serializeStatus() {
-        var tag = new CompoundTag();
-        for (var i = 0; i < requestStatus.length; i++) {
-            var state = requestStatus[i];
-            if (state instanceof LinkState cls) {
-                var stateTag = new CompoundTag();
-                cls.link().writeToNBT(stateTag);
-                tag.put(String.valueOf(i), stateTag);
-            }
-        }
-        return tag;
-    }
-
-    @Override
-    public void addAdditionalDrops(Level level, BlockPos pos, List<ItemStack> drops) {
-        storageManager.addDrops(drops);
-    }
-
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
         return new TickingRequest(1, 20, false, false);
@@ -147,13 +119,41 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
         getMainNode().setExposedOnSides(getExposedSides());
     }
 
+    @Override
+    public void addAdditionalDrops(Level level, BlockPos pos, List<ItemStack> drops) {
+        storageManager.addDrops(drops);
+    }
+
+    private void deserializeStatus(CompoundTag tag) {
+        for (var i = 0; i < requestStatus.length; i++) {
+            if (tag.contains(String.valueOf(i))) {
+                var stateTag = tag.getCompound(String.valueOf(i));
+                var link = StorageHelper.loadCraftingLink(stateTag, this);
+                requestStatus[i] = new LinkState(link);
+            }
+        }
+    }
+
+    private CompoundTag serializeStatus() {
+        var tag = new CompoundTag();
+        for (var i = 0; i < requestStatus.length; i++) {
+            var state = requestStatus[i];
+            if (state instanceof LinkState cls) {
+                var stateTag = new CompoundTag();
+                cls.link().writeToNBT(stateTag);
+                tag.put(String.valueOf(i), stateTag);
+            }
+        }
+        return tag;
+    }
+
     private boolean handleRequests() {
         var changed = false;
 
         var tickRateModulation = TickRateModulation.IDLE;
-        for (var slot = 0; slot < requestStatus.length; slot++) {
-            var state = requestStatus[slot];
-            var result = handleRequest(slot);
+        for (var i = 0; i < requestStatus.length; i++) {
+            var state = requestStatus[i];
+            var result = handleRequest(i);
             if (!Objects.equals(state, result)) {
                 changed = true;
             }
@@ -162,7 +162,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
                 tickRateModulation = resultTickRateModulation;
             }
 
-            updateRequestStatus(slot, result);
+            updateRequestStatus(i, result);
         }
         currentTickRate = tickRateModulation;
         return changed;
@@ -180,8 +180,10 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
 
     private void updateRequestStatus(int slot, StatusState state) {
         requestStatus[slot] = state;
-        requests.get(slot).setClientStatus(state.type());
-        markForUpdate();
+        if (state.type().translateToClient() != requests.get(slot).getClientStatus()) {
+            requests.get(slot).setClientStatus(state.type().translateToClient());
+            markForUpdate();
+        }
     }
 
     private EnumSet<Direction> getExposedSides() {
@@ -218,10 +220,10 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
 
     @Override
     public long insertCraftedItems(ICraftingLink link, AEKey what, long amount, Actionable mode) {
-        for (var slot = 0; slot < requestStatus.length; slot++) {
-            var state = requestStatus[slot];
+        for (var i = 0; i < requestStatus.length; i++) {
+            var state = requestStatus[i];
             if (state instanceof LinkState cls && cls.link().equals(link)) {
-                if (!mode.isSimulate()) storageManager.get(slot).update(what, amount);
+                if (!mode.isSimulate()) storageManager.get(i).update(what, amount);
                 return amount;
             }
         }

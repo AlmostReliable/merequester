@@ -97,7 +97,7 @@ public class RequesterTerminalScreen extends AbstractRequesterScreen<RequesterTe
         var cachedSearch = searchByQuery(searchQuery);
         var rebuild = cachedSearch.isEmpty();
 
-        for (RequesterReference requester : byId.values()) {
+        for (var requester : byId.values()) {
             if (!rebuild && !cachedSearch.contains(requester)) continue;
 
             boolean found = searchQuery.isEmpty();

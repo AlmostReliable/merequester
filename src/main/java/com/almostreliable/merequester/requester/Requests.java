@@ -371,7 +371,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
         }
 
         void setClientStatus(RequestStatus clientStatus) {
-            this.clientStatus = clientStatus.translateToClient();
+            this.clientStatus = clientStatus;
         }
 
         public boolean isRequesting() {

@@ -37,10 +37,10 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
 
     @Override
     public void onStackChange(AEKey key, long amount) {
-        for (var index = 0; index < storages.length; index++) {
-            if (key.equals(host.getRequests().getKey(index))) {
-                get(index).knownAmount = amount;
-                get(index).pendingAmount = 0;
+        for (var i = 0; i < storages.length; i++) {
+            if (key.equals(host.getRequests().getKey(i))) {
+                get(i).knownAmount = amount;
+                get(i).pendingAmount = 0;
             }
         }
     }
@@ -59,16 +59,16 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
     @Override
     public CompoundTag serializeNBT() {
         var tag = new CompoundTag();
-        for (var index = 0; index < storages.length; index++) {
-            tag.put(String.valueOf(index), get(index).serializeNBT());
+        for (var i = 0; i < storages.length; i++) {
+            tag.put(String.valueOf(i), get(i).serializeNBT());
         }
         return tag;
     }
 
     @Override
     public void deserializeNBT(CompoundTag tag) {
-        for (var index = 0; index < storages.length; index++) {
-            get(index).deserializeNBT(tag.getCompound(String.valueOf(index)));
+        for (var i = 0; i < storages.length; i++) {
+            get(i).deserializeNBT(tag.getCompound(String.valueOf(i)));
         }
     }
 
@@ -91,9 +91,9 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
     }
 
     private void populateWatcher(IStackWatcher watcher) {
-        for (var index = 0; index < storages.length; index++) {
-            if (host.getRequests().getKey(index) != null) {
-                watcher.add(host.getRequests().getKey(index));
+        for (var i = 0; i < storages.length; i++) {
+            if (host.getRequests().getKey(i) != null) {
+                watcher.add(host.getRequests().getKey(i));
             }
         }
     }

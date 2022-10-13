@@ -44,7 +44,7 @@ public final class Utils {
 
     public static void addShiftInfoTooltip(List<Component> tooltip) {
         tooltip.add(Component.literal("» ").withStyle(ChatFormatting.AQUA)
-            .append(Utils.translate(
+            .append(translate(
                 "tooltip",
                 "shift_for_more",
                 InputConstants.getKey("key.keyboard.left.shift").getDisplayName()
