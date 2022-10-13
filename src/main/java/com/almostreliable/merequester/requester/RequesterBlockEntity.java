@@ -16,6 +16,7 @@ import appeng.blockentity.grid.AENetworkBlockEntity;
 import appeng.me.helpers.MachineSource;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
+import com.almostreliable.merequester.requester.abstraction.RequestHost;
 import com.almostreliable.merequester.requester.progression.CraftingLinkState;
 import com.almostreliable.merequester.requester.progression.ProgressionState;
 import com.almostreliable.merequester.requester.progression.RequestStatus;

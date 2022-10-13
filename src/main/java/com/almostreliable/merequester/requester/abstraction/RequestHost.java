@@ -1,5 +1,6 @@
-package com.almostreliable.merequester.requester;
+package com.almostreliable.merequester.requester.abstraction;
 
+import com.almostreliable.merequester.requester.Requests;
 import net.minecraft.network.chat.Component;
 
 public interface RequestHost {

@@ -1,8 +1,8 @@
 package com.almostreliable.merequester.client.widgets;
 
 import appeng.client.gui.style.ScreenStyle;
-import com.almostreliable.merequester.client.RequestDisplay;
-import com.almostreliable.merequester.client.RequesterReference;
+import com.almostreliable.merequester.client.abstraction.RequestDisplay;
+import com.almostreliable.merequester.client.abstraction.RequesterReference;
 import com.almostreliable.merequester.network.PacketHandler;
 import com.almostreliable.merequester.network.RequestUpdatePacket;
 import com.almostreliable.merequester.requester.Requests.Request;

@@ -1,9 +1,10 @@
 package com.almostreliable.merequester.network;
 
-import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
+import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 
 public class RequestUpdatePacket extends ClientToServerPacket<RequestUpdatePacket> {
 
@@ -66,11 +67,11 @@ public class RequestUpdatePacket extends ClientToServerPacket<RequestUpdatePacke
 
     @Override
     protected void handlePacket(RequestUpdatePacket packet, @Nullable ServerPlayer player) {
-        if (player != null && player.containerMenu instanceof RequesterTerminalMenu terminal) {
+        if (player != null && player.containerMenu instanceof AbstractRequesterMenu requester) {
             if (packet.updateType == UpdateType.STATE) {
-                terminal.updateRequesterState(packet.requesterId, packet.requestIndex, packet.state);
+                requester.updateRequesterState(packet.requesterId, packet.requestIndex, packet.state);
             } else if (packet.updateType == UpdateType.NUMBERS) {
-                terminal.updateRequesterNumbers(packet.requesterId, packet.requestIndex, packet.amount, packet.batch);
+                requester.updateRequesterNumbers(packet.requesterId, packet.requestIndex, packet.amount, packet.batch);
             }
         }
     }

@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public final class Registration {
+final class Registration {
 
     private static final Tab TAB = new Tab();
 

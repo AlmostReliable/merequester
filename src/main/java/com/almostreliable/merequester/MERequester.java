@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("UtilityClassWithPublicConstructor")
+@SuppressWarnings({"UtilityClassWithPublicConstructor", "unused", "WeakerAccess"})
 @Mod(BuildConfig.MOD_ID)
 public final class MERequester {
 
@@ -33,7 +33,7 @@ public final class MERequester {
         - fix requester not detecting changes to the network
         - add drops
         - add recipes
-        - add screen to the requester block
+        - rename progression to request status
         - test if the REI drag and drop works when the AE2 commit is released and the REI plugin is loaded
         https://github.com/AppliedEnergistics/Applied-Energistics-2/commit/6c825cc00e228b54d5bc318b24de1a841a2b59b0
      */

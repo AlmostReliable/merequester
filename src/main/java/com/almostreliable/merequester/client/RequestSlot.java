@@ -2,11 +2,13 @@ package com.almostreliable.merequester.client;
 
 import appeng.menu.slot.FakeSlot;
 import com.almostreliable.merequester.Utils;
+import com.almostreliable.merequester.client.abstraction.RequestDisplay;
+import com.almostreliable.merequester.client.abstraction.RequesterReference;
 import com.almostreliable.merequester.mixin.accessors.SlotMixin;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Function;
 
@@ -16,7 +18,7 @@ public class RequestSlot extends FakeSlot {
     private final RequesterReference requesterReference;
     private final int slot;
 
-    RequestSlot(RequestDisplay host, RequesterReference requesterReference, int slot, int x, int y) {
+    public RequestSlot(RequestDisplay host, RequesterReference requesterReference, int slot, int x, int y) {
         super(requesterReference.getRequests(), slot);
         this.host = host;
         this.requesterReference = requesterReference;

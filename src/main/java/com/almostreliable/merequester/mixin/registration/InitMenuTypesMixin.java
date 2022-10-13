@@ -1,6 +1,7 @@
 package com.almostreliable.merequester.mixin.registration;
 
 import appeng.init.InitMenuTypes;
+import com.almostreliable.merequester.requester.RequesterMenu;
 import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -17,6 +18,7 @@ public class InitMenuTypesMixin {
     private static void merequester$initMenuTypes(IForgeRegistry<MenuType<?>> registry, CallbackInfo ci) {
         merequester$registerAll(
             registry,
+            RequesterMenu.TYPE,
             RequesterTerminalMenu.TYPE
         );
     }

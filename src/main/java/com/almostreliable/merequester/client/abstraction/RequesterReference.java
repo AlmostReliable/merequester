@@ -1,8 +1,8 @@
-package com.almostreliable.merequester.client;
+package com.almostreliable.merequester.client.abstraction;
 
 import appeng.client.gui.me.patternaccess.PatternProviderRecord;
-import com.almostreliable.merequester.requester.RequestHost;
 import com.almostreliable.merequester.requester.Requests;
+import com.almostreliable.merequester.requester.abstraction.RequestHost;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -21,7 +21,7 @@ public class RequesterReference implements RequestHost, Comparable<RequesterRefe
     private final long sortBy;
     private final Requests requests;
 
-    RequesterReference(long requesterId, String name, long sortBy) {
+    public RequesterReference(long requesterId, String name, long sortBy) {
         this.requesterId = requesterId;
         this.displayName = name;
         this.searchName = name.toLowerCase();
@@ -61,11 +61,11 @@ public class RequesterReference implements RequestHost, Comparable<RequesterRefe
         return requesterId;
     }
 
-    String getDisplayName() {
+    public String getDisplayName() {
         return displayName;
     }
 
-    String getSearchName() {
+    public String getSearchName() {
         return searchName;
     }
 }

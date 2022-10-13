@@ -1,11 +1,12 @@
 package com.almostreliable.merequester.network;
 
 import appeng.helpers.InventoryAction;
-import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
+import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 
 public class DragAndDropPacket extends ClientToServerPacket<DragAndDropPacket> {
 
@@ -45,7 +46,7 @@ public class DragAndDropPacket extends ClientToServerPacket<DragAndDropPacket> {
     @Override
     protected void handlePacket(DragAndDropPacket packet, @Nullable ServerPlayer player) {
         if (player == null ||
-            !(player.containerMenu instanceof RequesterTerminalMenu requester) ||
+            !(player.containerMenu instanceof AbstractRequesterMenu requester) ||
             packet.action != InventoryAction.SET_FILTER) {
             return;
         }

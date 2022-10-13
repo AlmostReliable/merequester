@@ -9,6 +9,7 @@ import appeng.api.stacks.AEKeyType;
 import appeng.api.stacks.GenericStack;
 import appeng.api.storage.MEStorage;
 import appeng.helpers.externalstorage.GenericStackInv;
+import com.almostreliable.merequester.requester.abstraction.RequestHost;
 import com.almostreliable.merequester.requester.progression.RequestStatus;
 import com.google.common.primitives.Ints;
 import net.minecraft.nbt.CompoundTag;
@@ -18,8 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.INBTSerializable;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
@@ -187,7 +188,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
     }
 
     @Override
-    public void setItemDirect(int slot, @NotNull ItemStack stack) {
+    public void setItemDirect(int slot, @Nonnull ItemStack stack) {
         if (stack.isEmpty()) {
             setStack(slot, null);
         } else {

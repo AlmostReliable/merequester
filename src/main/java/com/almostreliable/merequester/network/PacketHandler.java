@@ -21,7 +21,7 @@ public final class PacketHandler {
     public static void init() {
         var packetId = -1;
         // server to client
-        register(++packetId, RequesterTerminalPacket.class, new RequesterTerminalPacket());
+        register(++packetId, RequesterSyncPacket.class, new RequesterSyncPacket());
         // client to server
         register(++packetId, RequestUpdatePacket.class, new RequestUpdatePacket());
         register(++packetId, DragAndDropPacket.class, new DragAndDropPacket());
