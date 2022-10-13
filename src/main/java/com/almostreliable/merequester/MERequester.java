@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -48,6 +49,11 @@ public final class MERequester {
         modLoadingContext.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
         var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(MERequester::onCommonSetup);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> MERequester::MERequesterClient);
+    }
+
+    private static void MERequesterClient() {
+        var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(MERequester::onModelBake);
     }
 

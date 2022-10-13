@@ -368,7 +368,6 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
             return host;
         }
 
-        @OnlyIn(Dist.CLIENT)
         public RequestStatus getClientStatus() {
             return clientStatus;
         }
