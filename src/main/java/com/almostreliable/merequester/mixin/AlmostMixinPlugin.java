@@ -19,7 +19,7 @@ public class AlmostMixinPlugin implements IMixinConfigPlugin {
     private static final BooleanSupplier TRUE = () -> true;
     private static final Map<String, BooleanSupplier> CONDITIONS = ImmutableMap.of(
         "com.almostreliable.merequester.mixin.compat.JEIItemSlotTargetMixin", modLoaded("jei"),
-        "com.almostreliable.merequester.mixin.compat.REIItemSlotTargetMixin", modLoaded("roughlyenoughitems")
+        "com.almostreliable.merequester.mixin.compat.REIItemSlotTargetMixin", modLoaded("roughlyenoughitemsno")
     );
 
     private static BooleanSupplier modLoaded(String id) {
