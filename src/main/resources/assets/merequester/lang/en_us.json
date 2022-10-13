@@ -11,6 +11,7 @@
   "tooltip.merequester.enter_to_submit": "%s to submit",
 
   "tooltip.merequester.whole_number": "Must be whole number!",
+  "tooltip.merequester.locked": "Locked! Request in progress.",
 
   "tooltip.merequester.toggle": "Toggle Request",
   "tooltip.merequester.amount": "Amount to Stock",

@@ -8,7 +8,7 @@ public enum RequestStatus {
         return this;
     }
 
-    public boolean locksSlot() {
+    public boolean locksRequest() {
         return this == LINK || this == EXPORT;
     }
 }

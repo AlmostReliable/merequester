@@ -186,13 +186,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
 
             var lineElement = lines.get(scrollLevel + i);
             if (lineElement instanceof Request request) {
-                menu.slots.add(new RequestSlot(
-                    this,
-                    (RequesterReference) request.getRequesterReference(),
-                    request.getIndex(),
-                    ROW_HEIGHT + GUI_PADDING_X,
-                    (i + 1) * ROW_HEIGHT + 1
-                ));
+                menu.slots.add(createSlot(i, request));
                 requestWidgets.get(i).applyRequest(request);
             } else if (lineElement instanceof String name) {
                 var text = name;
@@ -220,6 +214,8 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
             super.slotClicked(slot, slotIndex, mouseButton, clickType);
             return;
         }
+
+        if (requestSlot.isLocked()) return;
 
         // fluid container handler
         if (mouseButton == InputConstants.MOUSE_BUTTON_RIGHT && getEmptyingAction(slot, menu.getCarried()) != null) {
@@ -301,6 +297,19 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
 
     private void blit(PoseStack poseStack, int pX, int pY, Rect2i srcRect) {
         blit(poseStack, pX, pY, srcRect.getX(), srcRect.getY(), srcRect.getWidth(), srcRect.getHeight());
+    }
+
+    private RequestSlot createSlot(int index, Request request) {
+        var slot = new RequestSlot(
+            this,
+            (RequesterReference) request.getRequesterReference(),
+            request.getIndex(),
+            ROW_HEIGHT + GUI_PADDING_X,
+            (index + 1) * ROW_HEIGHT + 1
+        );
+        slot.setHideAmount(true);
+        slot.setLocked(request.getClientStatus().locksRequest());
+        return slot;
     }
 
     protected abstract Rect2i getFooterBbox();

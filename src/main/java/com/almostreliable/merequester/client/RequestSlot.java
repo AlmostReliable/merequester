@@ -5,10 +5,12 @@ import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.abstraction.RequestDisplay;
 import com.almostreliable.merequester.client.abstraction.RequesterReference;
 import com.almostreliable.merequester.mixin.accessors.SlotMixin;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -17,6 +19,8 @@ public class RequestSlot extends FakeSlot {
     private final RequestDisplay host;
     private final RequesterReference requesterReference;
     private final int slot;
+
+    private boolean isLocked;
 
     public RequestSlot(RequestDisplay host, RequesterReference requesterReference, int slot, int x, int y) {
         super(requesterReference.getRequests(), slot);
@@ -33,10 +37,19 @@ public class RequestSlot extends FakeSlot {
     @Override
     public void decrease(ItemStack is) {}
 
-    // render custom tooltip for fluid containers
+    @Override
+    public boolean hasItem() {
+        // hide item tooltip when locked
+        return !isLocked && super.hasItem();
+    }
+
     @Nullable
     @Override
     public List<Component> getCustomTooltip(Function<ItemStack, List<Component>> getItemTooltip, ItemStack carried) {
+        if (isLocked) {
+            return Collections.singletonList(Utils.translate("tooltip", "locked").withStyle(ChatFormatting.RED));
+        }
+        // custom tooltip for fluid containers
         var emptyingTooltip = host.getEmptyingTooltip(this, carried);
         if (emptyingTooltip == null) return super.getCustomTooltip(getItemTooltip, carried);
         return emptyingTooltip;
@@ -53,5 +66,13 @@ public class RequestSlot extends FakeSlot {
 
     public int getSlot() {
         return slot;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
     }
 }

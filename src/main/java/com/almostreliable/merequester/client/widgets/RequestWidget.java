@@ -86,7 +86,15 @@ public class RequestWidget {
     public void applyRequest(Request request) {
         subWidgets.values().forEach(w -> w.visible = true);
         stateBox.setSelected(request.getState());
-        statusDisplay.setStatus(request.getClientStatus());
+        var status = request.getClientStatus();
+        statusDisplay.setStatus(status);
+        if (status.locksRequest()) {
+            amountField.setEditable(false);
+            batchField.setEditable(false);
+        } else {
+            amountField.setEditable(true);
+            batchField.setEditable(true);
+        }
         if (amountField.isFocused() || batchField.isFocused() || submitButton.isFocused()) return;
         amountField.setLongValue(request.getAmount());
         batchField.setLongValue(request.getBatch());

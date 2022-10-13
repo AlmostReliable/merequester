@@ -12,6 +12,7 @@
     "registration.InitMenuTypesMixin"
   ],
   "client": [
+    "accessors.EditBoxMixin",
     "accessors.SlotMixin",
     "accessors.WidgetContainerMixin",
     "compat.JEIItemSlotTargetMixin",

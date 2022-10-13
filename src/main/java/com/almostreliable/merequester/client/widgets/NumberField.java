@@ -7,6 +7,7 @@ import appeng.client.gui.widgets.ConfirmableTextField;
 import appeng.client.gui.widgets.NumberEntryWidget;
 import appeng.core.localization.GuiText;
 import com.almostreliable.merequester.Utils;
+import com.almostreliable.merequester.mixin.accessors.EditBoxMixin;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -144,5 +145,13 @@ public class NumberField extends ConfirmableTextField {
                 "enter_to_submit",
                 InputConstants.getKey("key.keyboard.enter").getDisplayName()
             ).withStyle(ChatFormatting.GRAY)));
+    }
+
+    @Override
+    public void setFocus(boolean isFocused) {
+        if (isFocused && !Utils.cast(this, EditBoxMixin.class).merequester$isEditable()) {
+            return;
+        }
+        super.setFocus(isFocused);
     }
 }
