@@ -3,7 +3,6 @@ package com.almostreliable.merequester.client.widgets;
 import appeng.client.gui.widgets.ITooltip;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.status.RequestStatus;
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -76,12 +75,7 @@ public class StatusDisplay extends AbstractWidget implements ITooltip {
                 Utils.translate("tooltip", f("{}_desc", RequestStatus.EXPORT.toString().toLowerCase()))
             ));
         } else {
-            tooltip.add(Component.literal("» ").withStyle(ChatFormatting.AQUA)
-                .append(Utils.translate(
-                    "tooltip",
-                    "shift_for_more",
-                    InputConstants.getKey("key.keyboard.left.shift").getDisplayName()
-                ).withStyle(ChatFormatting.GRAY)));
+            Utils.addShiftInfoTooltip(tooltip);
         }
         return tooltip;
     }

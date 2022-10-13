@@ -1,10 +1,12 @@
 package com.almostreliable.merequester;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 public final class Utils {
@@ -38,6 +40,15 @@ public final class Utils {
 
     public static String translateAsString(String type, String key) {
         return translate(type, key).getString();
+    }
+
+    public static void addShiftInfoTooltip(List<Component> tooltip) {
+        tooltip.add(Component.literal("» ").withStyle(ChatFormatting.AQUA)
+            .append(Utils.translate(
+                "tooltip",
+                "shift_for_more",
+                InputConstants.getKey("key.keyboard.left.shift").getDisplayName()
+            ).withStyle(ChatFormatting.GRAY)));
     }
 
     public static <T> T cast(Object o, Class<T> clazz) {
