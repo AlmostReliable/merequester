@@ -37,7 +37,6 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
 
     @Override
     public void onStackChange(AEKey key, long amount) {
-        if (amount == 0) return;
         for (var index = 0; index < storages.length; index++) {
             if (key.equals(host.getRequests().getKey(index))) {
                 get(index).knownAmount = amount;
