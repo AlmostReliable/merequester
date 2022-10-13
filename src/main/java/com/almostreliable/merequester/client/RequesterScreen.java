@@ -1,11 +1,11 @@
 package com.almostreliable.merequester.client;
 
 import appeng.client.gui.style.ScreenStyle;
+import com.almostreliable.merequester.Config;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.abstraction.AbstractRequesterScreen;
 import com.almostreliable.merequester.client.abstraction.RequesterReference;
-import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.requester.RequesterMenu;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -24,8 +24,6 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
     private static final ResourceLocation TEXTURE = Utils.getRL(f("textures/gui/{}.png", MERequester.REQUESTER_ID));
     private static final Rect2i FOOTER_BBOX = new Rect2i(0, 114, GUI_WIDTH, GUI_FOOTER_HEIGHT);
 
-    private static final int DEFAULT_ROW_COUNT = RequesterBlockEntity.SIZE;
-
     @Nullable private RequesterReference requesterReference;
 
     public RequesterScreen(
@@ -37,7 +35,7 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
     @Override
     protected void init() {
         rowAmount = (height - GUI_HEADER_HEIGHT - GUI_FOOTER_HEIGHT) / ROW_HEIGHT;
-        rowAmount = Mth.clamp(rowAmount, MIN_ROW_COUNT, DEFAULT_ROW_COUNT);
+        rowAmount = Mth.clamp(rowAmount, MIN_ROW_COUNT, Config.COMMON.requests.get());
         super.init();
     }
 
@@ -52,7 +50,7 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
         refreshList = false;
 
         lines.clear();
-        lines.ensureCapacity(RequesterBlockEntity.SIZE);
+        lines.ensureCapacity(Config.COMMON.requests.get());
         for (var i = 0; i < requesterReference.getRequests().size(); i++) {
             lines.add(requesterReference.getRequests().get(i));
         }

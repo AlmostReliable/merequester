@@ -15,6 +15,7 @@ import appeng.api.stacks.AEKey;
 import appeng.api.storage.StorageHelper;
 import appeng.blockentity.grid.AENetworkBlockEntity;
 import appeng.me.helpers.MachineSource;
+import com.almostreliable.merequester.Config;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
@@ -43,8 +44,6 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
     private static final String REQUEST_STATUS_ID = "request_status";
     private static final String STORAGE_MANAGER_ID = "storage_manager";
 
-    public static final int SIZE = 5;
-
     private final Requests requests;
     private final StatusState[] requestStatus;
     private final StorageManager storageManager;
@@ -55,16 +54,18 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
     public RequesterBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
         requests = new Requests(this);
-        requestStatus = new StatusState[SIZE];
+        requestStatus = new StatusState[Config.COMMON.requests.get()];
         Arrays.fill(requestStatus, StatusState.IDLE);
         storageManager = new StorageManager(this);
         actionSource = new MachineSource(this);
-        getMainNode().setFlags(GridFlags.REQUIRE_CHANNEL) // TODO: make configurable
+        getMainNode().setExposedOnSides(getExposedSides())
             .addService(IGridTickable.class, this)
             .addService(ICraftingRequester.class, this)
             .addService(IStorageWatcherNode.class, storageManager)
-            .setIdlePowerUsage(5) // TODO: make configurable
-            .setExposedOnSides(getExposedSides());
+            .setIdlePowerUsage(Config.COMMON.idleEnergy.get());
+        if (Config.COMMON.requireChannel.get()) {
+            getMainNode().setFlags(GridFlags.REQUIRE_CHANNEL);
+        }
     }
 
     @Override

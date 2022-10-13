@@ -4,6 +4,7 @@ import appeng.api.config.FuzzyMode;
 import appeng.api.networking.IStackWatcher;
 import appeng.api.networking.storage.IStorageWatcherNode;
 import appeng.api.stacks.AEKey;
+import com.almostreliable.merequester.Config;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -19,7 +20,7 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
 
     StorageManager(RequesterBlockEntity host) {
         this.host = host;
-        storages = new Storage[RequesterBlockEntity.SIZE];
+        storages = new Storage[Config.COMMON.requests.get()];
     }
 
     public Storage get(int index) {

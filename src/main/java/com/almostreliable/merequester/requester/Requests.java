@@ -9,6 +9,7 @@ import appeng.api.stacks.AEKeyType;
 import appeng.api.stacks.GenericStack;
 import appeng.api.storage.MEStorage;
 import appeng.helpers.externalstorage.GenericStackInv;
+import com.almostreliable.merequester.Config;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
 import com.almostreliable.merequester.requester.status.RequestStatus;
 import com.google.common.primitives.Ints;
@@ -37,10 +38,12 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
     // if null, the inventory is client-side and doesn't need saving
     @Nullable private final RequestHost host;
     private final Request[] requests;
+    private final int size;
 
     public Requests(@Nullable RequestHost host) {
         this.host = host;
-        requests = new Request[RequesterBlockEntity.SIZE];
+        this.size = Config.COMMON.requests.get();
+        requests = new Request[size];
         for (var i = 0; i < requests.length; i++) {
             requests[i] = new Request(i);
         }
@@ -56,7 +59,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
 
     @Override
     public int size() {
-        return RequesterBlockEntity.SIZE;
+        return size;
     }
 
     @Nullable

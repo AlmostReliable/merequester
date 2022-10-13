@@ -15,7 +15,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
@@ -42,6 +44,8 @@ public final class MERequester {
     public static final BlockDefinition<RequesterBlock> REQUESTER = Registration.setupRequester();
 
     public MERequester() {
+        var modLoadingContext = ModLoadingContext.get();
+        modLoadingContext.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
         var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(MERequester::onCommonSetup);
         modEventBus.addListener(MERequester::onModelBake);
