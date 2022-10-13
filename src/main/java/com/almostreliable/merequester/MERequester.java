@@ -34,7 +34,8 @@ public final class MERequester {
         - add drops
         - add recipes
         - add screen to the requester block
-        - implement JEI/REI drag and drop
+        - test if the REI drag and drop works when the AE2 commit is released and the REI plugin is loaded
+        https://github.com/AppliedEnergistics/Applied-Energistics-2/commit/6c825cc00e228b54d5bc318b24de1a841a2b59b0
      */
 
     public static final Logger LOGGER = LogUtils.getLogger();

@@ -1,4 +1,4 @@
-package com.almostreliable.merequester.mixin;
+package com.almostreliable.merequester.mixin.registration;
 
 import appeng.core.definitions.AEBlockEntities;
 import net.minecraft.resources.ResourceLocation;

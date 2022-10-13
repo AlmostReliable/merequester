@@ -2,7 +2,7 @@ package com.almostreliable.merequester.client;
 
 import appeng.menu.slot.FakeSlot;
 import com.almostreliable.merequester.Utils;
-import com.almostreliable.merequester.mixin.SlotMixin;
+import com.almostreliable.merequester.mixin.accessors.SlotMixin;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;

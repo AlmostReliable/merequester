@@ -1,4 +1,4 @@
-package com.almostreliable.merequester.mixin;
+package com.almostreliable.merequester.mixin.registration;
 
 import appeng.init.client.InitScreens;
 import com.almostreliable.merequester.client.RequesterTerminalScreen;

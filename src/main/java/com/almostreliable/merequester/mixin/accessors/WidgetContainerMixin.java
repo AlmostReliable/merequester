@@ -1,4 +1,4 @@
-package com.almostreliable.merequester.mixin;
+package com.almostreliable.merequester.mixin.accessors;
 
 import appeng.client.gui.WidgetContainer;
 import net.minecraft.client.gui.components.AbstractWidget;

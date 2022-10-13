@@ -1,4 +1,4 @@
-package com.almostreliable.merequester.mixin;
+package com.almostreliable.merequester.mixin.accessors;
 
 import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;

@@ -24,6 +24,7 @@ public final class PacketHandler {
         register(++packetId, RequesterTerminalPacket.class, new RequesterTerminalPacket());
         // client to server
         register(++packetId, RequestUpdatePacket.class, new RequestUpdatePacket());
+        register(++packetId, DragAndDropPacket.class, new DragAndDropPacket());
     }
 
     @SuppressWarnings("SameParameterValue")

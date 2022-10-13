@@ -89,6 +89,7 @@ dependencies {
 
     // modCompileOnly(modLocalRuntime("appeng:appliedenergistics2:$aeVersion")!!)
     modCompileOnly(modLocalRuntime("maven.modrinth:ae2:forge-$aeVersion")!!) // temporary location for latest AE2 version
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-forge:$reiVersion")
 
     when (recipeViewer) {
         "rei" -> modLocalRuntime("me.shedaniel:RoughlyEnoughItems-forge:$reiVersion")

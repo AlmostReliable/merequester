@@ -23,7 +23,7 @@ import appeng.menu.me.interaction.StackInteractions;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.widgets.RequestWidget;
-import com.almostreliable.merequester.mixin.WidgetContainerMixin;
+import com.almostreliable.merequester.mixin.accessors.WidgetContainerMixin;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.requester.Requests.Request;
 import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
