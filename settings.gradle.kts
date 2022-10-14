@@ -5,15 +5,8 @@ pluginManagement {
         maven("https://maven.minecraftforge.net/")
         gradlePluginPortal()
     }
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == "org.spongepowered.mixin") {
-                useModule("org.spongepowered:mixingradle:${requested.version}")
-            }
-        }
-    }
 }
 
 val modName = extra.get("modName").toString().replace(" ", "-")
 val mcVersion: String by extra
-rootProject.name = "$modName-$mcVersion"
+rootProject.name = "$modName-$mcVersion-Forge"
