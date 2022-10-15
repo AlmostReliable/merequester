@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 @Mixin(AEBlocks.class)
 public interface AEBlocksMixin {
     @Invoker(value = "block", remap = false)
-    static <T extends Block> BlockDefinition<T> merequester$aeBlock(
+    public static <T extends Block> BlockDefinition<T> merequester$aeBlock(
         String name, ResourceLocation id, Supplier<T> blockSupplier,
         @Nullable BiFunction<Block, Item.Properties, BlockItem> itemFactory
     ) {

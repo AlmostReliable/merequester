@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @SuppressWarnings("ALL")
 @Mixin(targets = "appeng.integration.modules.jei.GhostIngredientHandler$ItemSlotTarget")
-public class JEIItemSlotTargetMixin {
+public abstract class JEIItemSlotTargetMixin {
 
     @Shadow(remap = false)
     @Final

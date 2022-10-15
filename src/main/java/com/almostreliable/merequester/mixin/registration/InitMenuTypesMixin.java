@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @SuppressWarnings("ALL")
 @Mixin(InitMenuTypes.class)
-public class InitMenuTypesMixin {
+public abstract class InitMenuTypesMixin {
     @Inject(method = "init", at = @At("TAIL"), remap = false)
     private static void merequester$initMenuTypes(IForgeRegistry<MenuType<?>> registry, CallbackInfo ci) {
         merequester$registerAll(

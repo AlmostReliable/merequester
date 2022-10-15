@@ -31,7 +31,7 @@ final class Registration {
 
     static ItemDefinition<PartItem<RequesterTerminalPart>> setupTerminal() {
         PartModels.registerModels(PartModelsHelper.createModels(RequesterTerminalPart.class));
-        return AEItemsMixin.merequester$partItem(
+        AEItemsMixin.merequester$aeItem(
             "",
             Utils.getRL(MERequester.TERMINAL_ID),
             props -> new PartItem<>(props, RequesterTerminalPart.class, RequesterTerminalPart::new),
@@ -66,8 +66,8 @@ final class Registration {
         @SuppressWarnings("ConstantConditions")
         var type = BlockEntityType.Builder.of(supplier, block.block()).build(null);
         typeHolder.set(type);
-        AEBlockEntitiesMixin.merequester$getBlockEntityTypes().put(Utils.getRL(MERequester.REQUESTER_ID), type);
 
+        AEBlockEntitiesMixin.merequester$blockEntityTypes().put(Utils.getRL(MERequester.REQUESTER_ID), type);
         AEBaseBlockEntity.registerBlockEntityItem(type, block.asItem());
 
         BlockEntityTicker<RequesterBlockEntity> serverTicker = null;

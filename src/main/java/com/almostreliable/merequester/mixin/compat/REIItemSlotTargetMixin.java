@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @SuppressWarnings("ALL")
 @Mixin(targets = "appeng.integration.modules.rei.GhostIngredientHandler$ItemSlotTarget")
-public class REIItemSlotTargetMixin {
+public abstract class REIItemSlotTargetMixin {
 
     @Shadow(remap = false)
     @Final

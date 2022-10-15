@@ -14,7 +14,7 @@ import java.util.function.Function;
 @Mixin(AEItems.class)
 public interface AEItemsMixin {
     @Invoker(value = "item", remap = false)
-    static <T extends Item> ItemDefinition<T> merequester$partItem(
+    public static <T extends Item> ItemDefinition<T> merequester$aeItem(
         String name, ResourceLocation id, Function<Item.Properties, T> partFactory, CreativeModeTab creativeTab
     ) {
         throw new AssertionError();
