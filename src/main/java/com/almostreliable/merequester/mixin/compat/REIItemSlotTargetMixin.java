@@ -1,10 +1,8 @@
 package com.almostreliable.merequester.mixin.compat;
 
-import appeng.helpers.InventoryAction;
 import appeng.menu.slot.AppEngSlot;
 import com.almostreliable.merequester.client.RequestSlot;
-import com.almostreliable.merequester.network.DragAndDropPacket;
-import com.almostreliable.merequester.network.PacketHandler;
+import com.almostreliable.merequester.platform.Platform;
 import dev.architectury.fluid.FluidStack;
 import me.shedaniel.rei.api.client.gui.drag.DraggableStack;
 import me.shedaniel.rei.api.common.entry.EntryStack;
@@ -36,12 +34,11 @@ public abstract class REIItemSlotTargetMixin {
         DraggableStack ingredient, CallbackInfoReturnable<Boolean> ci, EntryStack<?> entryStack, ItemStack itemStack
     ) {
         if (slot instanceof RequestSlot requestSlot) {
-            PacketHandler.CHANNEL.sendToServer(new DragAndDropPacket(
+            Platform.sendDragAndDrop(
                 requestSlot.getRequesterReference().getRequesterId(),
                 requestSlot.getSlot(),
-                InventoryAction.SET_FILTER,
                 itemStack
-            ));
+            );
             ci.setReturnValue(true);
         }
     }
@@ -58,12 +55,11 @@ public abstract class REIItemSlotTargetMixin {
         ItemStack wrappedFluid
     ) {
         if (slot instanceof RequestSlot requestSlot) {
-            PacketHandler.CHANNEL.sendToServer(new DragAndDropPacket(
+            Platform.sendDragAndDrop(
                 requestSlot.getRequesterReference().getRequesterId(),
                 requestSlot.getSlot(),
-                InventoryAction.SET_FILTER,
                 wrappedFluid
-            ));
+            );
             ci.setReturnValue(true);
         }
     }

@@ -7,7 +7,7 @@ import appeng.api.networking.security.IActionHost;
 import appeng.menu.implementations.MenuTypeBuilder;
 import appeng.menu.implementations.PatternAccessTermMenu;
 import com.almostreliable.merequester.MERequester;
-import com.almostreliable.merequester.network.RequesterSyncPacket;
+import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
 import com.almostreliable.merequester.requester.abstraction.RequestTracker;
@@ -77,7 +77,7 @@ public final class RequesterTerminalMenu extends AbstractRequesterMenu {
         byRequester.clear();
 
         // clear the current data on the client
-        sendClientPacket(RequesterSyncPacket.clearData());
+        Platform.sendClearData(getPlayer());
 
         for (var requester : grid.getActiveMachines(RequesterBlockEntity.class)) {
             byRequester.put(requester, createTracker(requester));

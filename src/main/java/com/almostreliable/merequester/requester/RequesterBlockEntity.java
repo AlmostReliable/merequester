@@ -15,9 +15,9 @@ import appeng.api.stacks.AEKey;
 import appeng.api.storage.StorageHelper;
 import appeng.blockentity.grid.AENetworkBlockEntity;
 import appeng.me.helpers.MachineSource;
-import com.almostreliable.merequester.Config;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
+import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
 import com.almostreliable.merequester.requester.status.LinkState;
 import com.almostreliable.merequester.requester.status.RequestStatus;
@@ -54,7 +54,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
     public RequesterBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
         requests = new Requests(this);
-        requestStatus = new StatusState[Config.COMMON.requests.get()];
+        requestStatus = new StatusState[Platform.getRequestLimit()];
         Arrays.fill(requestStatus, StatusState.IDLE);
         storageManager = new StorageManager(this);
         actionSource = new MachineSource(this);
@@ -62,8 +62,8 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
             .addService(IGridTickable.class, this)
             .addService(ICraftingRequester.class, this)
             .addService(IStorageWatcherNode.class, storageManager)
-            .setIdlePowerUsage(Config.COMMON.idleEnergy.get());
-        if (Config.COMMON.requireChannel.get()) {
+            .setIdlePowerUsage(Platform.getIdleEnergy());
+        if (Platform.requireChannel()) {
             getMainNode().setFlags(GridFlags.REQUIRE_CHANNEL);
         }
     }
@@ -71,17 +71,17 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
     @Override
     public void loadTag(CompoundTag tag) {
         super.loadTag(tag);
-        if (tag.contains(REQUESTS_ID)) requests.deserializeNBT(tag.getCompound(REQUESTS_ID));
+        if (tag.contains(REQUESTS_ID)) requests.deserialize(tag.getCompound(REQUESTS_ID));
         if (tag.contains(REQUEST_STATUS_ID)) deserializeStatus(tag.getCompound(REQUEST_STATUS_ID));
-        if (tag.contains(STORAGE_MANAGER_ID)) storageManager.deserializeNBT(tag.getCompound(STORAGE_MANAGER_ID));
+        if (tag.contains(STORAGE_MANAGER_ID)) storageManager.deserialize(tag.getCompound(STORAGE_MANAGER_ID));
     }
 
     @Override
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        tag.put(REQUESTS_ID, requests.serializeNBT());
+        tag.put(REQUESTS_ID, requests.serialize());
         tag.put(REQUEST_STATUS_ID, serializeStatus());
-        tag.put(STORAGE_MANAGER_ID, storageManager.serializeNBT());
+        tag.put(STORAGE_MANAGER_ID, storageManager.serialize());
     }
 
     @Override
@@ -224,7 +224,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
         for (var i = 0; i < requestStatus.length; i++) {
             var state = requestStatus[i];
             if (state instanceof LinkState cls && cls.link().equals(link)) {
-                if (!mode.isSimulate()) storageManager.get(i).update(what, amount);
+                if (mode != Actionable.SIMULATE) storageManager.get(i).update(what, amount);
                 return amount;
             }
         }

@@ -4,15 +4,15 @@ import appeng.api.config.FuzzyMode;
 import appeng.api.networking.IStackWatcher;
 import appeng.api.networking.storage.IStorageWatcherNode;
 import appeng.api.stacks.AEKey;
-import com.almostreliable.merequester.Config;
+import com.almostreliable.merequester.platform.Platform;
+import com.almostreliable.merequester.platform.TagSerializable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class StorageManager implements IStorageWatcherNode, INBTSerializable<CompoundTag> {
+public class StorageManager implements IStorageWatcherNode, TagSerializable<CompoundTag> {
 
     private final RequesterBlockEntity host;
     private final Storage[] storages;
@@ -20,7 +20,7 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
 
     StorageManager(RequesterBlockEntity host) {
         this.host = host;
-        storages = new Storage[Config.COMMON.requests.get()];
+        storages = new Storage[Platform.getRequestLimit()];
     }
 
     public Storage get(int index) {
@@ -58,18 +58,18 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serialize() {
         var tag = new CompoundTag();
         for (var i = 0; i < storages.length; i++) {
-            tag.put(String.valueOf(i), get(i).serializeNBT());
+            tag.put(String.valueOf(i), get(i).serialize());
         }
         return tag;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag tag) {
+    public void deserialize(CompoundTag tag) {
         for (var i = 0; i < storages.length; i++) {
-            get(i).deserializeNBT(tag.getCompound(String.valueOf(i)));
+            get(i).deserialize(tag.getCompound(String.valueOf(i)));
         }
     }
 
@@ -116,7 +116,7 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
             .get(key);
     }
 
-    public static class Storage implements INBTSerializable<CompoundTag> {
+    public static class Storage implements TagSerializable<CompoundTag> {
 
         // serialization IDs
         private static final String KEY_ID = "key";
@@ -130,7 +130,7 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
         private long knownAmount = -1;
 
         @Override
-        public CompoundTag serializeNBT() {
+        public CompoundTag serialize() {
             var tag = new CompoundTag();
             if (key != null) tag.put(KEY_ID, key.toTagGeneric());
             tag.putLong(BUFFER_AMOUNT_ID, bufferAmount);
@@ -140,7 +140,7 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
         }
 
         @Override
-        public void deserializeNBT(CompoundTag tag) {
+        public void deserialize(CompoundTag tag) {
             key = tag.contains(KEY_ID) ? AEKey.fromTagGeneric(tag.getCompound(KEY_ID)) : null;
             bufferAmount = tag.getLong(BUFFER_AMOUNT_ID);
             pendingAmount = tag.getLong(PENDING_AMOUNT_ID);

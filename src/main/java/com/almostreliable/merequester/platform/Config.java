@@ -1,11 +1,12 @@
-package com.almostreliable.merequester;
+package com.almostreliable.merequester.platform;
 
+import com.almostreliable.merequester.MERequester;
 import net.minecraftforge.common.ForgeConfigSpec;
 
-public final class Config {
+final class Config {
 
     static final ForgeConfigSpec COMMON_SPEC;
-    public static final CommonConfig COMMON;
+    static final CommonConfig COMMON;
 
     static {
         var commonPair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
@@ -15,11 +16,11 @@ public final class Config {
 
     private Config() {}
 
-    public static final class CommonConfig {
+    static final class CommonConfig {
 
-        public final ForgeConfigSpec.IntValue requests;
-        public final ForgeConfigSpec.DoubleValue idleEnergy;
-        public final ForgeConfigSpec.BooleanValue requireChannel;
+        final ForgeConfigSpec.IntValue requests;
+        final ForgeConfigSpec.DoubleValue idleEnergy;
+        final ForgeConfigSpec.BooleanValue requireChannel;
 
         private CommonConfig(ForgeConfigSpec.Builder builder) {
             builder.push(MERequester.REQUESTER_ID);

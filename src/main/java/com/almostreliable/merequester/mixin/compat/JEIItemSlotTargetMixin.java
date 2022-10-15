@@ -1,10 +1,8 @@
 package com.almostreliable.merequester.mixin.compat;
 
-import appeng.helpers.InventoryAction;
 import appeng.menu.slot.AppEngSlot;
 import com.almostreliable.merequester.client.RequestSlot;
-import com.almostreliable.merequester.network.DragAndDropPacket;
-import com.almostreliable.merequester.network.PacketHandler;
+import com.almostreliable.merequester.platform.Platform;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,12 +29,11 @@ public abstract class JEIItemSlotTargetMixin {
     )
     private void merequester$accept(Object ingredient, CallbackInfo ci, ItemStack wrapped) {
         if (slot instanceof RequestSlot requestSlot) {
-            PacketHandler.CHANNEL.sendToServer(new DragAndDropPacket(
+            Platform.sendDragAndDrop(
                 requestSlot.getRequesterReference().getRequesterId(),
                 requestSlot.getSlot(),
-                InventoryAction.SET_FILTER,
                 wrapped
-            ));
+            );
             ci.cancel();
         }
     }

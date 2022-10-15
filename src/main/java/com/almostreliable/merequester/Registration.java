@@ -3,33 +3,33 @@ package com.almostreliable.merequester;
 import appeng.api.parts.PartModels;
 import appeng.block.AEBaseBlockItem;
 import appeng.blockentity.AEBaseBlockEntity;
-import appeng.blockentity.ClientTickingBlockEntity;
-import appeng.blockentity.ServerTickingBlockEntity;
-import appeng.core.definitions.AEBlockEntities;
 import appeng.core.definitions.BlockDefinition;
-import appeng.core.definitions.ItemDefinition;
 import appeng.items.parts.PartItem;
 import appeng.items.parts.PartModelsHelper;
 import com.almostreliable.merequester.mixin.registration.AEBlockEntitiesMixin;
 import com.almostreliable.merequester.mixin.registration.AEBlocksMixin;
 import com.almostreliable.merequester.mixin.registration.AEItemsMixin;
+import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.RequesterBlock;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.terminal.RequesterTerminalPart;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-final class Registration {
+public final class Registration {
 
-    private static final Tab TAB = new Tab();
+    private static final CreativeModeTab TAB = Platform.createTab();
 
     private Registration() {}
 
-    static ItemDefinition<PartItem<RequesterTerminalPart>> setupTerminal() {
+    public static void init() {
+        setupTerminal();
+        setupRequester();
+    }
+
+    private static void setupTerminal() {
         PartModels.registerModels(PartModelsHelper.createModels(RequesterTerminalPart.class));
         AEItemsMixin.merequester$aeItem(
             "",
@@ -39,7 +39,7 @@ final class Registration {
         );
     }
 
-    static BlockDefinition<RequesterBlock> setupRequester() {
+    private static void setupRequester() {
         var blockDef = AEBlocksMixin.merequester$aeBlock(
             "",
             Utils.getRL(MERequester.REQUESTER_ID),
@@ -47,13 +47,8 @@ final class Registration {
             (block, properties) -> new AEBaseBlockItem(block, properties.tab(TAB))
         );
         registerRequesterEntity(blockDef);
-        return blockDef;
     }
 
-    /**
-     * yoinked from {@link AEBlockEntities}
-     */
-    @SuppressWarnings("CastToIncompatibleInterface")
     private static void registerRequesterEntity(BlockDefinition<RequesterBlock> block) {
         AtomicReference<BlockEntityType<RequesterBlockEntity>> typeHolder = new AtomicReference<>();
         BlockEntityType.BlockEntitySupplier<RequesterBlockEntity> supplier = (blockPos, blockState) ->
@@ -69,28 +64,6 @@ final class Registration {
 
         AEBlockEntitiesMixin.merequester$blockEntityTypes().put(Utils.getRL(MERequester.REQUESTER_ID), type);
         AEBaseBlockEntity.registerBlockEntityItem(type, block.asItem());
-
-        BlockEntityTicker<RequesterBlockEntity> serverTicker = null;
-        if (ServerTickingBlockEntity.class.isAssignableFrom(RequesterBlockEntity.class)) {
-            serverTicker = (level, pos, state, entity) -> ((ServerTickingBlockEntity) entity).serverTick();
-        }
-        BlockEntityTicker<RequesterBlockEntity> clientTicker = null;
-        if (ClientTickingBlockEntity.class.isAssignableFrom(RequesterBlockEntity.class)) {
-            clientTicker = (level, pos, state, entity) -> ((ClientTickingBlockEntity) entity).clientTick();
-        }
-
-        block.block().setBlockEntity(RequesterBlockEntity.class, type, clientTicker, serverTicker);
-    }
-
-    private static final class Tab extends CreativeModeTab {
-
-        private Tab() {
-            super(BuildConfig.MOD_ID);
-        }
-
-        @Override
-        public ItemStack makeIcon() {
-            return MERequester.TERMINAL.stack();
-        }
+        block.block().setBlockEntity(RequesterBlockEntity.class, type, null, null);
     }
 }

@@ -8,11 +8,11 @@ import appeng.client.gui.widgets.AETextField;
 import appeng.client.gui.widgets.SettingToggleButton;
 import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
-import com.almostreliable.merequester.Config;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.abstraction.AbstractRequesterScreen;
 import com.almostreliable.merequester.client.abstraction.RequesterReference;
+import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.Requests.Request;
 import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
 import com.google.common.collect.HashMultimap;
@@ -71,7 +71,7 @@ public class RequesterTerminalScreen extends AbstractRequesterScreen<RequesterTe
     @Override
     protected void init() {
         TerminalStyle terminalStyle = AEConfig.instance().getTerminalStyle();
-        var maxRows = terminalStyle == TerminalStyle.SMALL ? Config.COMMON.requests.get() + 1 : Integer.MAX_VALUE;
+        var maxRows = terminalStyle == TerminalStyle.SMALL ? Platform.getRequestLimit() + 1 : Integer.MAX_VALUE;
         rowAmount = (height - GUI_HEADER_HEIGHT - GUI_FOOTER_HEIGHT) / ROW_HEIGHT;
         rowAmount = Mth.clamp(rowAmount, MIN_ROW_COUNT, maxRows);
 
@@ -120,7 +120,7 @@ public class RequesterTerminalScreen extends AbstractRequesterScreen<RequesterTe
         Collections.sort(requesterNames);
 
         lines.clear();
-        lines.ensureCapacity(requesterNames.size() + byId.size() * Config.COMMON.requests.get());
+        lines.ensureCapacity(requesterNames.size() + byId.size() * Platform.getRequestLimit());
 
         for (var name : requesterNames) {
             lines.add(name);
@@ -173,8 +173,9 @@ public class RequesterTerminalScreen extends AbstractRequesterScreen<RequesterTe
 
     @SuppressWarnings("SuspiciousMethodCalls")
     private void reinitialize() {
-        children().removeAll(renderables);
-        renderables.clear();
+        var renderableWidgets = Platform.getRenderables(this);
+        children().removeAll(renderableWidgets);
+        renderableWidgets.clear();
         init();
     }
 

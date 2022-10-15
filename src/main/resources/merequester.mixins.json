@@ -9,6 +9,7 @@
     "registration.AEBlockEntitiesMixin",
     "registration.AEBlocksMixin",
     "registration.AEItemsMixin",
+    "registration.AEPartsMixin",
     "registration.InitMenuTypesMixin"
   ],
   "client": [

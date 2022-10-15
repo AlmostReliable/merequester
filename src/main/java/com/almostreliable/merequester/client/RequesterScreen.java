@@ -1,11 +1,11 @@
 package com.almostreliable.merequester.client;
 
 import appeng.client.gui.style.ScreenStyle;
-import com.almostreliable.merequester.Config;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.abstraction.AbstractRequesterScreen;
 import com.almostreliable.merequester.client.abstraction.RequesterReference;
+import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.RequesterMenu;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -35,7 +35,7 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
     @Override
     protected void init() {
         rowAmount = (height - GUI_HEADER_HEIGHT - GUI_FOOTER_HEIGHT) / ROW_HEIGHT;
-        rowAmount = Mth.clamp(rowAmount, MIN_ROW_COUNT, Config.COMMON.requests.get());
+        rowAmount = Mth.clamp(rowAmount, MIN_ROW_COUNT, Platform.getRequestLimit());
         super.init();
     }
 
@@ -50,7 +50,7 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
         refreshList = false;
 
         lines.clear();
-        lines.ensureCapacity(Config.COMMON.requests.get());
+        lines.ensureCapacity(Platform.getRequestLimit());
         for (var i = 0; i < requesterReference.getRequests().size(); i++) {
             lines.add(requesterReference.getRequests().get(i));
         }

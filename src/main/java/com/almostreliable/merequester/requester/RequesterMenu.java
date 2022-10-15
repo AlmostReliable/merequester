@@ -4,7 +4,7 @@ import appeng.api.config.SecurityPermissions;
 import appeng.api.networking.IGrid;
 import appeng.menu.implementations.MenuTypeBuilder;
 import com.almostreliable.merequester.MERequester;
-import com.almostreliable.merequester.network.RequesterSyncPacket;
+import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
 import com.almostreliable.merequester.requester.abstraction.RequestTracker;
 import net.minecraft.world.entity.player.Inventory;
@@ -49,7 +49,7 @@ public final class RequesterMenu extends AbstractRequesterMenu {
 
     @Override
     protected void sendFullUpdate(@Nullable IGrid grid) {
-        sendClientPacket(RequesterSyncPacket.clearData());
+        Platform.sendClearData(getPlayer());
         requestTracker = createTracker((RequesterBlockEntity) getBlockEntity());
         syncRequestTrackerFull(requestTracker);
     }

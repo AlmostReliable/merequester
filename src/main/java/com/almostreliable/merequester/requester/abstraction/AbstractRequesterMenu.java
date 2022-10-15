@@ -6,16 +6,13 @@ import appeng.helpers.InventoryAction;
 import appeng.menu.AEBaseMenu;
 import appeng.menu.me.interaction.StackInteractions;
 import com.almostreliable.merequester.MERequester;
-import com.almostreliable.merequester.network.PacketHandler;
-import com.almostreliable.merequester.network.RequesterSyncPacket;
-import com.almostreliable.merequester.network.ServerToClientPacket;
+import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 
@@ -118,16 +115,16 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
         var client = requestTracker.getClient();
 
         // get the requests from the server
-        var tag = server.serializeNBT();
+        var tag = server.serialize();
         // store the information in the client tracker to
         // check for differences on partial updates later
         // tag serialization is used to avoid references to the original data
-        client.deserializeNBT(tag);
+        client.deserialize(tag);
 
         // send relevant data to the client
         tag.putString(UNIQUE_NAME_ID, requestTracker.getName());
         tag.putLong(SORT_BY_ID, requestTracker.getSortBy());
-        sendClientPacket(RequesterSyncPacket.inventory(requestTracker.getId(), tag));
+        Platform.sendInventoryData(getPlayer(), requestTracker.getId(), tag);
     }
 
     protected void syncRequestTrackerPartial(RequestTracker requestTracker) {
@@ -148,16 +145,16 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
                     tag.putLong(SORT_BY_ID, requestTracker.getSortBy());
                 }
 
-                var serverData = serverRequest.serializeNBT();
+                var serverData = serverRequest.serialize();
                 tag.put(String.valueOf(i), serverData);
                 // update the client information for future difference checks
-                clientRequest.deserializeNBT(serverData);
+                clientRequest.deserialize(serverData);
             }
         }
 
         // only send an update if something changed
         if (tag != null) {
-            sendClientPacket(RequesterSyncPacket.inventory(requestTracker.getId(), tag));
+            Platform.sendInventoryData(getPlayer(), requestTracker.getId(), tag);
         }
     }
 
@@ -165,12 +162,6 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
         RequestTracker requestTracker = new RequestTracker(requester, idSerial);
         idSerial++;
         return requestTracker;
-    }
-
-    protected void sendClientPacket(ServerToClientPacket<?> packet) {
-        if (getPlayer() instanceof ServerPlayer serverPlayer) {
-            PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), packet);
-        }
     }
 
     @Nullable
