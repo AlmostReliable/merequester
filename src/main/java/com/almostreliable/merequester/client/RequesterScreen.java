@@ -40,29 +40,25 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
     }
 
     @Override
-    protected void clear() {
-        requesterReference = null;
-    }
+    protected void clear() {}
 
     @Override
     protected void refreshList() {
-        assert requesterReference != null;
-        refreshList = false;
-
-        lines.clear();
-        lines.ensureCapacity(Platform.getRequestLimit());
-        for (var i = 0; i < requesterReference.getRequests().size(); i++) {
-            lines.add(requesterReference.getRequests().get(i));
+        if (requesterReference != null) {
+            lines.clear();
+            lines.ensureCapacity(Platform.getRequestLimit());
+            for (var i = 0; i < requesterReference.getRequests().size(); i++) {
+                lines.add(requesterReference.getRequests().get(i));
+            }
         }
-
+        refreshList = false;
         resetScrollbar();
     }
 
     @Override
     protected Set<RequesterReference> getByName(String name) {
-        assert requesterReference != null;
-        if (!requesterReference.getDisplayName().equals(name)) {
-            throw new IllegalArgumentException("name does not match");
+        if (requesterReference == null || !requesterReference.getDisplayName().equals(name)) {
+            throw new IllegalStateException("reference is null or name doesn't match");
         }
         return Collections.singleton(requesterReference);
     }
