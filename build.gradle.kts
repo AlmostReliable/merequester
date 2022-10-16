@@ -86,7 +86,10 @@ dependencies {
         parchment("org.parchmentmc.data:$mappingsChannel-$mcVersion:$mappingsVersion@zip")
     })
 
-    modCompileOnly(modLocalRuntime("appeng:appliedenergistics2-forge:$aeVersion")!!)
+    // only needed for CI until the Modmaven is fixed
+    modCompileOnly("appeng:appliedenergistics2:12.7.0") { isTransitive = false }
+
+    // modCompileOnly(modLocalRuntime("appeng:appliedenergistics2-forge:$aeVersion")!!)
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-forge:$reiVersion")
 
     when (recipeViewer) {
