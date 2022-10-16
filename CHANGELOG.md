@@ -14,4 +14,4 @@ Initial release!
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
-[1.0.0]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-forge-1.0.0
+[1.0.0]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-fabric-1.0.0
