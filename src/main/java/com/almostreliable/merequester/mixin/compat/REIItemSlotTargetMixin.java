@@ -25,7 +25,7 @@ public abstract class REIItemSlotTargetMixin {
 
     @Inject(
         method = "accept",
-        at = @At(value = "INVOKE", target = "Lappeng/core/sync/network/NetworkHandler;instance()Lappeng/core/sync/network/NetworkHandler;"),
+        at = @At(value = "INVOKE", target = "Lappeng/core/sync/network/NetworkHandler;instance()Lappeng/core/sync/network/NetworkHandler;", ordinal = 0),
         locals = LocalCapture.CAPTURE_FAILHARD,
         cancellable = true,
         remap = false

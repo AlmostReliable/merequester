@@ -14,14 +14,7 @@ import org.slf4j.Logger;
 @Mod(BuildConfig.MOD_ID)
 public final class MERequester {
 
-    /*
-        TODO:
-        - REI drag and drop when the AE2 commit is released and the REI plugin is loaded (disabled in mixin plugin)
-        https://github.com/AppliedEnergistics/Applied-Energistics-2/commit/6c825cc00e228b54d5bc318b24de1a841a2b59b0
-     */
-
     public static final Logger LOGGER = LogUtils.getLogger();
-
     public static final String TERMINAL_ID = "requester_terminal";
     public static final String REQUESTER_ID = "requester";
 
