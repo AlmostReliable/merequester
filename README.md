@@ -18,7 +18,7 @@ A [Minecraft] mod to keep items and fluids in your [Applied Energistics 2][ae2] 
 </div>
 
 ## **📑 Overview**
-This is a mod for [Minecraft]-[Forge] and [Fabric] (WIP).
+This is a mod for [Minecraft]-[Forge] and [Fabric].
 
 It makes it easy to automatically keep items and fluids in your Applied Energistics 2 ME-System in stock.<br>
 The ME Requester can host 5 requests by default. You can place as many of them as you like on your system
