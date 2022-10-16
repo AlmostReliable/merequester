@@ -1,55 +1,50 @@
 package com.almostreliable.merequester.network;
 
+import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.abstraction.AbstractRequesterScreen;
+import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Objects;
 
-public class RequesterSyncPacket extends ServerToClientPacket<RequesterSyncPacket> {
+public final class RequesterSyncPacket {
 
-    private boolean clearData;
-    private long requesterId;
-    private CompoundTag data;
+    public static final ResourceLocation CHANNEL = Utils.getRL("requester_sync");
 
-    private RequesterSyncPacket(boolean clearData, long requesterId, CompoundTag data) {
-        this.clearData = clearData;
-        this.requesterId = requesterId;
-        this.data = data;
+    private RequesterSyncPacket() {}
+
+    @SuppressWarnings("unused")
+    static void handlePacket(
+        Minecraft mc, ClientPacketListener packetListener, FriendlyByteBuf buffer, PacketSender packetSender
+    ) {
+        var clearData = buffer.readBoolean();
+        var requesterId = buffer.readLong();
+        var data = Objects.requireNonNull(buffer.readNbt());
+        mc.execute(() -> {
+            if (mc.screen instanceof AbstractRequesterScreen<?> screen) {
+                screen.updateFromMenu(clearData, requesterId, data);
+            }
+        });
     }
 
-    RequesterSyncPacket() {}
-
-    public static RequesterSyncPacket clearData() {
-        return new RequesterSyncPacket(true, -1, new CompoundTag());
+    public static FriendlyByteBuf encode() {
+        return encode(true, -1, new CompoundTag());
     }
 
-    public static RequesterSyncPacket inventory(long requesterId, CompoundTag data) {
-        return new RequesterSyncPacket(false, requesterId, data);
+    public static FriendlyByteBuf encode(long requesterId, CompoundTag data) {
+        return encode(false, requesterId, data);
     }
 
-    @Override
-    public void encode(RequesterSyncPacket packet, FriendlyByteBuf buffer) {
-        buffer.writeBoolean(packet.clearData);
-        buffer.writeLong(packet.requesterId);
-        buffer.writeNbt(packet.data);
-    }
-
-    @Override
-    public RequesterSyncPacket decode(FriendlyByteBuf buffer) {
-        return new RequesterSyncPacket(
-            buffer.readBoolean(),
-            buffer.readLong(),
-            Objects.requireNonNull(buffer.readNbt())
-        );
-    }
-
-    @Override
-    protected void handlePacket(RequesterSyncPacket packet, ClientLevel level) {
-        if (Minecraft.getInstance().screen instanceof AbstractRequesterScreen<?> screen) {
-            screen.updateFromMenu(packet.clearData, packet.requesterId, packet.data);
-        }
+    private static FriendlyByteBuf encode(boolean clearData, long requesterId, CompoundTag data) {
+        var buffer = new FriendlyByteBuf(Unpooled.buffer());
+        buffer.writeBoolean(clearData);
+        buffer.writeLong(requesterId);
+        buffer.writeNbt(data);
+        return buffer;
     }
 }

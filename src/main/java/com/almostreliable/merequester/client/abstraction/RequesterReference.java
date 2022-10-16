@@ -3,16 +3,16 @@ package com.almostreliable.merequester.client.abstraction;
 import appeng.client.gui.me.patternaccess.PatternProviderRecord;
 import com.almostreliable.merequester.requester.Requests;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * yoinked from {@link PatternProviderRecord}
  * <p>
  * Note: this class has a natural ordering that is inconsistent with equals.
  */
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class RequesterReference implements RequestHost, Comparable<RequesterReference> {
 
     private final long requesterId;

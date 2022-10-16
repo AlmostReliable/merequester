@@ -1,5 +1,10 @@
 {
-  "itemGroup.merequester": "ME Anforderer",
+  "itemGroup.merequester.tab": "ME Anforderer",
+
+  "merequester.midnightconfig.title": "ME Anforderer Konfiguration",
+  "merequester.midnightconfig.REQUESTS": "Anforderungen pro Anforderer",
+  "merequester.midnightconfig.IDLE_ENERGY": "Anforderer Leerlauf Energieverbrauch",
+  "merequester.midnightconfig.REQUIRE_CHANNEL": "Anforderer benötigt Kanal",
 
   "item.merequester.requester_terminal": "ME Anforderungskonsole",
   "block.merequester.requester": "ME Anforderer",

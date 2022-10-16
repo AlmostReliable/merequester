@@ -1,46 +1,41 @@
 package com.almostreliable.merequester.network;
 
+import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
+import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.item.ItemStack;
 
-import javax.annotation.Nullable;
+public final class DragAndDropPacket {
 
-public class DragAndDropPacket extends ClientToServerPacket<DragAndDropPacket> {
+    public static final ResourceLocation CHANNEL = Utils.getRL("drag_and_drop");
 
-    private long requesterId;
-    private int requestIndex;
+    private DragAndDropPacket() {}
 
-    private ItemStack item;
-
-    public DragAndDropPacket(long requesterId, int requestIndex, ItemStack item) {
-        this.requesterId = requesterId;
-        this.requestIndex = requestIndex;
-        this.item = item;
+    @SuppressWarnings("unused")
+    static void handlePacket(
+        MinecraftServer server, ServerPlayer player,
+        ServerGamePacketListenerImpl packetListener, FriendlyByteBuf buffer,
+        PacketSender packetSender
+    ) {
+        if (player.containerMenu instanceof AbstractRequesterMenu requester) {
+            var requesterId = buffer.readLong();
+            var requestIndex = buffer.readVarInt();
+            var item = buffer.readItem();
+            requester.applyDragAndDrop(player, requestIndex, requesterId, item);
+        }
     }
 
-    DragAndDropPacket() {}
-
-    @Override
-    public void encode(DragAndDropPacket packet, FriendlyByteBuf buffer) {
-        buffer.writeLong(packet.requesterId);
-        buffer.writeVarInt(packet.requestIndex);
-        buffer.writeItem(packet.item);
-    }
-
-    @Override
-    public DragAndDropPacket decode(FriendlyByteBuf buffer) {
-        return new DragAndDropPacket(
-            buffer.readLong(),
-            buffer.readVarInt(),
-            buffer.readItem()
-        );
-    }
-
-    @Override
-    protected void handlePacket(DragAndDropPacket packet, @Nullable ServerPlayer player) {
-        if (player == null || !(player.containerMenu instanceof AbstractRequesterMenu requester)) return;
-        requester.applyDragAndDrop(player, packet.requestIndex, packet.requesterId, packet.item);
+    public static FriendlyByteBuf encode(long requesterId, int requestIndex, ItemStack item) {
+        var buffer = new FriendlyByteBuf(Unpooled.buffer());
+        buffer.writeLong(requesterId);
+        buffer.writeVarInt(requestIndex);
+        buffer.writeItem(item);
+        return buffer;
     }
 }

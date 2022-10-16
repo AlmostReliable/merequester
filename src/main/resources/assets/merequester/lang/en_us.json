@@ -1,5 +1,10 @@
 {
-  "itemGroup.merequester": "ME Requester",
+  "itemGroup.merequester.tab": "ME Requester",
+
+  "merequester.midnightconfig.title": "ME Requester Config",
+  "merequester.midnightconfig.REQUESTS": "Requests per Requester",
+  "merequester.midnightconfig.IDLE_ENERGY": "Requester idle energy drain",
+  "merequester.midnightconfig.REQUIRE_CHANNEL": "Requester requires channel",
 
   "item.merequester.requester_terminal": "ME Requester Terminal",
   "block.merequester.requester": "ME Requester",

@@ -14,12 +14,13 @@ import com.almostreliable.merequester.platform.TagSerializable;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
 import com.almostreliable.merequester.requester.status.RequestStatus;
 import com.google.common.primitives.Ints;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -128,6 +129,11 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
     @Override
     public void onChange() {
         if (host != null) host.saveChanges();
+    }
+
+    @Override
+    public void updateSnapshots(int slot, TransactionContext transaction) {
+        // idk what this does
     }
 
     @Override
@@ -362,7 +368,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
             return batch;
         }
 
-        @OnlyIn(Dist.CLIENT)
+        @Environment(EnvType.CLIENT)
         public RequestHost getRequesterReference() {
             assert host != null;
             return host;

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "${modId}",
+  "version": "${version}",
+  "name": "${modName}",
+  "description": "${modDescription}",
+  "authors": [
+    "${modAuthor}"
+  ],
+  "contact": {
+    "homepage": "https://almostreliable.com/",
+    "email": "team@almostreliable.com",
+    "sources": "https://github.com/${githubUser}/${githubRepo}",
+    "issues": "https://github.com/${githubUser}/${githubRepo}/issues"
+  },
+  "license": "${license}",
+  "icon": "logo.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.almostreliable.merequester.MERequester"
+    ],
+    "client": [
+      "com.almostreliable.merequester.MERequesterClient"
+    ]
+  },
+  "mixins": [
+    "merequester.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.9",
+    "fabric-api": "*",
+    "minecraft": ">=${mcVersion}",
+    "java": ">=17",
+    "ae2": ">=${aeVersionMin}"
+  }
+}

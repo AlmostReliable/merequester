@@ -14,20 +14,20 @@ val license: String by project
 val extraModsDirectory: String by project
 val recipeViewer: String by project
 val mcVersion: String by project
-val mcVersionRange: String by project
-val forgeVersion: String by project
-val forgeVersionRange: String by project
+val fabricVersion: String by project
+val fabricLoaderVersion: String by project
 val mappingsChannel: String by project
 val mappingsVersion: String by project
 val githubUser: String by project
 val githubRepo: String by project
+val midnightLibVersion: String by project
 val aeVersion: String by project
-val aeVersionRange: String by project
+val aeVersionMin: String by project
 val reiVersion: String by project
 val jeiVersion: String by project
 
 plugins {
-    id("dev.architectury.loom") version "0.12.0-SNAPSHOT"
+    id("fabric-loom") version "1.0-SNAPSHOT"
     id("io.github.juuxel.loom-quiltflower") version "1.7.4"
     id("com.github.gmazzo.buildconfig") version "3.0.3"
     java
@@ -42,8 +42,6 @@ base {
 }
 
 loom {
-    silentMojangMappingsLicense()
-
     runs {
         named("client") {
             client()
@@ -57,10 +55,6 @@ loom {
         }
     }
 
-    forge {
-        mixinConfig("$modId.mixins.json")
-    }
-
     mixin {
         defaultRefmapName.set("$modId.refmap.json")
     }
@@ -71,6 +65,7 @@ repositories {
     maven("https://modmaven.dev/")
     maven("https://maven.shedaniel.me/")
     maven("https://dvs1.progwml6.com/files/maven/")
+    maven("https://api.modrinth.com/maven/")
     flatDir {
         name = extraModsDirectory
         dir(file("$extraModsDirectory-$mcVersion"))
@@ -80,21 +75,24 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:$mcVersion")
-    forge("net.minecraftforge:forge:$mcVersion-$forgeVersion")
+    modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:$fabricVersion")
     mappings(loom.layered {
         officialMojangMappings()
         parchment("org.parchmentmc.data:$mappingsChannel-$mcVersion:$mappingsVersion@zip")
     })
+    implementation("com.google.code.findbugs:jsr305:3.0.2") // javax annotations
+    modImplementation(include("maven.modrinth:midnightlib:$midnightLibVersion")!!) // config lib
 
     // only needed for CI until the Modmaven is fixed
-    modCompileOnly("appeng:appliedenergistics2:12.7.0") { isTransitive = false }
+    modCompileOnly("appeng:appliedenergistics2-fabric:12.7.0") { isTransitive = false }
 
-    // modCompileOnly(modLocalRuntime("appeng:appliedenergistics2-forge:$aeVersion")!!)
-    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-forge:$reiVersion")
+    // modCompileOnly(modLocalRuntime("appeng:appliedenergistics2-fabric:$aeVersion")!!)
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$reiVersion")
 
     when (recipeViewer) {
-        "rei" -> modLocalRuntime("me.shedaniel:RoughlyEnoughItems-forge:$reiVersion")
-        "jei" -> modLocalRuntime("mezz.jei:jei-$mcVersion-forge:$jeiVersion") { isTransitive = false }
+        "rei" -> modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$reiVersion")
+        "jei" -> modLocalRuntime("mezz.jei:jei-$mcVersion-fabric:$jeiVersion") { isTransitive = false }
         else -> throw GradleException("Invalid recipeViewer value: $recipeViewer")
     }
 
@@ -129,7 +127,7 @@ tasks {
         }
     }
     processResources {
-        val resourceTargets = listOf("META-INF/mods.toml", "pack.mcmeta")
+        val resourceTargets = listOf("fabric.mod.json", "pack.mcmeta")
 
         val replaceProperties = mapOf(
             "version" to version as String,
@@ -138,11 +136,10 @@ tasks {
             "modAuthor" to modAuthor,
             "modDescription" to modDescription,
             "license" to license,
-            "mcVersionRange" to mcVersionRange,
-            "forgeVersionRange" to forgeVersionRange,
+            "mcVersion" to mcVersion,
             "githubUser" to githubUser,
             "githubRepo" to githubRepo,
-            "aeVersionRange" to aeVersionRange
+            "aeVersionMin" to aeVersionMin
         )
 
         inputs.properties(replaceProperties)

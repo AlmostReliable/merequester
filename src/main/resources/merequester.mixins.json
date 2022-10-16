@@ -14,6 +14,7 @@
   ],
   "client": [
     "accessors.EditBoxMixin",
+    "accessors.ScreenMixin",
     "accessors.SlotMixin",
     "accessors.WidgetContainerMixin",
     "compat.JEIItemSlotTargetMixin",
