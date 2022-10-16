@@ -86,10 +86,7 @@ dependencies {
         parchment("org.parchmentmc.data:$mappingsChannel-$mcVersion:$mappingsVersion@zip")
     })
 
-    // disable transitivity because AE2 publishes all their dependencies to maven for some reason
-    modCompileOnly("appeng:appliedenergistics2:$aeVersion") { isTransitive = false }
-    modLocalRuntime("appeng:appliedenergistics2:$aeVersion") { isTransitive = false }
-
+    modCompileOnly(modLocalRuntime("appeng:appliedenergistics2-forge:$aeVersion")!!)
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-forge:$reiVersion")
 
     when (recipeViewer) {
