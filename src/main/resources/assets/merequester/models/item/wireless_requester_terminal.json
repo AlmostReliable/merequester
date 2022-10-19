@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "merequester:item/wireless_requester_terminal"
+  }
+}

@@ -18,6 +18,7 @@ val fabricLoaderVersion: String by project
 val fabricApiVersion: String by project
 val fabricRecipeViewer: String by project
 val aeVersion: String by project
+val ae2wtlibVersion: String by project
 val jeiVersion: String by project
 val reiVersion: String by project
 val githubUser: String by project
@@ -75,16 +76,18 @@ dependencies {
     // Compile
     modCompileOnly("appeng:appliedenergistics2-fabric:$aeVersion")
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$reiVersion")
+    modCompileOnly("maven.modrinth:applied-energistics-2-wireless-terminals:12.8.5-fabric")
 
     // Runtime
     modLocalRuntime("appeng:appliedenergistics2-fabric:$aeVersion")
+    modLocalRuntime("maven.modrinth:applied-energistics-2-wireless-terminals:$ae2wtlibVersion-fabric")
+    modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:8.3.103")
     when (fabricRecipeViewer) {
         "rei" -> {
             modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$reiVersion") { isTransitive = false }
             // disabled transitivity because Dan is not capable of shipping transitive dependencies
             // that won't crash the runtime, manual deps now, whooo
             modLocalRuntime("dev.architectury:architectury-fabric:6.5.82")
-            modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:8.3.103")
         }
 
         "jei" -> modLocalRuntime("mezz.jei:jei-$minecraftVersion-fabric:$jeiVersion") { isTransitive = false }

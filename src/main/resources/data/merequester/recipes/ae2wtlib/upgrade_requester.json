@@ -1,0 +1,7 @@
+{
+  "type": "ae2wtlib:upgrade",
+  "terminal": {
+    "item": "merequester:wireless_requester_terminal"
+  },
+  "terminalName": "requester"
+}

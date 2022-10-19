@@ -11,6 +11,7 @@ import eu.midnightdust.lib.config.MidnightConfig;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Registry;
@@ -87,5 +88,9 @@ public final class Platform {
 
     public static List<Widget> getRenderables(Screen screen) {
         return Utils.cast(screen, ScreenMixin.class).merequester$getRenderables();
+    }
+
+    public static boolean isModLoaded(String mod) {
+        return FabricLoader.getInstance().isModLoaded(mod);
     }
 }

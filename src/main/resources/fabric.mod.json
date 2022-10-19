@@ -17,11 +17,17 @@
   "icon": "logo.png",
   "environment": "*",
   "entrypoints": {
-    "main": [
+    "ae2": [
       "com.almostreliable.merequester.MERequester"
     ],
     "client": [
       "com.almostreliable.merequester.MERequesterClient"
+    ],
+    "ae2wtlib": [
+      "com.almostreliable.merequester.wireless.ae2wtlib.WTLibCommon"
+    ],
+    "ae2wtlib:client": [
+      "com.almostreliable.merequester.wireless.ae2wtlib.WTLibClient"
     ]
   },
   "mixins": [

@@ -4,8 +4,11 @@ import appeng.init.client.InitScreens;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.client.RequesterScreen;
 import com.almostreliable.merequester.client.RequesterTerminalScreen;
+import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.RequesterMenu;
 import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
+import com.almostreliable.merequester.wireless.WirelessRequesterTerminalMenu;
+import com.almostreliable.merequester.wireless.WirelessRequesterTerminalScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,5 +31,7 @@ public abstract class InitScreensMixin {
             RequesterTerminalScreen::new,
             f("/screens/{}.json", MERequester.TERMINAL_ID)
         );
+        if(!Platform.isModLoaded("ae2wtlib")) InitScreens.register(WirelessRequesterTerminalMenu.TYPE,
+            WirelessRequesterTerminalScreen::new, f("/screens/{}.json", WirelessRequesterTerminalMenu.ID));
     }
 }

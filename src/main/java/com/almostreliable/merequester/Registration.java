@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public final class Registration {
 
-    private static final CreativeModeTab TAB = Platform.createTab();
+    public static final CreativeModeTab TAB = Platform.createTab();
 
     private Registration() {}
 
