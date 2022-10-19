@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * yoinked from {@link PatternAccessTermMenu}
  */
-public final class RequesterTerminalMenu extends AbstractRequesterMenu {
+public class RequesterTerminalMenu extends AbstractRequesterMenu {
 
     public static final MenuType<RequesterTerminalMenu> TYPE = MenuTypeBuilder
         .create(RequesterTerminalMenu::new, RequesterTerminalPart.class)
@@ -34,8 +34,8 @@ public final class RequesterTerminalMenu extends AbstractRequesterMenu {
     private final Long2ObjectOpenHashMap<RequestTracker> byId = new Long2ObjectOpenHashMap<>();
     private final Map<RequesterBlockEntity, RequestTracker> byRequester = new IdentityHashMap<>();
 
-    private RequesterTerminalMenu(int id, Inventory playerInventory, RequesterTerminalPart host) {
-        super(TYPE, id, playerInventory, host);
+    protected RequesterTerminalMenu(MenuType<?> menuType, int id, Inventory playerInventory, Object host) {
+        super(menuType, id, playerInventory, host);
     }
 
     @Override

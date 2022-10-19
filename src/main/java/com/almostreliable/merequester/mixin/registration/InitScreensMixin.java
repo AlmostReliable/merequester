@@ -23,7 +23,7 @@ public abstract class InitScreensMixin {
             RequesterScreen::new,
             f("/screens/{}.json", MERequester.REQUESTER_ID)
         );
-        InitScreens.register(
+        InitScreens.<RequesterTerminalMenu, RequesterTerminalScreen<RequesterTerminalMenu>>register(
             RequesterTerminalMenu.TYPE,
             RequesterTerminalScreen::new,
             f("/screens/{}.json", MERequester.TERMINAL_ID)
