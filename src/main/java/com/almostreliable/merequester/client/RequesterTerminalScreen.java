@@ -27,7 +27,7 @@ import java.util.*;
 
 import static com.almostreliable.merequester.Utils.f;
 
-public class RequesterTerminalScreen extends AbstractRequesterScreen<RequesterTerminalMenu> {
+public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends AbstractRequesterScreen<T> {
 
     private static final ResourceLocation TEXTURE = Utils.getRL(f("textures/gui/{}.png", MERequester.TERMINAL_ID));
     private static final Rect2i FOOTER_BBOX = new Rect2i(0, 133, GUI_WIDTH, GUI_FOOTER_HEIGHT);
@@ -40,7 +40,7 @@ public class RequesterTerminalScreen extends AbstractRequesterScreen<RequesterTe
     private final AETextField searchField;
 
     public RequesterTerminalScreen(
-        RequesterTerminalMenu menu, Inventory playerInventory, Component name, ScreenStyle style
+        T menu, Inventory playerInventory, Component name, ScreenStyle style
     ) {
         super(menu, playerInventory, name, style);
 
