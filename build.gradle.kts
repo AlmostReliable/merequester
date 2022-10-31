@@ -84,10 +84,7 @@ dependencies {
     implementation("com.google.code.findbugs:jsr305:3.0.2") // javax annotations
     modImplementation(include("maven.modrinth:midnightlib:$midnightLibVersion")!!) // config lib
 
-    // only needed for CI until the Modmaven is fixed
-    modCompileOnly("appeng:appliedenergistics2-fabric:12.7.0") { isTransitive = false }
-
-    // modCompileOnly(modLocalRuntime("appeng:appliedenergistics2-fabric:$aeVersion")!!)
+    modCompileOnly(modLocalRuntime("appeng:appliedenergistics2-fabric:$aeVersion")!!)
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$reiVersion")
 
     when (recipeViewer) {
