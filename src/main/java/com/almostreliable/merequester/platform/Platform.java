@@ -15,11 +15,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.loading.LoadingModList;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.List;
@@ -27,13 +24,6 @@ import java.util.List;
 public final class Platform {
 
     private Platform() {}
-
-    public static boolean isModLoaded(String id) {
-        if (ModList.get() == null) {
-            return LoadingModList.get().getMods().stream().map(ModInfo::getModId).anyMatch(id::equals);
-        }
-        return ModList.get().isLoaded(id);
-    }
 
     public static void initConfig() {
         var modLoadingContext = ModLoadingContext.get();
