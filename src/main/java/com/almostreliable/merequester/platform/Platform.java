@@ -11,7 +11,6 @@ import eu.midnightdust.lib.config.MidnightConfig;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Registry;
@@ -26,10 +25,6 @@ import java.util.List;
 public final class Platform {
 
     private Platform() {}
-
-    public static boolean isModLoaded(String id) {
-        return FabricLoader.getInstance().isModLoaded(id);
-    }
 
     public static void initConfig() {
         MidnightConfig.init(BuildConfig.MOD_ID, Config.class);

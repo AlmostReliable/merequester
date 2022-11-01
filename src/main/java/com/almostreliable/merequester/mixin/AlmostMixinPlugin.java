@@ -1,7 +1,7 @@
 package com.almostreliable.merequester.mixin;
 
-import com.almostreliable.merequester.platform.Platform;
 import com.google.common.collect.ImmutableMap;
+import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -19,10 +19,6 @@ public class AlmostMixinPlugin implements IMixinConfigPlugin {
         "com.almostreliable.merequester.mixin.compat.JEIItemSlotTargetMixin", modLoaded("jei"),
         "com.almostreliable.merequester.mixin.compat.REIItemSlotTargetMixin", modLoaded("roughlyenoughitems")
     );
-
-    private static BooleanSupplier modLoaded(String id) {
-        return () -> Platform.isModLoaded(id);
-    }
 
     @Override
     public void onLoad(String mixinPackage) {}
@@ -50,4 +46,8 @@ public class AlmostMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
+
+    private static BooleanSupplier modLoaded(String id) {
+        return () -> FabricLoader.getInstance().isModLoaded(id);
+    }
 }
