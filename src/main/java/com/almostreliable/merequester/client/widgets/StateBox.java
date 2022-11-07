@@ -8,6 +8,7 @@ import com.almostreliable.merequester.Utils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class StateBox extends AECheckbox implements ITooltip {
 
     StateBox(int x, int y, ScreenStyle style, Runnable changeListener) {
         // add 2 to the positions, so it matches with a slot
-        super(x + 2, y + 2, SIZE, SIZE, style, Component.empty());
+        super(x + 2, y + 2, SIZE, SIZE, style, TextComponent.EMPTY);
         setChangeListener(changeListener);
     }
 

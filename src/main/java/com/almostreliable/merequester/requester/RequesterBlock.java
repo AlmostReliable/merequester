@@ -10,6 +10,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -67,7 +68,7 @@ public class RequesterBlock extends AEBaseEntityBlock<RequesterBlockEntity> {
         ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, TooltipFlag flag
     ) {
         if (Screen.hasShiftDown()) {
-            tooltip.add(Component.literal(" "));
+            tooltip.add(new TextComponent(" "));
             tooltip.add(Utils.translate("tooltip", f("{}_desc", MERequester.REQUESTER_ID))
                 .withStyle(ChatFormatting.AQUA));
         } else {

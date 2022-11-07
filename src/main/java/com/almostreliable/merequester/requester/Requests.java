@@ -19,6 +19,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
@@ -161,7 +162,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
 
     @Override
     public Component getDescription() {
-        if (host == null) return Component.empty();
+        if (host == null) return TextComponent.EMPTY;
         return host.getTerminalName();
     }
 

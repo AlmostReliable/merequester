@@ -2,7 +2,7 @@ package com.almostreliable.merequester.client.abstraction;
 
 import appeng.api.stacks.GenericStack;
 import appeng.client.gui.AEBaseScreen;
-import appeng.client.gui.me.patternaccess.PatternAccessTermScreen;
+import appeng.client.gui.me.interfaceterminal.InterfaceTerminalScreen;
 import appeng.client.gui.style.PaletteColor;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.Scrollbar;
@@ -43,7 +43,7 @@ import java.util.Set;
 import static com.almostreliable.merequester.Utils.f;
 
 /**
- * yoinked from {@link PatternAccessTermScreen}
+ * yoinked from {@link InterfaceTerminalScreen}
  */
 public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> extends AEBaseScreen<M> implements RequestDisplay {
 

@@ -4,8 +4,8 @@ import appeng.api.config.SecurityPermissions;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
+import appeng.menu.implementations.InterfaceTerminalMenu;
 import appeng.menu.implementations.MenuTypeBuilder;
-import appeng.menu.implementations.PatternAccessTermMenu;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
@@ -22,7 +22,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 /**
- * yoinked from {@link PatternAccessTermMenu}
+ * yoinked from {@link InterfaceTerminalMenu}
  */
 public class RequesterTerminalMenu extends AbstractRequesterMenu {
 

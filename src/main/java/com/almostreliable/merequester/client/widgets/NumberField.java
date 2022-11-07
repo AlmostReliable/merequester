@@ -12,6 +12,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -78,7 +79,7 @@ public class NumberField extends ConfirmableTextField {
                     var formatted = decimalFormat.format(convertToInternalValue(MIN_VALUE));
                     validationErrors.add(GuiText.NumberLessThanMinValue.text(formatted));
                 } else if (!isNumber()) {
-                    infoMessages.add(Component.literal("= " + decimalFormat.format(possibleValue.get())));
+                    infoMessages.add(new TextComponent("= " + decimalFormat.format(possibleValue.get())));
                 }
             }
         } else {
@@ -139,7 +140,7 @@ public class NumberField extends ConfirmableTextField {
         tooltipMessage.add(0, Utils.translate("tooltip", name));
         super.setTooltipMessage(tooltipMessage);
         if (!isFocused() || (tooltipMessage.size() > 1 && !tooltipMessage.get(1).getString().startsWith("="))) return;
-        tooltipMessage.add(Component.literal("» ").withStyle(ChatFormatting.AQUA)
+        tooltipMessage.add(new TextComponent("» ").withStyle(ChatFormatting.AQUA)
             .append(Utils.translate(
                 "tooltip",
                 "enter_to_submit",

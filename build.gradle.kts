@@ -12,7 +12,6 @@ val modAuthor: String by project
 val modDescription: String by project
 val license: String by project
 val extraModsDirectory: String by project
-val recipeViewer: String by project
 val mcVersion: String by project
 val fabricVersion: String by project
 val fabricLoaderVersion: String by project
@@ -24,12 +23,11 @@ val midnightLibVersion: String by project
 val aeVersion: String by project
 val aeVersionMin: String by project
 val reiVersion: String by project
-val jeiVersion: String by project
 
 plugins {
     id("fabric-loom") version "1.0-SNAPSHOT"
     id("io.github.juuxel.loom-quiltflower") version "1.7.4"
-    id("com.github.gmazzo.buildconfig") version "3.0.3"
+    id("com.github.gmazzo.buildconfig") version "3.1.0"
     java
     idea
     eclipse
@@ -64,8 +62,8 @@ repositories {
     maven("https://maven.parchmentmc.org/")
     maven("https://modmaven.dev/")
     maven("https://maven.shedaniel.me/")
-    maven("https://dvs1.progwml6.com/files/maven/")
     maven("https://api.modrinth.com/maven/")
+    maven("https://cursemaven.com")
     flatDir {
         name = extraModsDirectory
         dir(file("$extraModsDirectory-$mcVersion"))
@@ -86,12 +84,7 @@ dependencies {
 
     modCompileOnly(modLocalRuntime("appeng:appliedenergistics2-fabric:$aeVersion")!!)
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:$reiVersion")
-
-    when (recipeViewer) {
-        "rei" -> modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$reiVersion")
-        "jei" -> modLocalRuntime("mezz.jei:jei-$mcVersion-fabric:$jeiVersion") { isTransitive = false }
-        else -> throw GradleException("Invalid recipeViewer value: $recipeViewer")
-    }
+    modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$reiVersion")
 
     fileTree("$extraModsDirectory-$mcVersion") { include("**/*.jar") }
         .forEach { f ->
