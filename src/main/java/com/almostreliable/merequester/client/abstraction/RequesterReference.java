@@ -1,14 +1,15 @@
 package com.almostreliable.merequester.client.abstraction;
 
-import appeng.client.gui.me.patternaccess.PatternProviderRecord;
+import appeng.client.gui.me.interfaceterminal.InterfaceRecord;
 import com.almostreliable.merequester.requester.Requests;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
- * yoinked from {@link PatternProviderRecord}
+ * yoinked from {@link InterfaceRecord}
  * <p>
  * Note: this class has a natural ordering that is inconsistent with equals.
  */
@@ -43,7 +44,7 @@ public class RequesterReference implements RequestHost, Comparable<RequesterRefe
 
     @Override
     public Component getTerminalName() {
-        return Component.empty();
+        return TextComponent.EMPTY;
     }
     // </editor-fold>
 

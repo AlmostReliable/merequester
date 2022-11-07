@@ -31,3 +31,10 @@ mandatory = true
 versionRange = "${aeVersionRange}"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.${modId}]]
+modId = "lazierae2"
+mandatory = false
+versionRange = "[INCOMPATIBLE]"
+ordering = "AFTER"
+side = "BOTH"

@@ -7,7 +7,7 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.List;
@@ -21,8 +21,8 @@ public class MERequesterClient {
     }
 
     @OnlyIn(Dist.CLIENT)
-    private static void onModelBake(ModelEvent.BakingCompleted event) {
-        Map<ResourceLocation, BakedModel> modelRegistry = event.getModels();
+    private static void onModelBake(ModelBakeEvent event) {
+        Map<ResourceLocation, BakedModel> modelRegistry = event.getModelRegistry();
         List<ModelResourceLocation> locations = List.of(
             new ModelResourceLocation(BuildConfig.MOD_ID, MERequester.REQUESTER_ID, "active=true"),
             new ModelResourceLocation(BuildConfig.MOD_ID, MERequester.REQUESTER_ID, "active=false")

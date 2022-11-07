@@ -10,6 +10,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class StatusDisplay extends AbstractWidget implements ITooltip {
     private RequestStatus status = RequestStatus.IDLE;
 
     StatusDisplay(int x, int y, BooleanSupplier isInactive) {
-        super(x, y, WIDTH, HEIGHT, Component.empty());
+        super(x, y, WIDTH, HEIGHT, TextComponent.EMPTY);
         this.isInactive = isInactive;
     }
 
@@ -61,15 +62,15 @@ public class StatusDisplay extends AbstractWidget implements ITooltip {
         tooltip.add(Utils.translate("tooltip", "status"));
         if (Screen.hasShiftDown()) {
             tooltip.addAll(List.of(
-                Component.literal(" "),
+                new TextComponent(" "),
                 Utils.translate("tooltip", RequestStatus.IDLE.toString().toLowerCase())
                     .withStyle(getStatusColor(RequestStatus.IDLE)),
                 Utils.translate("tooltip", f("{}_desc", RequestStatus.IDLE.toString().toLowerCase())),
-                Component.literal(" "),
+                new TextComponent(" "),
                 Utils.translate("tooltip", RequestStatus.LINK.toString().toLowerCase())
                     .withStyle(getStatusColor(RequestStatus.LINK)),
                 Utils.translate("tooltip", f("{}_desc", RequestStatus.LINK.toString().toLowerCase())),
-                Component.literal(" "),
+                new TextComponent(" "),
                 Utils.translate("tooltip", RequestStatus.EXPORT.toString().toLowerCase())
                     .withStyle(getStatusColor(RequestStatus.EXPORT)),
                 Utils.translate("tooltip", f("{}_desc", RequestStatus.EXPORT.toString().toLowerCase()))

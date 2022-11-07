@@ -27,9 +27,9 @@ val reiVersion: String by project
 val jeiVersion: String by project
 
 plugins {
-    id("dev.architectury.loom") version "0.12.0-SNAPSHOT"
+    id("dev.architectury.loom") version "1.0-SNAPSHOT"
     id("io.github.juuxel.loom-quiltflower") version "1.7.4"
-    id("com.github.gmazzo.buildconfig") version "3.0.3"
+    id("com.github.gmazzo.buildconfig") version "3.1.0"
     java
     idea
     eclipse
@@ -91,7 +91,7 @@ dependencies {
 
     when (recipeViewer) {
         "rei" -> modLocalRuntime("me.shedaniel:RoughlyEnoughItems-forge:$reiVersion")
-        "jei" -> modLocalRuntime("mezz.jei:jei-$mcVersion-forge:$jeiVersion") { isTransitive = false }
+        "jei" -> modLocalRuntime("mezz.jei:jei-$mcVersion:$jeiVersion") { isTransitive = false }
         else -> throw GradleException("Invalid recipeViewer value: $recipeViewer")
     }
 

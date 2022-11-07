@@ -16,6 +16,7 @@ import com.almostreliable.merequester.requester.status.RequestStatus;
 import com.google.common.primitives.Ints;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -155,7 +156,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
 
     @Override
     public Component getDescription() {
-        if (host == null) return Component.empty();
+        if (host == null) return TextComponent.EMPTY;
         return host.getTerminalName();
     }
 

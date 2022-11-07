@@ -23,15 +23,15 @@ public final class PlanState implements StatusState {
 
         try {
             var plan = future.get();
-            var submitResult = host.getMainNodeGrid()
+            var link = host.getMainNodeGrid()
                 .getCraftingService()
                 .submitJob(plan, host, null, false, host.getActionSource());
 
-            if (!submitResult.successful() || submitResult.link() == null) {
+            if (link == null) {
                 return StatusState.IDLE;
             }
 
-            return new LinkState(Objects.requireNonNull(submitResult.link()));
+            return new LinkState(Objects.requireNonNull(link));
         } catch (InterruptedException | ExecutionException e) {
             return StatusState.IDLE;
         }

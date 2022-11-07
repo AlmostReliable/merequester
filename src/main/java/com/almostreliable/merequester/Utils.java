@@ -3,7 +3,8 @@ package com.almostreliable.merequester;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -34,8 +35,8 @@ public final class Utils {
         return 0xFF << 3 * 8 | color.getColor();
     }
 
-    public static MutableComponent translate(String type, String key, Object... args) {
-        return Component.translatable(getTranslationKey(type, key), args);
+    public static TranslatableComponent translate(String type, String key, Object... args) {
+        return new TranslatableComponent(getTranslationKey(type, key), args);
     }
 
     public static String translateAsString(String type, String key) {
@@ -43,7 +44,7 @@ public final class Utils {
     }
 
     public static void addShiftInfoTooltip(List<Component> tooltip) {
-        tooltip.add(Component.literal("» ").withStyle(ChatFormatting.AQUA)
+        tooltip.add(new TextComponent("» ").withStyle(ChatFormatting.AQUA)
             .append(translate(
                 "tooltip",
                 "shift_for_more",

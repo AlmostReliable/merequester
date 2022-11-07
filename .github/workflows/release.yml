@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v1.19-forge-*.*.*'
+      - 'v1.18-forge-*.*.*'
 
 env:
   JAVA_DIST: 'zulu'
@@ -102,8 +102,10 @@ jobs:
           changelog-file: changes.md
           curseforge-dependencies: |
             applied-energistics-2 | depends | *
+            lazierae2 | breaks | *
           modrinth-dependencies: |
             ae2 | depends | *
+            lazierae2 | breaks | *
 
           retry-attempts: 2
           retry-delay: 10000

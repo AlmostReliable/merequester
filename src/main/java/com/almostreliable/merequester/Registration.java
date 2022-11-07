@@ -60,6 +60,7 @@ public final class Registration {
 
         @SuppressWarnings("ConstantConditions")
         var type = BlockEntityType.Builder.of(supplier, block.block()).build(null);
+        type.setRegistryName(block.id());
         typeHolder.set(type);
 
         AEBlockEntitiesMixin.merequester$blockEntityTypes().put(Utils.getRL(MERequester.REQUESTER_ID), type);
