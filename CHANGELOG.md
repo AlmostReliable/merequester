@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [1.0.1] - 2022-11-XX
+## Unreleased
+
+### Fixed
+- ME Requester Terminal not lighting up when connected to the network
+
+## [1.0.1] - 2022-11-07
 
 Initial 1.18 release!
 
