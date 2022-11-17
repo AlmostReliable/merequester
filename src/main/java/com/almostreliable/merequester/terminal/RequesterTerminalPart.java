@@ -2,6 +2,7 @@ package com.almostreliable.merequester.terminal;
 
 import appeng.api.parts.IPartItem;
 import appeng.api.parts.IPartModel;
+import appeng.core.AppEng;
 import appeng.items.parts.PartModels;
 import appeng.menu.MenuOpener;
 import appeng.menu.locator.MenuLocators;
@@ -9,7 +10,6 @@ import appeng.parts.PartModel;
 import appeng.parts.reporting.AbstractDisplayPart;
 import appeng.parts.reporting.PatternAccessTerminalPart;
 import com.almostreliable.merequester.MERequester;
-import com.almostreliable.merequester.Utils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -22,10 +22,10 @@ import static com.almostreliable.merequester.Utils.f;
  */
 public class RequesterTerminalPart extends AbstractDisplayPart {
 
-    @PartModels private static final ResourceLocation MODEL_OFF = Utils.getRL(
+    @PartModels private static final ResourceLocation MODEL_OFF = AppEng.makeId(
         f("part/{}_off", MERequester.TERMINAL_ID)
     );
-    @PartModels private static final ResourceLocation MODEL_ON = Utils.getRL(
+    @PartModels private static final ResourceLocation MODEL_ON = AppEng.makeId(
         f("part/{}_on", MERequester.TERMINAL_ID)
     );
 
