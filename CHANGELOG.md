@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## Unreleased
+## [1.0.2] - 2022-11-18
 
 ### Fixed
 - ME Requester Terminal not lighting up when connected to the network
@@ -24,5 +24,6 @@ Initial release!
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
+[1.0.2]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-fabric-1.0.2
 [1.0.1]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-fabric-1.0.1
 [1.0.0]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-fabric-1.0.0
