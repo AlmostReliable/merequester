@@ -1,0 +1,31 @@
+{
+    "itemGroup.merequester": "ME Solicitante",
+  
+    "item.merequester.requester_terminal": "ME Terminal do Solicitante",
+    "block.merequester.requester": "ME Solicitante",
+  
+    "gui.merequester.requester_terminal": "ME Terminal do Solicitante",
+    "gui.merequester.no_requesters": "Nenhum solicitante de ME encontrado!",
+  
+    "tooltip.merequester.requester_desc": "Automaticamente mantém itens e fluidos em estoque solicitando novos ofícios quando necessário. Tem de estar ligado a uma rede ME e pode ser acedido a partir de um Terminal ME Requester.",
+  
+    "tooltip.merequester.shift_for_more": "%s para mais",
+    "tooltip.merequester.enter_to_submit": "%s submeter",
+  
+    "tooltip.merequester.whole_number": "Deve ser um número inteiro!",
+    "tooltip.merequester.locked": "Trancado! Solicitação em andamento.",
+  
+    "tooltip.merequester.toggle": "Solicitação de alternância",
+    "tooltip.merequester.amount": "Valor para estoque",
+    "tooltip.merequester.batch": "Tamanho do batch",
+    "tooltip.merequester.submit": "Enviar alterações",
+    "tooltip.merequester.status": "Status da Solicitação",
+  
+    "tooltip.merequester.idle": "Inativo",
+    "tooltip.merequester.idle_desc": "O solicitante está inativo quando a quantidade solicitada já foi atingida, não há padrão de fabricação para este item ou fluido ou se não há ingredientes suficientes para solicitar mais artesanato.",
+    "tooltip.merequester.link": "Construindo",
+    "tooltip.merequester.link_desc": "O sistema está construindo o item ou fluido solicitado.",
+    "tooltip.merequester.export": "Exportador",
+    "tooltip.merequester.export_desc": "O solicitante está tentando exportar os resultados da criação para o sistema. Se o Solicitante estiver com esse status por muito tempo, não haverá espaço disponível para a exportação."
+  }
+  
