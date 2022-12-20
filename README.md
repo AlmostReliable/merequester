@@ -47,8 +47,8 @@ This project is licensed under the [GNU Lesser General Public License v3.0][lice
 [version_badge]: https://img.shields.io/github/v/release/AlmostReliable/merequester?include_prereleases&style=flat-square
 [version_link]: https://github.com/AlmostReliable/merequester/releases/latest
 [total_downloads_cf_badge]: http://cf.way2muchnoise.eu/full_688367.svg?badge_style=flat
-[total_downloads_mr_badge]: https://img.shields.io/badge/dynamic/json?style=flat-square&color=5da545&label=modrinth&query=downloads&url=https://api.modrinth.com/api/v1/mod/E6BFl96N
-[workflow_status_badge]: https://img.shields.io/github/workflow/status/AlmostReliable/merequester/Build?style=flat-square
+[total_downloads_mr_badge]: https://img.shields.io/modrinth/dt/E6BFl96N?color=5da545&label=Modrinth&style=flat-square
+[workflow_status_badge]: https://img.shields.io/github/actions/workflow/status/AlmostReliable/merequester/build.yml?branch=1.19-forge&style=flat-square
 [workflow_status_link]: https://github.com/AlmostReliable/merequester/actions
 [license_badge]: https://img.shields.io/github/license/AlmostReliable/merequester?style=flat-square
 
