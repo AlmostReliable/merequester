@@ -1,0 +1,30 @@
+{
+  "itemGroup.merequester": "Requisitor ME",
+
+  "item.merequester.requester_terminal": "Terminal requisitor ME",
+  "block.merequester.requester": "Requisitor ME",
+
+  "gui.merequester.requester_terminal": "Term. requisitor ME",
+  "gui.merequester.no_requesters": "Sem requisitores ME na rede!",
+
+  "tooltip.merequester.requester_desc": "Mantém automaticamente itens e fluidos em estoque solicitando novas fabricações quando necessário. Precisa ser conectado a uma rede ME e pode ser acessado a partir de um terminal requisitor ME.",
+
+  "tooltip.merequester.shift_for_more": "%s para mais detalhes",
+  "tooltip.merequester.enter_to_submit": "%s para enviar",
+
+  "tooltip.merequester.whole_number": "Deve ser um número inteiro!",
+  "tooltip.merequester.locked": "Bloqueado! Requisição em progresso.",
+
+  "tooltip.merequester.toggle": "Alternar requisição",
+  "tooltip.merequester.amount": "Quantidade para estocar",
+  "tooltip.merequester.batch": "Tamanho da fila",
+  "tooltip.merequester.submit": "Enviar mudanças",
+  "tooltip.merequester.status": "Estado da requisição",
+
+  "tooltip.merequester.idle": "Inativo",
+  "tooltip.merequester.idle_desc": "O requisitor está inativo quando a quantidade solicitada já foi atingida, não há padrão de fabricação para este item ou fluido ou se não houver ingredientes suficientes para mais fabricações.",
+  "tooltip.merequester.link": "Fabricando",
+  "tooltip.merequester.link_desc": "O sistema atualmente está fabricando o item ou fluido requisitado.",
+  "tooltip.merequester.export": "Exportando",
+  "tooltip.merequester.export_desc": "O requisitor está tentando exportar os resultados da fabricação ao sistema. Se o requisitor estiver nesse estado por muito tempo, não há espaço disponível para a exportação."
+}
