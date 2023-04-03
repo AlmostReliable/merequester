@@ -6,6 +6,7 @@ import com.almostreliable.merequester.requester.RequesterBlockEntity;
 public interface StatusState {
 
     StatusState IDLE = new IdleState();
+    StatusState MISSING = new MissingState();
     StatusState REQUEST = new RequestState();
     StatusState EXPORT = new ExportState();
 

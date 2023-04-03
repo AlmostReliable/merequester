@@ -1,7 +1,7 @@
 package com.almostreliable.merequester.requester.status;
 
 public enum RequestStatus {
-    LINK, PLAN, EXPORT, IDLE, REQUEST;
+    IDLE, MISSING, REQUEST, PLAN, LINK, EXPORT;
 
     public RequestStatus translateToClient() {
         if (this == REQUEST || this == PLAN) return IDLE;

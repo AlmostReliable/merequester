@@ -27,7 +27,9 @@
   "tooltip.merequester.status": "Request Status",
 
   "tooltip.merequester.idle": "Idling",
-  "tooltip.merequester.idle_desc": "The Requester is idling when the requested amount is already reached, there is no crafting pattern for this item or fluid or if there are not enough ingredients to request more crafts.",
+  "tooltip.merequester.idle_desc": "The Requester is idling when the requested amount is already reached or there is no crafting pattern for this item or fluid.",
+  "tooltip.merequester.missing": "Missing Ingredients",
+  "tooltip.merequester.missing_desc": "The system is missing ingredients to craft the requested item or fluid. The process is continued when the ingredients are available.",
   "tooltip.merequester.link": "Crafting",
   "tooltip.merequester.link_desc": "The system is currently crafting the requested item or fluid.",
   "tooltip.merequester.export": "Exporting",
