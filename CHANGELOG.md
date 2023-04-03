@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [1.1.0] - 2023-04-03
+
+### Added
+- ability to copy-paste settings with the Memory Card ([#12])
+
+<!-- Links -->
+[#12]: https://github.com/AlmostReliable/merequester/issues/12
+
 ## [1.0.3] - 2023-01-02
 
 ### Added
