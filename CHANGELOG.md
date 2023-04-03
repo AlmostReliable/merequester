@@ -43,6 +43,7 @@ Initial release!
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
+[1.1.0]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-forge-1.1.0
 [1.0.3]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-forge-1.0.3
 [1.0.2]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-forge-1.0.2
 [1.0.1]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-forge-1.0.1
