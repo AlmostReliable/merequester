@@ -12,7 +12,7 @@
   "gui.merequester.requester_terminal": "ME Anforderungsk.",
   "gui.merequester.no_requesters": "Keine ME Anforderer gefunden!",
 
-  "tooltip.merequester.requester_desc": "Hält automatisch Gegenstände und Flüssigkeiten auf Vorrat, indem neue Herstellungsaufgaben gestartet werden, wenn sie benötigt werden. Muss mit einem ME-Netzwerk verbunden sein und kann von einer ME-Anforderungskonsole angesteuert werden.",
+  "tooltip.merequester.requester_desc": "Hält automatisch Gegenstände und Flüssigkeiten auf Vorrat, indem neue Herstellungsaufgaben gestartet werden, wenn sie benötigt werden. Muss mit einem ME-Netzwerk verbunden sein und kann von einer ME-Anforderungskonsole angesteuert werden. Verliert seine Konfiguration, wenn er zerstört wird. Einstellungen können mit einer Speicherkarte kopiert werden.",
 
   "tooltip.merequester.shift_for_more": "%s für mehr",
   "tooltip.merequester.enter_to_submit": "%s zum Bestätigen",

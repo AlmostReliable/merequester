@@ -15,6 +15,7 @@ import appeng.api.stacks.AEKey;
 import appeng.api.storage.StorageHelper;
 import appeng.blockentity.grid.AENetworkBlockEntity;
 import appeng.me.helpers.MachineSource;
+import appeng.util.SettingsFrom;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.platform.Platform;
@@ -27,10 +28,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -82,6 +85,22 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
         tag.put(REQUESTS_ID, requests.serialize());
         tag.put(REQUEST_STATUS_ID, serializeStatus());
         tag.put(STORAGE_MANAGER_ID, storageManager.serialize());
+    }
+
+    @Override
+    public void importSettings(SettingsFrom mode, CompoundTag input, @Nullable Player player) {
+        super.importSettings(mode, input, player);
+        if (mode == SettingsFrom.MEMORY_CARD) {
+            if (input.contains(REQUESTS_ID)) requests.deserialize(input.getCompound(REQUESTS_ID));
+        }
+    }
+
+    @Override
+    public void exportSettings(SettingsFrom mode, CompoundTag output, @Nullable Player player) {
+        super.exportSettings(mode, output, player);
+        if (mode == SettingsFrom.MEMORY_CARD) {
+            output.put(REQUESTS_ID, requests.serialize());
+        }
     }
 
     @Override
