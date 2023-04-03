@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning].
 ## [1.1.0] - 2023-04-03
 
 ### Added
+- new status for missing ingredients ([#7])
 - ability to copy-paste settings with the Memory Card ([#12])
 
 <!-- Links -->
+[#7]: https://github.com/AlmostReliable/merequester/issues/7
 [#12]: https://github.com/AlmostReliable/merequester/issues/12
 
 ## [1.0.3] - 2023-01-02

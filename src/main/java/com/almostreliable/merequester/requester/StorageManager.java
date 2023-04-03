@@ -10,17 +10,22 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.*;
 
 public class StorageManager implements IStorageWatcherNode, TagSerializable<CompoundTag> {
 
     private final RequesterBlockEntity host;
     private final Storage[] storages;
+    private final Map<Integer, List<AEKey>> missingIngreds;
     @Nullable private IStackWatcher stackWatcher;
 
     StorageManager(RequesterBlockEntity host) {
         this.host = host;
         storages = new Storage[Platform.getRequestLimit()];
+        missingIngreds = new HashMap<>(Platform.getRequestLimit());
+        for (var i = 0; i < Platform.getRequestLimit(); i++) {
+            missingIngreds.put(i, new ArrayList<>());
+        }
     }
 
     public Storage get(int index) {
@@ -42,6 +47,9 @@ public class StorageManager implements IStorageWatcherNode, TagSerializable<Comp
             if (key.equals(host.getRequests().getKey(i))) {
                 get(i).knownAmount = amount;
                 get(i).pendingAmount = 0;
+            }
+            if (!missingIngreds.get(i).isEmpty()) {
+                missingIngreds.get(i).remove(key);
             }
         }
     }
@@ -87,14 +95,29 @@ public class StorageManager implements IStorageWatcherNode, TagSerializable<Comp
 
     void clear(int index) {
         get(index).knownAmount = -1;
+        missingIngreds.get(index).clear();
         computeKnownAmount(index);
         resetWatcher();
+    }
+
+    public void addMissingIngred(int index, Set<AEKey> missingIngred) {
+        missingIngreds.get(index).addAll(missingIngred);
+        resetWatcher();
+    }
+
+    public boolean hasMissingIngred(int index) {
+        return !missingIngreds.get(index).isEmpty();
     }
 
     private void populateWatcher(IStackWatcher watcher) {
         for (var i = 0; i < storages.length; i++) {
             if (host.getRequests().getKey(i) != null) {
                 watcher.add(host.getRequests().getKey(i));
+            }
+            if (!missingIngreds.get(i).isEmpty()) {
+                for (var key : missingIngreds.get(i)) {
+                    watcher.add(key);
+                }
             }
         }
     }
