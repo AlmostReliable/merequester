@@ -31,7 +31,6 @@ public final class PlanState implements StatusState {
             if (!submitResult.successful() || submitResult.link() == null) {
                 if (submitResult.errorCode() == CraftingSubmitErrorCode.INCOMPLETE_PLAN &&
                     !plan.missingItems().isEmpty()) {
-                    host.getStorageManager().addMissingIngred(index, plan.missingItems().keySet());
                     return StatusState.MISSING;
                 }
                 return StatusState.IDLE;
