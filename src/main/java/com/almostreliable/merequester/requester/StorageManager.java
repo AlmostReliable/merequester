@@ -10,29 +10,24 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.List;
 
 public class StorageManager implements IStorageWatcherNode, TagSerializable<CompoundTag> {
 
     private final RequesterBlockEntity host;
     private final Storage[] storages;
-    private final Map<Integer, List<AEKey>> missingIngreds;
     @Nullable private IStackWatcher stackWatcher;
 
     StorageManager(RequesterBlockEntity host) {
         this.host = host;
         storages = new Storage[Platform.getRequestLimit()];
-        missingIngreds = new HashMap<>(Platform.getRequestLimit());
-        for (var i = 0; i < Platform.getRequestLimit(); i++) {
-            missingIngreds.put(i, new ArrayList<>());
-        }
     }
 
-    public Storage get(int index) {
-        if (storages[index] == null) {
-            storages[index] = new Storage();
+    public Storage get(int slot) {
+        if (storages[slot] == null) {
+            storages[slot] = new Storage();
         }
-        return storages[index];
+        return storages[slot];
     }
 
     @Override
@@ -48,19 +43,16 @@ public class StorageManager implements IStorageWatcherNode, TagSerializable<Comp
                 get(i).knownAmount = amount;
                 get(i).pendingAmount = 0;
             }
-            if (!missingIngreds.get(i).isEmpty()) {
-                missingIngreds.get(i).remove(key);
-            }
         }
     }
 
-    public long computeAmountToCraft(int index) {
+    public long computeAmountToCraft(int slot) {
         var requests = host.getRequests();
-        if (requests.getKey(index) == null) return 0;
+        if (requests.getKey(slot) == null) return 0;
 
-        var storedAmount = get(index).knownAmount + get(index).pendingAmount;
-        if (storedAmount < requests.getAmount(index)) {
-            return requests.get(index).getBatch();
+        var storedAmount = get(slot).knownAmount + get(slot).pendingAmount;
+        if (storedAmount < requests.getAmount(slot)) {
+            return requests.get(slot).getBatch();
         }
         return 0;
     }
@@ -93,31 +85,16 @@ public class StorageManager implements IStorageWatcherNode, TagSerializable<Comp
         }
     }
 
-    void clear(int index) {
-        get(index).knownAmount = -1;
-        missingIngreds.get(index).clear();
-        computeKnownAmount(index);
+    void clear(int slot) {
+        get(slot).knownAmount = -1;
+        computeKnownAmount(slot);
         resetWatcher();
-    }
-
-    public void addMissingIngred(int index, Set<AEKey> missingIngred) {
-        missingIngreds.get(index).addAll(missingIngred);
-        resetWatcher();
-    }
-
-    public boolean hasMissingIngred(int index) {
-        return !missingIngreds.get(index).isEmpty();
     }
 
     private void populateWatcher(IStackWatcher watcher) {
         for (var i = 0; i < storages.length; i++) {
             if (host.getRequests().getKey(i) != null) {
                 watcher.add(host.getRequests().getKey(i));
-            }
-            if (!missingIngreds.get(i).isEmpty()) {
-                for (var key : missingIngreds.get(i)) {
-                    watcher.add(key);
-                }
             }
         }
     }
@@ -129,10 +106,10 @@ public class StorageManager implements IStorageWatcherNode, TagSerializable<Comp
         }
     }
 
-    private void computeKnownAmount(int index) {
-        var key = host.getRequests().getKey(index);
+    private void computeKnownAmount(int slot) {
+        var key = host.getRequests().getKey(slot);
         if (key == null) return;
-        get(index).knownAmount = host.getMainNodeGrid()
+        get(slot).knownAmount = host.getMainNodeGrid()
             .getStorageService()
             .getInventory()
             .getAvailableStacks()
