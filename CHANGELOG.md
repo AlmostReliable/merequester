@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [1.1.2] - 2023-04-22
+
+### Added
+- simplified Chinese translation ([#13])
+
+### Fixed
+- ME Requester disconnecting from network after server restart ([#14])
+
+<!-- Links -->
+[#13]: https://github.com/AlmostReliable/merequester/pull/13
+[#14]: https://github.com/AlmostReliable/merequester/issues/14
+
 ## [1.1.1] - 2023-04-14
 
 ### Fixed
@@ -52,6 +64,7 @@ Initial release!
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
+[1.1.2]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-fabric-1.1.2
 [1.1.1]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-fabric-1.1.1
 [1.1.0]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-fabric-1.1.0
 [1.0.3]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-fabric-1.0.3
