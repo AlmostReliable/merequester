@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [1.1.2] - 2023-04-22
+
+### Added
+- ability to copy-paste settings with the Memory Card ([#12])
+- simplified Chinese translation ([#13])
+
+### Fixed
+- ME Requester disconnecting from network after server restart ([#14])
+
+<!-- Links -->
+[#12]: https://github.com/AlmostReliable/merequester/issues/12
+[#13]: https://github.com/AlmostReliable/merequester/pull/13
+[#14]: https://github.com/AlmostReliable/merequester/issues/14
+
 ## [1.0.3] - 2023-01-02
 
 ### Added
@@ -28,6 +42,7 @@ Initial 1.18 release!
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
+[1.1.2]: https://github.com/AlmostReliable/merequester/releases/tag/v1.18-forge-1.1.2
 [1.0.3]: https://github.com/AlmostReliable/merequester/releases/tag/v1.18-forge-1.0.3
 [1.0.2]: https://github.com/AlmostReliable/merequester/releases/tag/v1.18-forge-1.0.2
 [1.0.1]: https://github.com/AlmostReliable/merequester/releases/tag/v1.18-forge-1.0.1
