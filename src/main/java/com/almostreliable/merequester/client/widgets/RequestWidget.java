@@ -87,6 +87,8 @@ public class RequestWidget {
         stateBox.setSelected(request.getState());
         var status = request.getClientStatus();
         statusDisplay.setStatus(status);
+        amountField.adjustToType(request.getKey());
+        batchField.adjustToType(request.getKey());
         if (status.locksRequest()) {
             amountField.setEditable(false);
             batchField.setEditable(false);

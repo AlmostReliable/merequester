@@ -1,5 +1,7 @@
 package com.almostreliable.merequester.client.widgets;
 
+import appeng.api.stacks.AEFluidKey;
+import appeng.api.stacks.AEKey;
 import appeng.client.gui.MathExpressionParser;
 import appeng.client.gui.NumberEntryType;
 import appeng.client.gui.style.ScreenStyle;
@@ -32,17 +34,20 @@ import java.util.function.Consumer;
  */
 public class NumberField extends ConfirmableTextField {
 
+    private static final int PADDING = 10;
     private static final int WIDTH = 52;
     private static final int HEIGHT = 12;
 
     private static final int TEXT_COLOR = 0xFF_FFFF;
     private static final int ERROR_COLOR = 0xFF_0000;
 
-    private static final NumberEntryType TYPE = NumberEntryType.UNITLESS;
     private static final int MIN_VALUE = 0;
 
     private final String name;
     private final DecimalFormat decimalFormat;
+
+    private NumberEntryType type = NumberEntryType.UNITLESS;
+    private boolean isFluid;
 
     NumberField(int x, int y, String name, ScreenStyle style, Consumer<Long> onConfirm) {
         super(style, Minecraft.getInstance().font, x, y, WIDTH, HEIGHT);
@@ -64,6 +69,20 @@ public class NumberField extends ConfirmableTextField {
             }
         });
         validate();
+    }
+
+    @Override
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partial) {
+        super.renderWidget(guiGraphics, mouseX, mouseY, partial);
+        if (!isFluid) return;
+        guiGraphics.drawString(
+            Minecraft.getInstance().font,
+            "B",
+            getX() + WIDTH - PADDING,
+            getY(),
+            0x54_5454,
+            false
+        );
     }
 
     private void validate() {
@@ -94,14 +113,14 @@ public class NumberField extends ConfirmableTextField {
     }
 
     private long convertToExternalValue(BigDecimal internalValue) {
-        var multiplicand = BigDecimal.valueOf(TYPE.amountPerUnit());
+        var multiplicand = BigDecimal.valueOf(type.amountPerUnit());
         var value = internalValue.multiply(multiplicand, MathContext.DECIMAL128);
         value = value.setScale(0, RoundingMode.UP);
         return value.longValue();
     }
 
     private BigDecimal convertToInternalValue(long externalValue) {
-        var divisor = BigDecimal.valueOf(TYPE.amountPerUnit());
+        var divisor = BigDecimal.valueOf(type.amountPerUnit());
         return BigDecimal.valueOf(externalValue).divide(divisor, MathContext.DECIMAL128);
     }
 
@@ -155,5 +174,15 @@ public class NumberField extends ConfirmableTextField {
             return;
         }
         super.setFocused(isFocused);
+    }
+
+    void adjustToType(@Nullable AEKey key) {
+        this.isFluid = key instanceof AEFluidKey;
+        this.type = NumberEntryType.of(key);
+        if (isFluid) {
+            setWidth(WIDTH - PADDING - 10);
+        } else {
+            setWidth(WIDTH - PADDING);
+        }
     }
 }
