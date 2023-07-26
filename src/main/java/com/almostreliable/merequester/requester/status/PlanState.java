@@ -36,6 +36,7 @@ public final class PlanState implements StatusState {
                 return StatusState.IDLE;
             }
 
+            host.getStorageManager().get(index).setTotalAmount(plan.finalOutput().amount());
             return new LinkState(Objects.requireNonNull(submitResult.link()));
         } catch (InterruptedException | ExecutionException e) {
             return StatusState.IDLE;
