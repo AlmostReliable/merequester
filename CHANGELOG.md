@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [1.1.3] - 2023-07-16
+## [1.1.3] - 2023-07-26
 
 Initial 1.20.1 release!
 
