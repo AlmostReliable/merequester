@@ -4,49 +4,51 @@ import appeng.api.parts.PartModels;
 import appeng.block.AEBaseBlockItem;
 import appeng.blockentity.AEBaseBlockEntity;
 import appeng.core.definitions.BlockDefinition;
+import appeng.core.definitions.ItemDefinition;
 import appeng.items.parts.PartItem;
 import appeng.items.parts.PartModelsHelper;
 import com.almostreliable.merequester.mixin.registration.AEBlockEntitiesMixin;
 import com.almostreliable.merequester.mixin.registration.AEBlocksMixin;
 import com.almostreliable.merequester.mixin.registration.AEItemsMixin;
-import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.RequesterBlock;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.terminal.RequesterTerminalPart;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class Registration {
 
-    private static final CreativeModeTab TAB = Platform.createTab();
+    public static final ItemDefinition<PartItem<?>> TERMINAL = setupTerminal();
+    public static final BlockDefinition<RequesterBlock> REQUESTER = setupRequester();
 
     private Registration() {}
 
     public static void init() {
-        setupTerminal();
-        setupRequester();
+        MERequester.LOGGER.info("Registering content");
+        ModTab.registerTab();
+        ModTab.initContents();
     }
 
-    private static void setupTerminal() {
+    private static ItemDefinition<PartItem<?>> setupTerminal() {
         PartModels.registerModels(PartModelsHelper.createModels(RequesterTerminalPart.class));
-        AEItemsMixin.merequester$aeItem(
+        return AEItemsMixin.merequester$aeItem(
             "",
             Utils.getRL(MERequester.TERMINAL_ID),
             props -> new PartItem<>(props, RequesterTerminalPart.class, RequesterTerminalPart::new),
-            TAB
+            ModTab.TAB_KEY
         );
     }
 
-    private static void setupRequester() {
+    private static BlockDefinition<RequesterBlock> setupRequester() {
         var blockDef = AEBlocksMixin.merequester$aeBlock(
             "",
             Utils.getRL(MERequester.REQUESTER_ID),
             RequesterBlock::new,
-            (block, properties) -> new AEBaseBlockItem(block, properties.tab(TAB))
+            AEBaseBlockItem::new
         );
         registerRequesterEntity(blockDef);
+        return blockDef;
     }
 
     private static void registerRequesterEntity(BlockDefinition<RequesterBlock> block) {

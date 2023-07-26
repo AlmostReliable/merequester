@@ -2,6 +2,7 @@ package com.almostreliable.merequester.mixin.registration;
 
 import appeng.core.definitions.AEItems;
 import appeng.core.definitions.ItemDefinition;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -15,7 +16,8 @@ import java.util.function.Function;
 public interface AEItemsMixin {
     @Invoker(value = "item", remap = false)
     public static <T extends Item> ItemDefinition<T> merequester$aeItem(
-        String name, ResourceLocation id, Function<Item.Properties, T> partFactory, CreativeModeTab creativeTab
+        String name, ResourceLocation id, Function<Item.Properties, T> partFactory,
+        ResourceKey<CreativeModeTab> creativeTab
     ) {
         throw new AssertionError();
     }

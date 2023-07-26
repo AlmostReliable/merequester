@@ -42,7 +42,7 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
     public RequesterTerminalScreen(
         T menu, Inventory playerInventory, Component name, ScreenStyle style
     ) {
-        super(menu, playerInventory, name, style);
+        super(menu, playerInventory, name, style, TEXTURE);
 
         addToLeftToolbar(new SettingToggleButton<>(
             Settings.TERMINAL_STYLE,
@@ -155,13 +155,8 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
     }
 
     @Override
-    protected Rect2i getFooterBbox() {
+    protected Rect2i getFooterBounds() {
         return FOOTER_BBOX;
-    }
-
-    @Override
-    protected ResourceLocation getTexture() {
-        return TEXTURE;
     }
 
     private void toggleTerminalStyle(SettingToggleButton<TerminalStyle> button, boolean backwards) {

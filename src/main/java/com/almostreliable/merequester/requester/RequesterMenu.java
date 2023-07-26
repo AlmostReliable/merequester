@@ -1,6 +1,5 @@
 package com.almostreliable.merequester.requester;
 
-import appeng.api.config.SecurityPermissions;
 import appeng.api.networking.IGrid;
 import appeng.menu.implementations.MenuTypeBuilder;
 import com.almostreliable.merequester.MERequester;
@@ -17,7 +16,6 @@ public final class RequesterMenu extends AbstractRequesterMenu {
 
     public static final MenuType<RequesterMenu> TYPE = MenuTypeBuilder
         .create(RequesterMenu::new, RequesterBlockEntity.class)
-        .requirePermission(SecurityPermissions.BUILD)
         .build(MERequester.REQUESTER_ID);
 
     @Nullable private RequestTracker requestTracker;

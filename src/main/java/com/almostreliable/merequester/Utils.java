@@ -56,6 +56,6 @@ public final class Utils {
     }
 
     private static String getTranslationKey(String type, String key) {
-        return f("{}.{}.{}", type.toLowerCase(), BuildConfig.MOD_ID, key);
+        return f("{}.{}.{}", type, BuildConfig.MOD_ID, key);
     }
 }

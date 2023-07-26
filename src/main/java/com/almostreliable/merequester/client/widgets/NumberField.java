@@ -11,8 +11,10 @@ import com.almostreliable.merequester.mixin.accessors.EditBoxMixin;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -58,7 +60,7 @@ public class NumberField extends ConfirmableTextField {
         setOnConfirm(() -> {
             if (getLongValue().isPresent()) {
                 onConfirm.accept(getLongValue().getAsLong());
-                setFocus(false);
+                setFocused(false);
             }
         });
         validate();
@@ -148,10 +150,10 @@ public class NumberField extends ConfirmableTextField {
     }
 
     @Override
-    public void setFocus(boolean isFocused) {
+    public void setFocused(boolean isFocused) {
         if (isFocused && !Utils.cast(this, EditBoxMixin.class).merequester$isEditable()) {
             return;
         }
-        super.setFocus(isFocused);
+        super.setFocused(isFocused);
     }
 }

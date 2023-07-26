@@ -1,19 +1,18 @@
 package com.almostreliable.merequester.platform;
 
 import com.almostreliable.merequester.BuildConfig;
-import com.almostreliable.merequester.MERequester;
+import com.almostreliable.merequester.Registration;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.mixin.accessors.ScreenMixin;
 import com.almostreliable.merequester.network.DragAndDropPacket;
 import com.almostreliable.merequester.network.RequestUpdatePacket;
 import com.almostreliable.merequester.network.RequesterSyncPacket;
 import eu.midnightdust.lib.config.MidnightConfig;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -43,9 +42,11 @@ public final class Platform {
     }
 
     public static CreativeModeTab createTab() {
-        return FabricItemGroupBuilder.build(
-            Utils.getRL("tab"), () -> Registry.ITEM.get(Utils.getRL(MERequester.TERMINAL_ID)).getDefaultInstance()
-        );
+        return FabricItemGroup.builder()
+            .title(Utils.translate("itemGroup", "tab"))
+            .icon(() -> Registration.REQUESTER.stack())
+            .noScrollBar()
+            .build();
     }
 
     public static void sendRequestUpdate(long requesterId, int requestIndex, boolean state) {
@@ -85,7 +86,7 @@ public final class Platform {
         }
     }
 
-    public static List<Widget> getRenderables(Screen screen) {
+    public static List<Renderable> getRenderables(Screen screen) {
         return Utils.cast(screen, ScreenMixin.class).merequester$getRenderables();
     }
 }

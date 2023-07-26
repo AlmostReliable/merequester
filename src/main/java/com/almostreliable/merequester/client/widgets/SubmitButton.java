@@ -5,7 +5,7 @@ import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.AECheckbox;
 import appeng.client.gui.widgets.ITooltip;
 import com.almostreliable.merequester.Utils;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
@@ -27,10 +27,10 @@ public class SubmitButton extends AECheckbox implements ITooltip {
     }
 
     @Override
-    public void renderButton(PoseStack poseStack, int mX, int mY, float partial) {
+    public void renderWidget(GuiGraphics guiGraphics, int mX, int mY, float partial) {
         Blitter icon = isFocused() || isMouseOver(mX, mY) ? FOCUSED : UNFOCUSED;
         var opacity = isActive() ? 1 : 0.5f;
-        icon.dest(x, y).opacity(opacity).blit(poseStack, getBlitOffset());
+        icon.dest(getX(), getY()).opacity(opacity).blit(guiGraphics);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class SubmitButton extends AECheckbox implements ITooltip {
 
     @Override
     public Rect2i getTooltipArea() {
-        return new Rect2i(x, y, width, height);
+        return new Rect2i(getX(), getY(), width, height);
     }
 
     @Override

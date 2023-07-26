@@ -11,6 +11,7 @@ import appeng.api.networking.storage.IStorageWatcherNode;
 import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
+import appeng.api.orientation.BlockOrientation;
 import appeng.api.stacks.AEKey;
 import appeng.api.storage.StorageHelper;
 import appeng.blockentity.grid.AENetworkBlockEntity;
@@ -134,19 +135,20 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
 
     @Override
     public Component getTerminalName() {
-        return hasCustomInventoryName() ?
-            getCustomInventoryName() :
+        return hasCustomName() ?
+            Objects.requireNonNull(getCustomName()) :
             Utils.translate("block", MERequester.REQUESTER_ID);
     }
 
     @Override
-    public void setOrientation(Direction inForward, Direction inUp) {
-        super.setOrientation(inForward, inUp);
+    protected void onOrientationChanged(BlockOrientation orientation) {
+        super.onOrientationChanged(orientation);
         getMainNode().setExposedOnSides(getExposedSides());
     }
 
     @Override
     public void addAdditionalDrops(Level level, BlockPos pos, List<ItemStack> drops) {
+        super.addAdditionalDrops(level, pos, drops);
         storageManager.addDrops(drops);
     }
 
@@ -214,7 +216,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
 
     private EnumSet<Direction> getExposedSides() {
         var exposedSides = EnumSet.allOf(Direction.class);
-        exposedSides.remove(getForward());
+        exposedSides.remove(getFront());
         return exposedSides;
     }
 

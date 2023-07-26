@@ -29,7 +29,7 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
     public RequesterScreen(
         RequesterMenu menu, Inventory playerInventory, Component name, ScreenStyle style
     ) {
-        super(menu, playerInventory, name, style);
+        super(menu, playerInventory, name, style, TEXTURE);
     }
 
     @Override
@@ -73,12 +73,7 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
     }
 
     @Override
-    protected Rect2i getFooterBbox() {
+    protected Rect2i getFooterBounds() {
         return FOOTER_BBOX;
-    }
-
-    @Override
-    protected ResourceLocation getTexture() {
-        return TEXTURE;
     }
 }

@@ -1,10 +1,10 @@
 package com.almostreliable.merequester.requester.abstraction;
 
+import appeng.api.behaviors.ContainerItemStrategies;
 import appeng.api.networking.IGrid;
 import appeng.api.stacks.GenericStack;
 import appeng.helpers.InventoryAction;
 import appeng.menu.AEBaseMenu;
-import appeng.menu.me.interaction.StackInteractions;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings("UnstableApiUsage")
 public abstract class AbstractRequesterMenu extends AEBaseMenu {
 
     public static final String SORT_BY_ID = "sort_by";
@@ -45,10 +46,9 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
 
         // the screen only has fake slots, so don't transfer anything to the player's inventory
         switch (action) {
-            case PICKUP_OR_SET_DOWN:
+            case PICKUP_OR_SET_DOWN ->
                 requestSlot.setItemDirect(0, carriedStack.isEmpty() ? ItemStack.EMPTY : carriedStack.copy());
-                break;
-            case SPLIT_OR_PLACE_SINGLE:
+            case SPLIT_OR_PLACE_SINGLE -> {
                 if (carriedStack.isEmpty()) {
                     requestSlot.setItemDirect(0, ItemStack.EMPTY);
                 } else {
@@ -56,12 +56,10 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
                     copy.setCount(1);
                     requestSlot.setItemDirect(0, copy);
                 }
-                break;
-            case SHIFT_CLICK:
-                requestSlot.setItemDirect(0, ItemStack.EMPTY);
-                break;
-            case EMPTY_ITEM:
-                var emptyingAction = StackInteractions.getEmptyingAction(carriedStack);
+            }
+            case SHIFT_CLICK -> requestSlot.setItemDirect(0, ItemStack.EMPTY);
+            case EMPTY_ITEM -> {
+                var emptyingAction = ContainerItemStrategies.getEmptyingAction(carriedStack);
                 if (emptyingAction != null) {
                     requestSlot.insertItem(
                         0,
@@ -69,8 +67,8 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
                         false
                     );
                 }
-                break;
-            case CREATIVE_DUPLICATE:
+            }
+            case CREATIVE_DUPLICATE -> {
                 if (player.getAbilities().instabuild && carriedStack.isEmpty()) {
                     if (requestStack.isEmpty()) {
                         setCarried(ItemStack.EMPTY);
@@ -80,8 +78,9 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
                         setCarried(stack);
                     }
                 }
-                break;
-            default:
+            }
+            default -> {
+            }
         }
     }
 

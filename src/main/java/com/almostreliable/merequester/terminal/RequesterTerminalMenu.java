@@ -1,6 +1,5 @@
 package com.almostreliable.merequester.terminal;
 
-import appeng.api.config.SecurityPermissions;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
@@ -28,7 +27,6 @@ public class RequesterTerminalMenu extends AbstractRequesterMenu {
 
     public static final MenuType<RequesterTerminalMenu> TYPE = MenuTypeBuilder
         .create(RequesterTerminalMenu::new, RequesterTerminalPart.class)
-        .requirePermission(SecurityPermissions.BUILD)
         .build(MERequester.TERMINAL_ID);
 
     private final Long2ObjectOpenHashMap<RequestTracker> byId = new Long2ObjectOpenHashMap<>();

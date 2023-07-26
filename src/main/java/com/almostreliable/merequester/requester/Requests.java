@@ -289,7 +289,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
 
         public void updateBatch(long batch) {
             var oldBatch = this.batch;
-            this.batch = Mth.clamp(batch, 1, batch);
+            this.batch = (long) Mth.clamp(batch, 1, batch);
             if (oldBatch != this.batch && host != null) host.saveChanges();
         }
 
