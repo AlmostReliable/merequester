@@ -1,5 +1,7 @@
 package com.almostreliable.merequester.client.abstraction;
 
+import appeng.api.behaviors.ContainerItemStrategies;
+import appeng.api.behaviors.EmptyingAction;
 import appeng.api.stacks.GenericStack;
 import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.me.patternaccess.PatternAccessTermScreen;
@@ -11,8 +13,6 @@ import appeng.core.localization.Tooltips;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.InventoryActionPacket;
 import appeng.helpers.InventoryAction;
-import appeng.menu.me.interaction.EmptyingAction;
-import appeng.menu.me.interaction.StackInteractions;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.RequestSlot;
@@ -21,8 +21,7 @@ import com.almostreliable.merequester.mixin.accessors.WidgetContainerMixin;
 import com.almostreliable.merequester.requester.Requests.Request;
 import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.nbt.CompoundTag;
@@ -45,6 +44,7 @@ import static com.almostreliable.merequester.Utils.f;
 /**
  * yoinked from {@link PatternAccessTermScreen}
  */
+@SuppressWarnings("UnstableApiUsage")
 public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> extends AEBaseScreen<M> implements RequestDisplay {
 
     protected static final int GUI_WIDTH = 195;
@@ -64,6 +64,8 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
     private static final Rect2i TEXT_BBOX = new Rect2i(0, 19, GUI_WIDTH, ROW_HEIGHT);
     private static final Rect2i REQUEST_BBOX = new Rect2i(0, 38, GUI_WIDTH, ROW_HEIGHT);
 
+    private final ResourceLocation texture;
+
     protected final ArrayList<Object> lines = new ArrayList<>();
     private final Scrollbar scrollbar;
     private final List<RequestWidget> requestWidgets = new ArrayList<>();
@@ -73,18 +75,19 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
 
     @SuppressWarnings("AssignmentToSuperclassField")
     protected AbstractRequesterScreen(
-        M menu, Inventory playerInventory, Component name, ScreenStyle style
+        M menu, Inventory playerInventory, Component name, ScreenStyle style, ResourceLocation texture
     ) {
         super(menu, playerInventory, name, style);
+        this.texture = texture;
         scrollbar = widgets.addScrollBar("scrollbar");
         imageWidth = GUI_WIDTH;
     }
 
     @Override
     public void addSubWidget(String id, AbstractWidget widget, Map<String, AbstractWidget> subWidgets) {
-        if (widget.isFocused()) widget.changeFocus(false);
-        widget.x += leftPos;
-        widget.y += topPos;
+        if (widget.isFocused()) widget.setFocused(false);
+        widget.setX(widget.getX() + leftPos);
+        widget.setY(widget.getY() + topPos);
         subWidgets.put(id, widget);
         Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets().put(id, widget);
         addRenderableWidget(widget);
@@ -151,7 +154,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
     @Override
     protected EmptyingAction getEmptyingAction(Slot slot, ItemStack carried) {
         if (slot instanceof RequestSlot requestSlot) {
-            var emptyingAction = StackInteractions.getEmptyingAction(carried);
+            var emptyingAction = ContainerItemStrategies.getEmptyingAction(carried);
             if (emptyingAction == null) return null;
 
             var wrappedStack = GenericStack.wrapInItemStack(new GenericStack(emptyingAction.what(), 1));
@@ -163,7 +166,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
     }
 
     @Override
-    public void drawFG(PoseStack poseStack, int pX, int pY, int mX, int mY) {
+    public void drawFG(GuiGraphics guiGraphics, int pX, int pY, int mX, int mY) {
         menu.slots.removeIf(RequestSlot.class::isInstance);
 
         int textColor = style.getColor(PaletteColor.DEFAULT_TEXT_COLOR).toARGB();
@@ -171,7 +174,14 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
         if (lines.isEmpty()) {
             var text = Utils.translateAsString("gui", "no_requesters");
             var textWidth = font.width(text);
-            font.draw(poseStack, text, (GUI_WIDTH - textWidth) / 2f - 10, GUI_PADDING_Y + GUI_HEADER_HEIGHT, textColor);
+            guiGraphics.drawString(
+                font,
+                text,
+                (int) ((GUI_WIDTH - textWidth) / 2f - 10),
+                GUI_PADDING_Y + GUI_HEADER_HEIGHT,
+                textColor,
+                false
+            );
             requestWidgets.forEach(RequestWidget::hide);
             return;
         }
@@ -194,12 +204,13 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
                 if (rows > 1) text = f("{} ({})", text, rows);
                 text = font.plainSubstrByWidth(text, TEXT_MAX_WIDTH, true);
 
-                font.draw(
-                    poseStack,
+                guiGraphics.drawString(
+                    font,
                     text,
                     GUI_PADDING_X + TEXT_MARGIN_X,
                     GUI_PADDING_Y + GUI_HEADER_HEIGHT + i * ROW_HEIGHT,
-                    textColor
+                    textColor,
+                    false
                 );
                 requestWidgets.get(i).hide();
             } else {
@@ -230,22 +241,19 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
 
         InventoryAction action = null;
         switch (clickType) {
-            case PICKUP:
-                action = mouseButton == 1 ?
-                    InventoryAction.SPLIT_OR_PLACE_SINGLE :
-                    InventoryAction.PICKUP_OR_SET_DOWN;
-                break;
-            case QUICK_MOVE:
-                action = mouseButton == 1 ?
-                    InventoryAction.PICKUP_SINGLE :
-                    InventoryAction.SHIFT_CLICK;
-                break;
-            case CLONE:
+            case PICKUP -> action = mouseButton == 1 ?
+                InventoryAction.SPLIT_OR_PLACE_SINGLE :
+                InventoryAction.PICKUP_OR_SET_DOWN;
+            case QUICK_MOVE -> action = mouseButton == 1 ?
+                InventoryAction.PICKUP_SINGLE :
+                InventoryAction.SHIFT_CLICK;
+            case CLONE -> {
                 if (getPlayer().getAbilities().instabuild) {
                     action = InventoryAction.CREATIVE_DUPLICATE;
                 }
-                break;
-            default:
+            }
+            default -> {
+            }
         }
 
         if (action != null) {
@@ -259,15 +267,13 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
     }
 
     @Override
-    public void drawBG(PoseStack poseStack, int pX, int pY, int mX, int mY, float partial) {
-        RenderSystem.setShaderTexture(0, getTexture());
-
-        blit(poseStack, pX, pY, HEADER_BBOX);
+    public void drawBG(GuiGraphics guiGraphics, int pX, int pY, int mX, int mY, float partial) {
+        blit(guiGraphics, pX, pY, HEADER_BBOX);
 
         int scrollLevel = scrollbar.getCurrentScroll();
         int currentY = pY + GUI_HEADER_HEIGHT;
 
-        blit(poseStack, pX, currentY + rowAmount * ROW_HEIGHT, getFooterBbox());
+        blit(guiGraphics, pX, currentY + rowAmount * ROW_HEIGHT, getFooterBounds());
 
         for (var i = 0; i < rowAmount; i++) {
             var isRequestElement = false;
@@ -276,7 +282,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
                 isRequestElement = lineElement instanceof Request;
             }
 
-            blit(poseStack, pX, currentY, isRequestElement ? REQUEST_BBOX : TEXT_BBOX);
+            blit(guiGraphics, pX, currentY, isRequestElement ? REQUEST_BBOX : TEXT_BBOX);
 
             currentY += ROW_HEIGHT;
         }
@@ -295,8 +301,8 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
 
     protected abstract RequesterReference getById(long requesterId, String name, long sortBy);
 
-    private void blit(PoseStack poseStack, int pX, int pY, Rect2i srcRect) {
-        blit(poseStack, pX, pY, srcRect.getX(), srcRect.getY(), srcRect.getWidth(), srcRect.getHeight());
+    private void blit(GuiGraphics guiGraphics, int pX, int pY, Rect2i srcRect) {
+        guiGraphics.blit(texture, pX, pY, srcRect.getX(), srcRect.getY(), srcRect.getWidth(), srcRect.getHeight());
     }
 
     private RequestSlot createSlot(int index, Request request) {
@@ -312,7 +318,5 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
         return slot;
     }
 
-    protected abstract Rect2i getFooterBbox();
-
-    protected abstract ResourceLocation getTexture();
+    protected abstract Rect2i getFooterBounds();
 }

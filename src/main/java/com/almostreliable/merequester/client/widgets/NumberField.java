@@ -58,7 +58,7 @@ public class NumberField extends ConfirmableTextField {
         setOnConfirm(() -> {
             if (getLongValue().isPresent()) {
                 onConfirm.accept(getLongValue().getAsLong());
-                setFocus(false);
+                setFocused(false);
             }
         });
         validate();
@@ -148,10 +148,10 @@ public class NumberField extends ConfirmableTextField {
     }
 
     @Override
-    public void setFocus(boolean isFocused) {
+    public void setFocused(boolean isFocused) {
         if (isFocused && !Utils.cast(this, EditBoxMixin.class).merequester$isEditable()) {
             return;
         }
-        super.setFocus(isFocused);
+        super.setFocused(isFocused);
     }
 }

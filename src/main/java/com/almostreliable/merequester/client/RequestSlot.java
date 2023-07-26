@@ -12,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 public class RequestSlot extends FakeSlot {
 
@@ -45,13 +44,13 @@ public class RequestSlot extends FakeSlot {
 
     @Nullable
     @Override
-    public List<Component> getCustomTooltip(Function<ItemStack, List<Component>> getItemTooltip, ItemStack carried) {
+    public List<Component> getCustomTooltip(ItemStack carried) {
         if (isLocked) {
             return Collections.singletonList(Utils.translate("tooltip", "locked").withStyle(ChatFormatting.RED));
         }
         // custom tooltip for fluid containers
         var emptyingTooltip = host.getEmptyingTooltip(this, carried);
-        if (emptyingTooltip == null) return super.getCustomTooltip(getItemTooltip, carried);
+        if (emptyingTooltip == null) return super.getCustomTooltip(carried);
         return emptyingTooltip;
     }
 

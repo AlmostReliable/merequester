@@ -3,8 +3,8 @@ package com.almostreliable.merequester.client.widgets;
 import appeng.client.gui.widgets.ITooltip;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.status.RequestStatus;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
@@ -32,13 +32,13 @@ public class StatusDisplay extends AbstractWidget implements ITooltip {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
+    public void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
         defaultButtonNarrationText(narrationElementOutput);
     }
 
     @Override
-    public void renderButton(PoseStack poseStack, int mX, int mY, float partialTick) {
-        fill(poseStack, x, y, x + width, y + height, Utils.fillColorAlpha(getStatusColor()));
+    public void renderWidget(GuiGraphics guiGraphics, int mX, int mY, float partialTick) {
+        guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, Utils.fillColorAlpha(getStatusColor()));
     }
 
     @Override
@@ -87,7 +87,7 @@ public class StatusDisplay extends AbstractWidget implements ITooltip {
 
     @Override
     public Rect2i getTooltipArea() {
-        return new Rect2i(x, y, width, height);
+        return new Rect2i(getX(), getY(), width, height);
     }
 
     @Override

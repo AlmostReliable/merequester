@@ -1,15 +1,13 @@
 package com.almostreliable.merequester.platform;
 
-import com.almostreliable.merequester.BuildConfig;
-import com.almostreliable.merequester.MERequester;
+import com.almostreliable.merequester.Registration;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.network.DragAndDropPacket;
 import com.almostreliable.merequester.network.PacketHandler;
 import com.almostreliable.merequester.network.RequestUpdatePacket;
 import com.almostreliable.merequester.network.RequesterSyncPacket;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -42,14 +40,13 @@ public final class Platform {
         return Config.COMMON.requireChannel.get();
     }
 
+    @SuppressWarnings("Convert2MethodRef")
     public static CreativeModeTab createTab() {
-        return new CreativeModeTab(BuildConfig.MOD_ID) {
-            @Override
-            public ItemStack makeIcon() {
-                // noinspection deprecation
-                return Registry.ITEM.get(Utils.getRL(MERequester.TERMINAL_ID)).getDefaultInstance();
-            }
-        };
+        return CreativeModeTab.builder()
+            .title(Utils.translate("itemGroup", "tab"))
+            .icon(() -> Registration.REQUESTER.stack())
+            .noScrollBar()
+            .build();
     }
 
     public static void sendRequestUpdate(long requesterId, int requestIndex, boolean state) {
@@ -82,7 +79,7 @@ public final class Platform {
         }
     }
 
-    public static List<Widget> getRenderables(Screen screen) {
+    public static List<Renderable> getRenderables(Screen screen) {
         return screen.renderables;
     }
 }

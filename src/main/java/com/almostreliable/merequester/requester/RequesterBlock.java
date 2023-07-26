@@ -1,5 +1,6 @@
 package com.almostreliable.merequester.requester;
 
+import appeng.api.orientation.IOrientationStrategy;
 import appeng.block.AEBaseEntityBlock;
 import appeng.menu.MenuOpener;
 import appeng.menu.locator.MenuLocators;
@@ -21,7 +22,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 
 import javax.annotation.Nullable;
@@ -31,10 +31,11 @@ import static com.almostreliable.merequester.Utils.f;
 
 public class RequesterBlock extends AEBaseEntityBlock<RequesterBlockEntity> {
 
+    private static final IOrientationStrategy ORIENTATION_STRATEGY = new FacingWithVerticalSpin();
     private static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 
     public RequesterBlock() {
-        super(defaultProps(Material.METAL));
+        super(metalProps());
         registerDefaultState(defaultBlockState().setValue(ACTIVE, false));
     }
 
@@ -60,6 +61,11 @@ public class RequesterBlock extends AEBaseEntityBlock<RequesterBlockEntity> {
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(ACTIVE);
+    }
+
+    @Override
+    public IOrientationStrategy getOrientationStrategy() {
+        return ORIENTATION_STRATEGY;
     }
 
     @Override
