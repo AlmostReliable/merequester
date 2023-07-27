@@ -7,4 +7,4 @@ pluginManagement {
 
 val modName = extra.get("modName").toString().replace(" ", "-")
 val minecraftVersion: String by extra
-rootProject.name = "$modName-$minecraftVersion-Forge"
+rootProject.name = "$modName-$minecraftVersion-Fabric"

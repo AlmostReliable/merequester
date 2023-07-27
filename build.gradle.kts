@@ -33,7 +33,7 @@ plugins {
 base {
     version = "$minecraftVersion-$modVersion"
     group = modPackage
-    archivesName.set("$modId-forge")
+    archivesName.set("$modId-fabric")
 }
 
 loom {

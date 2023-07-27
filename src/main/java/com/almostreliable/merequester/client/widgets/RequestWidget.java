@@ -6,8 +6,6 @@ import com.almostreliable.merequester.client.abstraction.RequesterReference;
 import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.Requests.Request;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -15,7 +13,6 @@ import java.util.Map;
 
 import static com.almostreliable.merequester.Utils.f;
 
-@OnlyIn(Dist.CLIENT)
 public class RequestWidget {
 
     private final RequestDisplay host;
