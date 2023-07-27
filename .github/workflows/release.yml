@@ -17,8 +17,31 @@ env:
 
 jobs:
 
+  checking:
+    name: Checking prerequisites
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Secrets
+        run: |
+          if [ -z "${{ secrets.MODRINTH_TOKEN }}" ]; then
+            echo "MODRINTH_TOKEN is not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.CURSEFORGE_TOKEN }}" ]; then
+            echo "CURSEFORGE_TOKEN is not set"
+            exit 1
+          fi
+
+      - name: Validate Modrinth Token
+        run: |
+          if [ -n "$(curl -s -H "Authorization: ${{ secrets.MODRINTH_TOKEN }}" https://api.modrinth.com/v2/user | grep "unauthorized")" ]; then
+            echo "Modrinth Token is invalid!"
+            exit 1
+          fi
+
   build:
     name: Build, collect info, parse changelog
+    needs: checking
     runs-on: ubuntu-latest
     outputs:
       JAR_FILE: ${{ steps.collect_info.outputs.JAR_FILE }}
@@ -130,14 +153,16 @@ jobs:
           version-type: ${{ needs.build.outputs.RELEASE_TYPE }}
           changelog-file: output/changelog.md
 
-          loaders: forge
+          loaders: |
+            forge
+            neoforge
           game-versions: ${{ needs.build.outputs.MINECRAFT_VERSION }}
           java: ${{ env.JAVA_VERSION }}
 
           dependencies: |
+            ae2(required){curseforge:223794}{modrinth:XxWD5pD3}
             jei(optional){curseforge:238222}{modrinth:u6dRKJwZ}
             rei(optional){curseforge:310111}{modrinth:nfn13YXA}
-            kubejs(optional){curseforge:238086}{modrinth:umyGl7zF}
 
   cf-forge-release:
     name: CurseForge Forge Release
@@ -164,14 +189,16 @@ jobs:
           version-type: ${{ needs.build.outputs.RELEASE_TYPE }}
           changelog-file: output/changelog.md
 
-          loaders: forge
+          loaders: |
+            forge
+            neoforge
           game-versions: ${{ needs.build.outputs.MINECRAFT_VERSION }}
           java: ${{ env.JAVA_VERSION }}
 
           dependencies: |
+            ae2(required){curseforge:223794}{modrinth:XxWD5pD3}
             jei(optional){curseforge:238222}{modrinth:u6dRKJwZ}
             rei(optional){curseforge:310111}{modrinth:nfn13YXA}
-            kubejs(optional){curseforge:238086}{modrinth:umyGl7zF}
 
   github-release:
     name: GitHub Release

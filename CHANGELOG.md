@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [1.1.3] - 2023-06-27
+
+### Changed
+- fluids are now configured with bucket amounts instead of mB amounts
+- text boxes show a 'B' after the text field when a fluid is selected
+
 ## [1.1.2] - 2023-04-22
 
 ### Added
@@ -60,6 +66,7 @@ Initial release!
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
+[1.1.3]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-forge-1.1.3
 [1.1.2]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-forge-1.1.2
 [1.1.1]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-forge-1.1.1
 [1.1.0]: https://github.com/AlmostReliable/merequester/releases/tag/v1.19-forge-1.1.0
