@@ -124,10 +124,11 @@ public class StorageManager implements IStorageWatcherNode, TagSerializable<Comp
         private static final String PENDING_AMOUNT_ID = "pending_amount";
         private static final String KNOWN_AMOUNT_ID = "known_amount";
 
-        @Nullable private AEKey key;
-        private long bufferAmount;
-        private long pendingAmount;
-        private long knownAmount = -1;
+        @Nullable private AEKey key; // the item or fluid type stored in this storage
+        private long totalAmount; // total amount of the job that needs to be exported
+        private long bufferAmount; // amount of items or fluid in the buffer
+        private long pendingAmount; // amount currently being inserted into the system but did not arrive yet
+        private long knownAmount = -1; // the known amount stored in the system
 
         @Override
         public CompoundTag serialize() {
@@ -152,12 +153,13 @@ public class StorageManager implements IStorageWatcherNode, TagSerializable<Comp
          * @return true if the buffer is not empty
          */
         public boolean compute(long inserted) {
-            pendingAmount = inserted;
+            pendingAmount += inserted;
             bufferAmount = getBufferAmount() - inserted;
+            totalAmount -= inserted;
             if (bufferAmount == 0) {
                 key = null;
             }
-            return bufferAmount > 0;
+            return bufferAmount > 0 || totalAmount > 0;
         }
 
         void update(AEKey key, long bufferAmount) {
@@ -166,6 +168,10 @@ public class StorageManager implements IStorageWatcherNode, TagSerializable<Comp
             }
             this.key = key;
             this.bufferAmount += bufferAmount;
+        }
+
+        public void setTotalAmount(long totalAmount) {
+            this.totalAmount = totalAmount;
         }
 
         @Nullable
