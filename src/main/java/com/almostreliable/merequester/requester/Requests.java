@@ -326,7 +326,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
             }
             key = stack.what();
             amount = stack.amount();
-            batch = 1;
+            batch = stack.what().getAmountPerUnit();
             keyChanged();
         }
 
@@ -356,7 +356,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
         }
 
         @Nullable
-        private AEKey getKey() {
+        public AEKey getKey() {
             return key;
         }
 
