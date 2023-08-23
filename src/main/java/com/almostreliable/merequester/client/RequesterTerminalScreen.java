@@ -19,7 +19,6 @@ import com.google.common.collect.HashMultimap;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 
 import javax.annotation.Nullable;
@@ -70,10 +69,9 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
 
     @Override
     protected void init() {
-        TerminalStyle terminalStyle = AEConfig.instance().getTerminalStyle();
-        var maxRows = terminalStyle == TerminalStyle.SMALL ? Platform.getRequestLimit() + 1 : Integer.MAX_VALUE;
-        rowAmount = (height - GUI_HEADER_HEIGHT - GUI_FOOTER_HEIGHT) / ROW_HEIGHT;
-        rowAmount = Mth.clamp(rowAmount, MIN_ROW_COUNT, maxRows);
+        var availableHeight = height - 2 * config.getTerminalMargin();
+        var possibleRows = (availableHeight - GUI_HEADER_HEIGHT - GUI_FOOTER_HEIGHT) / ROW_HEIGHT;
+        rowAmount = Math.max(MIN_ROW_COUNT, config.getTerminalStyle().getRows(possibleRows));
 
         super.init();
 
