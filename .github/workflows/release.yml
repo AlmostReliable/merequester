@@ -152,7 +152,9 @@ jobs:
           version-type: ${{ needs.build.outputs.RELEASE_TYPE }}
           changelog-file: output/changelog.md
 
-          loaders: forge
+          loaders: |
+            forge
+            neoforge
           game-versions: ${{ needs.build.outputs.MINECRAFT_VERSION }}
           java: ${{ env.JAVA_VERSION }}
 
@@ -186,7 +188,9 @@ jobs:
           version-type: ${{ needs.build.outputs.RELEASE_TYPE }}
           changelog-file: output/changelog.md
 
-          loaders: forge
+          loaders: |
+            forge
+            neoforge
           game-versions: ${{ needs.build.outputs.MINECRAFT_VERSION }}
           java: ${{ env.JAVA_VERSION }}
 
