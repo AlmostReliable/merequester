@@ -23,6 +23,7 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
 
     private static final ResourceLocation TEXTURE = Utils.getRL(f("textures/gui/{}.png", MERequester.REQUESTER_ID));
     private static final Rect2i FOOTER_BBOX = new Rect2i(0, 114, GUI_WIDTH, GUI_FOOTER_HEIGHT);
+    private static final int MAX_ROW_COUNT = 10;
 
     @Nullable private RequesterReference requesterReference;
 
@@ -34,8 +35,8 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
 
     @Override
     protected void init() {
-        rowAmount = (height - GUI_HEADER_HEIGHT - GUI_FOOTER_HEIGHT) / ROW_HEIGHT;
-        rowAmount = Mth.clamp(rowAmount, MIN_ROW_COUNT, Platform.getRequestLimit());
+        var possibleRows = (height - GUI_HEADER_HEIGHT - GUI_FOOTER_HEIGHT) / ROW_HEIGHT;
+        rowAmount = Mth.clamp(possibleRows, MIN_ROW_COUNT, Math.min(Platform.getRequestLimit(), MAX_ROW_COUNT));
         super.init();
     }
 
