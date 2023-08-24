@@ -79,7 +79,14 @@ dependencies {
     // Runtime
     modLocalRuntime("appeng:appliedenergistics2-fabric:$aeVersion")
     when (fabricRecipeViewer) {
-        "rei" -> modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$reiVersion")
+        "rei" -> {
+            modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$reiVersion") { isTransitive = false }
+            // disabled transitivity because Dan is not capable of shipping transitive dependencies
+            // that won't crash the runtime, manual deps now, whooo
+            modLocalRuntime("dev.architectury:architectury-fabric:6.5.82")
+            modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:8.3.103")
+        }
+
         "jei" -> modLocalRuntime("mezz.jei:jei-$minecraftVersion-fabric:$jeiVersion") { isTransitive = false }
         else -> throw GradleException("Invalid recipeViewer value: $fabricRecipeViewer")
     }
@@ -140,4 +147,15 @@ buildConfig {
     buildConfigField("String", "MOD_VERSION", "\"$version\"")
     packageName(modPackage)
     useJavaOutput()
+}
+
+/**
+ * force the fabric loader and api versions that are defined in the project
+ * some mods ship another version which crashes the runtime
+ */
+configurations.all {
+    resolutionStrategy {
+        force("net.fabricmc:fabric-loader:$fabricLoaderVersion")
+        force("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion+$minecraftVersion")
+    }
 }
