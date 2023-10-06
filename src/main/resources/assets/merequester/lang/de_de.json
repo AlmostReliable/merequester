@@ -13,6 +13,8 @@
   "gui.merequester.requester_terminal": "ME Anforderungsk.",
   "gui.merequester.no_requesters": "Keine ME Anforderer gefunden!",
 
+  "key.ae2.wireless_requester_terminal": "Open Drahtlose Anforderungskonsole",
+
   "tooltip.merequester.requester_desc": "Hält automatisch Gegenstände und Flüssigkeiten auf Vorrat, indem neue Herstellungsaufgaben gestartet werden, wenn sie benötigt werden. Muss mit einem ME-Netzwerk verbunden sein und kann von einer ME-Anforderungskonsole angesteuert werden. Verliert seine Konfiguration, wenn er zerstört wird. Einstellungen können mit einer Speicherkarte kopiert werden.",
 
   "tooltip.merequester.shift_for_more": "%s für mehr",

@@ -13,6 +13,8 @@
   "gui.merequester.requester_terminal": "ME Requ. Terminal",
   "gui.merequester.no_requesters": "No ME Requesters found!",
 
+  "key.ae2.wireless_requester_terminal": "Open Wireless Requester Terminal",
+
   "tooltip.merequester.requester_desc": "Automatically keeps items and fluids in stock by requesting new crafts when needed. Has to be connected to an ME network and can be accessed from an ME Requester Terminal. Will lose its configuration when broken. Settings can be copied with a Memory Card.",
 
   "tooltip.merequester.shift_for_more": "%s for more",
