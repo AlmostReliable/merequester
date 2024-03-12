@@ -1,9 +1,9 @@
 @file:Suppress("UnstableApiUsage")
 
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
+import net.fabricmc.loom.util.ModPlatform
 
 val license: String by project
-val enableAccessWidener: String by project
 val minecraftVersion: String by project
 val modVersion: String by project
 val modPackage: String by project
@@ -12,7 +12,7 @@ val modName: String by project
 val modAuthor: String by project
 val modDescription: String by project
 val parchmentVersion: String by project
-val forgeVersion: String by project
+val neoforgeVersion: String by project
 val forgeRecipeViewer: String by project
 val aeVersion: String by project
 val jeiVersion: String by project
@@ -21,8 +21,7 @@ val githubUser: String by project
 val githubRepo: String by project
 
 plugins {
-    id("dev.architectury.loom") version "1.3.+"
-    id("io.github.juuxel.loom-vineflower") version "1.11.0"
+    id("dev.architectury.loom") version "1.4-SNAPSHOT"
     id("com.github.gmazzo.buildconfig") version "4.0.4"
     java
 }
@@ -35,23 +34,11 @@ base {
 
 loom {
     silentMojangMappingsLicense()
-
-    forge {
-        mixinConfig("$modId.mixins.json")
-    }
-
-    if (project.findProperty("enableAccessWidener") == "true") {
-        accessWidenerPath.set(file("src/main/resources/$modId.accesswidener"))
-        forge {
-            convertAccessWideners.set(true)
-            extraAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
-        }
-        println("Access widener enabled for project. Access widener path: ${loom.accessWidenerPath.get()}")
-    }
 }
 
 repositories {
     maven("https://maven.parchmentmc.org/") // Parchment
+    maven("https://maven.neoforged.net/releases") // Parchment
     maven("https://modmaven.dev/") // Applied Energistics 2
     maven("https://maven.blamejared.com") // JEI
     maven("https://maven.shedaniel.me") // REI
@@ -67,17 +54,17 @@ dependencies {
     })
 
     // Forge
-    forge("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
+    neoForge("net.neoforged:neoforge:$neoforgeVersion")
 
     // Compile
-    modCompileOnly("appeng:appliedenergistics2-forge:$aeVersion")
-    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-forge:$reiVersion")
+    modCompileOnly("appeng:appliedenergistics2-neoforge:$aeVersion")
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-neoforge:$reiVersion")
 
     // Runtime
-    modLocalRuntime("appeng:appliedenergistics2-forge:$aeVersion")
+    modLocalRuntime("appeng:appliedenergistics2-neoforge:$aeVersion")
     when (forgeRecipeViewer) {
-        "rei" -> modLocalRuntime("me.shedaniel:RoughlyEnoughItems-forge:$reiVersion")
-        "jei" -> modLocalRuntime("mezz.jei:jei-$minecraftVersion-forge:$jeiVersion") { isTransitive = false }
+        "rei" -> modLocalRuntime("me.shedaniel:RoughlyEnoughItems-neoforge:$reiVersion")
+        "jei" -> modLocalRuntime("mezz.jei:jei-$minecraftVersion-neoforge:$jeiVersion") { isTransitive = false }
         else -> throw GradleException("Invalid recipeViewer value: $forgeRecipeViewer")
     }
 }
@@ -94,8 +81,8 @@ tasks {
             "modName" to modName,
             "modAuthor" to modAuthor,
             "modDescription" to modDescription,
-            "forgeVersion" to forgeVersion,
-            "forgeLoaderVersion" to forgeVersion.substringBefore("."),
+            "neoforgeVersion" to neoforgeVersion,
+            "forgeLoaderVersion" to "1",
             "aeVersion" to aeVersion,
             "githubUser" to githubUser,
             "githubRepo" to githubRepo
