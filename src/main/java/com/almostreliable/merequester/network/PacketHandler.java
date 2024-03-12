@@ -2,8 +2,8 @@ package com.almostreliable.merequester.network;
 
 import com.almostreliable.merequester.Utils;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
 
 public final class PacketHandler {
 

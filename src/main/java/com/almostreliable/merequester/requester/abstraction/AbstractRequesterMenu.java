@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-
 import javax.annotation.Nullable;
 
 public abstract class AbstractRequesterMenu extends AEBaseMenu {

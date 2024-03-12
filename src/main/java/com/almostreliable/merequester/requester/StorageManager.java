@@ -8,7 +8,6 @@ import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.platform.TagSerializable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-
 import javax.annotation.Nullable;
 import java.util.List;
 

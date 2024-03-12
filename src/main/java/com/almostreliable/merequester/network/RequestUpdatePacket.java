@@ -3,7 +3,6 @@ package com.almostreliable.merequester.network;
 import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-
 import javax.annotation.Nullable;
 
 public class RequestUpdatePacket extends ClientToServerPacket<RequestUpdatePacket> {

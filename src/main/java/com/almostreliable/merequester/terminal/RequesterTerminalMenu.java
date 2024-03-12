@@ -14,7 +14,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-
 import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.IdentityHashMap;

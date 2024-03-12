@@ -8,7 +8,6 @@ import com.almostreliable.merequester.Utils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-
 import java.util.List;
 
 public class StateBox extends AECheckbox implements ITooltip {

@@ -1,8 +1,7 @@
 package com.almostreliable.merequester.network;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
+import net.neoforged.neoforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public interface Packet<T> {

@@ -1,8 +1,7 @@
 package com.almostreliable.merequester.network;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
-
+import net.neoforged.neoforge.network.NetworkEvent;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 

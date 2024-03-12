@@ -14,7 +14,6 @@ import com.almostreliable.merequester.requester.RequesterBlock;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.terminal.RequesterTerminalPart;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class Registration {

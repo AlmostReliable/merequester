@@ -1,15 +1,15 @@
 package com.almostreliable.merequester.platform;
 
 import com.almostreliable.merequester.MERequester;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.NeoForgeConfigSpec;
 
 final class Config {
 
-    static final ForgeConfigSpec COMMON_SPEC;
+    static final NeoForgeConfigSpec COMMON_SPEC;
     static final CommonConfig COMMON;
 
     static {
-        var commonPair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
+        var commonPair = new NeoForgeConfigSpec.Builder().configure(CommonConfig::new);
         COMMON_SPEC = commonPair.getRight();
         COMMON = commonPair.getLeft();
     }
@@ -18,11 +18,11 @@ final class Config {
 
     static final class CommonConfig {
 
-        final ForgeConfigSpec.IntValue requests;
-        final ForgeConfigSpec.DoubleValue idleEnergy;
-        final ForgeConfigSpec.BooleanValue requireChannel;
+        final NeoForgeConfigSpec.IntValue requests;
+        final NeoForgeConfigSpec.DoubleValue idleEnergy;
+        final NeoForgeConfigSpec.BooleanValue requireChannel;
 
-        private CommonConfig(ForgeConfigSpec.Builder builder) {
+        private CommonConfig(NeoForgeConfigSpec.Builder builder) {
             builder.push(MERequester.REQUESTER_ID);
             requests = builder.comment("The amount of requests a single ME Requester can hold.")
                 .defineInRange("requests", 5, 1, 64);
