@@ -139,7 +139,7 @@ public class NumberField extends ConfirmableTextField {
     void setLongValue(long value) {
         var internalValue = convertToInternalValue(Math.max(value, MIN_VALUE));
         setValue(decimalFormat.format(internalValue));
-        moveCursorToEnd();
+        moveCursorToEnd(true);
         validate();
     }
 

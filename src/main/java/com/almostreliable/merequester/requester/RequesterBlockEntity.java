@@ -111,7 +111,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
 
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
-        return new TickingRequest(1, 20, false, false);
+        return new TickingRequest(1, 20, false);
     }
 
     @Override

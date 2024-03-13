@@ -15,22 +15,22 @@ authors = "${modAuthor}"
 description = '''${modDescription}'''
 
 [[dependencies.${modId}]]
-modId = "forge"
-mandatory = true
-versionRange = "[${forgeVersion},)"
+modId = "neoforge"
+type = "REQUIRED"
+versionRange = "[${neoforgeVersion},)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.${modId}]]
 modId = "minecraft"
-mandatory = true
+type = "REQUIRED"
 versionRange = "[${minecraftVersion},)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.${modId}]]
 modId = "ae2"
-mandatory = true
+type = "REQUIRED"
 versionRange = "[${aeVersion},)"
 ordering = "AFTER"
 side = "BOTH"

@@ -1,34 +1,44 @@
 package com.almostreliable.merequester.network;
 
-import com.almostreliable.merequester.Utils;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
+import com.almostreliable.merequester.BuildConfig;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 
 public final class PacketHandler {
-
-    private static final ResourceLocation ID = Utils.getRL("network");
     private static final String PROTOCOL = "1";
-    public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder.named(ID)
-        .networkProtocolVersion(() -> PROTOCOL)
-        .clientAcceptedVersions(PROTOCOL::equals)
-        .serverAcceptedVersions(PROTOCOL::equals)
-        .simpleChannel();
 
     private PacketHandler() {}
 
     @SuppressWarnings("ValueOfIncrementOrDecrementUsed")
-    public static void init() {
-        var packetId = -1;
-        // server to client
-        register(++packetId, RequesterSyncPacket.class, new RequesterSyncPacket());
-        // client to server
-        register(++packetId, RequestUpdatePacket.class, new RequestUpdatePacket());
-        register(++packetId, DragAndDropPacket.class, new DragAndDropPacket());
-    }
+    public static void init(RegisterPayloadHandlerEvent event) {
+        var registrar = event.registrar(BuildConfig.MOD_ID).versioned(PROTOCOL);
 
-    @SuppressWarnings("SameParameterValue")
-    private static <T> void register(int packetId, Class<T> clazz, Packet<T> packet) {
-        CHANNEL.registerMessage(packetId, clazz, packet::encode, packet::decode, packet::handle);
+        // server to client
+        registrar.play(RequesterSyncPacket.ID, RequesterSyncPacket::decode, builder -> {
+            builder.client((packet, context) -> {
+                context.player().ifPresent(player -> {
+                    context.workHandler().execute(() -> {
+                        packet.handlePacket(player);
+                    });
+                });
+            });
+        });
+
+        // client to server
+        registrar.play(RequestUpdatePacket.ID, RequestUpdatePacket::decode, builder -> {
+            builder.server((packet, context) -> {
+                context.player().ifPresent(player -> {
+                    context.workHandler().execute(() -> {
+                        packet.handlePacket(player);
+                    });
+                });
+            });
+        });
+        registrar.play(DragAndDropPacket.ID, DragAndDropPacket::decode, builder -> {
+            builder.server((packet, context) -> {
+                context.player().ifPresent(player -> {
+                    context.workHandler().execute(() -> packet.handlePacket(player));
+                });
+            });
+        });
     }
 }

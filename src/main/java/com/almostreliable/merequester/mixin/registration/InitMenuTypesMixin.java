@@ -3,8 +3,8 @@ package com.almostreliable.merequester.mixin.registration;
 import appeng.init.InitMenuTypes;
 import com.almostreliable.merequester.requester.RequesterMenu;
 import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
+import net.minecraft.core.Registry;
 import net.minecraft.world.inventory.MenuType;
-import net.neoforged.neoforge.registries.IForgeRegistry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(InitMenuTypes.class)
 public abstract class InitMenuTypesMixin {
     @Inject(method = "init", at = @At("TAIL"), remap = false)
-    private static void merequester$initMenuTypes(IForgeRegistry<MenuType<?>> registry, CallbackInfo ci) {
+    private static void merequester$initMenuTypes(Registry<MenuType<?>> registry, CallbackInfo ci) {
         merequester$registerAll(
             registry,
             RequesterMenu.TYPE,
@@ -24,7 +24,7 @@ public abstract class InitMenuTypesMixin {
     }
 
     @Invoker(value = "registerAll", remap = false)
-    private static void merequester$registerAll(IForgeRegistry<MenuType<?>> registry, MenuType<?>... types) {
+    private static void merequester$registerAll(Registry<MenuType<?>> registry, MenuType<?>... types) {
         throw new AssertionError();
     }
 }

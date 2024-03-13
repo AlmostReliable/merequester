@@ -3,9 +3,8 @@ package com.almostreliable.merequester;
 import com.almostreliable.merequester.network.PacketHandler;
 import com.almostreliable.merequester.platform.Platform;
 import com.mojang.logging.LogUtils;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
@@ -18,20 +17,11 @@ public final class MERequester {
     public static final String TERMINAL_ID = "requester_terminal";
     public static final String REQUESTER_ID = "requester";
 
-    public MERequester() {
-        onInitialize();
-    }
-
-    public void onInitialize() {
+    public MERequester(IEventBus modEventBus) {
         Platform.initConfig();
-        var modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modEventBus.addListener(MERequester::onCommonSetup);
         modEventBus.addListener(MERequester::onRegistryEvent);
         modEventBus.addListener(MERequester::onCreativeTabContents);
-    }
-
-    private static void onCommonSetup(FMLCommonSetupEvent event) {
-        PacketHandler.init();
+        modEventBus.addListener(PacketHandler::init);
     }
 
     private static void onRegistryEvent(RegisterEvent event) {

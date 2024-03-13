@@ -1,13 +1,17 @@
 package com.almostreliable.merequester.network;
 
+import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import javax.annotation.Nullable;
+public class DragAndDropPacket implements CustomPacketPayload {
 
-public class DragAndDropPacket extends ClientToServerPacket<DragAndDropPacket> {
+    public static final ResourceLocation ID = Utils.getRL("drag_and_drop");
 
     private long requesterId;
     private int requestIndex;
@@ -23,14 +27,18 @@ public class DragAndDropPacket extends ClientToServerPacket<DragAndDropPacket> {
     DragAndDropPacket() {}
 
     @Override
-    public void encode(DragAndDropPacket packet, FriendlyByteBuf buffer) {
-        buffer.writeLong(packet.requesterId);
-        buffer.writeVarInt(packet.requestIndex);
-        buffer.writeItem(packet.item);
+    public ResourceLocation id() {
+        return ID;
     }
 
     @Override
-    public DragAndDropPacket decode(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeLong(requesterId);
+        buffer.writeVarInt(requestIndex);
+        buffer.writeItem(item);
+    }
+
+    public static DragAndDropPacket decode(FriendlyByteBuf buffer) {
         return new DragAndDropPacket(
             buffer.readLong(),
             buffer.readVarInt(),
@@ -38,9 +46,10 @@ public class DragAndDropPacket extends ClientToServerPacket<DragAndDropPacket> {
         );
     }
 
-    @Override
-    protected void handlePacket(DragAndDropPacket packet, @Nullable ServerPlayer player) {
-        if (player == null || !(player.containerMenu instanceof AbstractRequesterMenu requester)) return;
-        requester.applyDragAndDrop(player, packet.requestIndex, packet.requesterId, packet.item);
+    public void handlePacket(Player player) {
+        if (player instanceof ServerPlayer serverPlayer && player.containerMenu instanceof AbstractRequesterMenu requester) {
+            requester.applyDragAndDrop(serverPlayer, requestIndex, requesterId, item);
+        }
     }
 }
+

@@ -1,20 +1,24 @@
 package com.almostreliable.merequester.network;
 
+import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import javax.annotation.Nullable;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
-public class RequestUpdatePacket extends ClientToServerPacket<RequestUpdatePacket> {
+public class RequestUpdatePacket implements CustomPacketPayload {
 
-    private long requesterId;
-    private int requestIndex;
+    public static final ResourceLocation ID = Utils.getRL("request_update");
+
+    private final long requesterId;
+    private final int requestIndex;
 
     private boolean state;
     private long amount;
     private long batch;
 
-    private UpdateType updateType;
+    private final UpdateType updateType;
 
     public RequestUpdatePacket(long requesterId, int requestIndex, boolean state) {
         this.requesterId = requesterId;
@@ -31,26 +35,28 @@ public class RequestUpdatePacket extends ClientToServerPacket<RequestUpdatePacke
         this.updateType = UpdateType.NUMBERS;
     }
 
-    RequestUpdatePacket() {}
-
     @Override
-    public void encode(RequestUpdatePacket packet, FriendlyByteBuf buffer) {
-        buffer.writeLong(packet.requesterId);
-        buffer.writeVarInt(packet.requestIndex);
-
-        buffer.writeVarInt(packet.updateType.ordinal());
-        if (packet.updateType == UpdateType.STATE) {
-            buffer.writeBoolean(packet.state);
-        } else if (packet.updateType == UpdateType.NUMBERS) {
-            buffer.writeLong(packet.amount);
-            buffer.writeLong(packet.batch);
-        } else {
-            throw new IllegalStateException("Unknown update type: " + packet.updateType);
-        }
+    public ResourceLocation id() {
+        return ID;
     }
 
     @Override
-    public RequestUpdatePacket decode(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeLong(requesterId);
+        buffer.writeVarInt(requestIndex);
+
+        buffer.writeVarInt(updateType.ordinal());
+        if (updateType == UpdateType.STATE) {
+            buffer.writeBoolean(state);
+        } else if (updateType == UpdateType.NUMBERS) {
+            buffer.writeLong(amount);
+            buffer.writeLong(batch);
+        } else {
+            throw new IllegalStateException("Unknown update type: " + updateType);
+        }
+    }
+
+    public static RequestUpdatePacket decode(FriendlyByteBuf buffer) {
         var id = buffer.readLong();
         var index = buffer.readVarInt();
 
@@ -64,13 +70,12 @@ public class RequestUpdatePacket extends ClientToServerPacket<RequestUpdatePacke
         throw new IllegalStateException("Unknown update type: " + type);
     }
 
-    @Override
-    protected void handlePacket(RequestUpdatePacket packet, @Nullable ServerPlayer player) {
-        if (player != null && player.containerMenu instanceof AbstractRequesterMenu requester) {
-            if (packet.updateType == UpdateType.STATE) {
-                requester.updateRequesterState(packet.requesterId, packet.requestIndex, packet.state);
-            } else if (packet.updateType == UpdateType.NUMBERS) {
-                requester.updateRequesterNumbers(packet.requesterId, packet.requestIndex, packet.amount, packet.batch);
+    public void handlePacket(Player player) {
+        if (player.containerMenu instanceof AbstractRequesterMenu requester) {
+            if (updateType == UpdateType.STATE) {
+                requester.updateRequesterState(requesterId, requestIndex, state);
+            } else if (updateType == UpdateType.NUMBERS) {
+                requester.updateRequesterNumbers(requesterId, requestIndex, amount, batch);
             }
         }
     }

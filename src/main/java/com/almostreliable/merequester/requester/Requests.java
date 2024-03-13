@@ -104,7 +104,12 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
     }
 
     @Override
-    public boolean isAllowed(AEKey key) {
+    public boolean isSupportedType(AEKeyType type) {
+        return true;
+    }
+
+    @Override
+    public boolean isAllowedIn(int slot, AEKey what) {
         return true;
     }
 

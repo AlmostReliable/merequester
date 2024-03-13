@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
-import net.fabricmc.loom.util.ModPlatform
 
 val license: String by project
 val minecraftVersion: String by project
@@ -58,9 +57,11 @@ dependencies {
 
     // Compile
     modCompileOnly("appeng:appliedenergistics2-neoforge:$aeVersion")
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:$reiVersion")
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-neoforge:$reiVersion")
 
     // Runtime
+    modLocalRuntime("dev.architectury:architectury-neoforge:11.1.17") // TODO: Remove on new REI version
     modLocalRuntime("appeng:appliedenergistics2-neoforge:$aeVersion")
     when (forgeRecipeViewer) {
         "rei" -> modLocalRuntime("me.shedaniel:RoughlyEnoughItems-neoforge:$reiVersion")
