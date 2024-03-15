@@ -35,6 +35,13 @@ loom {
     silentMojangMappingsLicense()
 
     runs {
+        create("guide") {
+            client()
+            property("appeng.guide-dev.sources", file("guidebook").absolutePath)
+            property("appeng.guide-dev.sources.namespace", modId)
+            property("guideDev.ae2guide.startupPage", "$modId:getting-started.md")
+        }
+
         forEach {
             it.vmArgs("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
         }
