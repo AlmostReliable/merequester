@@ -92,7 +92,7 @@ tasks {
                 "modName" to modName,
                 "modAuthor" to modAuthor,
                 "modDescription" to modDescription,
-                "neoforgeVersion" to neoVersion,
+                "neoVersion" to neoVersion,
                 "neoLoaderVersion" to neoVersion.substringBefore("."),
                 "aeVersion" to aeVersion,
                 "githubUser" to githubUser,
