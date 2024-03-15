@@ -1,11 +1,11 @@
 modLoader = "javafml"
-loaderVersion = "[${forgeLoaderVersion},)"
+loaderVersion = "[${neoLoaderVersion},)"
 issueTrackerURL = "https://github.com/${githubUser}/${githubRepo}/issues"
 license = "${license}"
 logoFile = "logo.png"
 
 [[mixins]]
-config="merequester.mixins.json"
+config="${modId}.mixins.json"
 
 [[mods]]
 modId = "${modId}"
@@ -17,7 +17,7 @@ description = '''${modDescription}'''
 [[dependencies.${modId}]]
 modId = "neoforge"
 type = "REQUIRED"
-versionRange = "[${neoforgeVersion},)"
+versionRange = "[${neoVersion},)"
 ordering = "NONE"
 side = "BOTH"
 
