@@ -17,7 +17,13 @@ public class RequestState implements StatusState {
         var future = owner
             .getMainNodeGrid()
             .getCraftingService()
-            .beginCraftingCalculation(owner.getLevel(), owner::getActionSource, key, amountToCraft, CalculationStrategy.CRAFT_LESS);
+            .beginCraftingCalculation(
+                owner.getLevel(),
+                owner::getActionSource,
+                key,
+                amountToCraft,
+                CalculationStrategy.REPORT_MISSING_ITEMS
+            );
 
         return new PlanState(future);
     }

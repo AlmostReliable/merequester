@@ -1,6 +1,5 @@
 package com.almostreliable.merequester.requester.status;
 
-import appeng.api.networking.crafting.CraftingSubmitErrorCode;
 import appeng.api.networking.crafting.ICraftingPlan;
 import appeng.api.networking.ticking.TickRateModulation;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
@@ -24,12 +23,12 @@ public final class PlanState implements StatusState {
 
         try {
             var plan = future.get();
-            var submitResult = host.getMainNodeGrid().getCraftingService().submitJob(plan, host, null, false, host.getActionSource());
+            if (!plan.missingItems().isEmpty()) {
+                return StatusState.MISSING;
+            }
 
+            var submitResult = host.getMainNodeGrid().getCraftingService().submitJob(plan, host, null, false, host.getActionSource());
             if (!submitResult.successful() || submitResult.link() == null) {
-                if (submitResult.errorCode() == CraftingSubmitErrorCode.INCOMPLETE_PLAN && !plan.missingItems().isEmpty()) {
-                    return StatusState.MISSING;
-                }
                 return StatusState.IDLE;
             }
 
