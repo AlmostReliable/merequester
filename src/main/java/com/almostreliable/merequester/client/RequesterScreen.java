@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Set;
@@ -24,7 +25,8 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
     private static final Rect2i FOOTER_BBOX = new Rect2i(0, 114, GUI_WIDTH, GUI_FOOTER_HEIGHT);
     private static final int MAX_ROW_COUNT = 10;
 
-    @Nullable private RequesterReference requesterReference;
+    @Nullable
+    private RequesterReference requesterReference;
 
     public RequesterScreen(
         RequesterMenu menu, Inventory playerInventory, Component name, ScreenStyle style

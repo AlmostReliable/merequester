@@ -22,12 +22,10 @@ import static com.almostreliable.merequester.Utils.f;
  */
 public class RequesterTerminalPart extends AbstractDisplayPart {
 
-    @PartModels private static final ResourceLocation MODEL_OFF = AppEng.makeId(
-        f("part/{}_off", MERequester.TERMINAL_ID)
-    );
-    @PartModels private static final ResourceLocation MODEL_ON = AppEng.makeId(
-        f("part/{}_on", MERequester.TERMINAL_ID)
-    );
+    @PartModels
+    private static final ResourceLocation MODEL_OFF = AppEng.makeId(f("part/{}_off", MERequester.TERMINAL_ID));
+    @PartModels
+    private static final ResourceLocation MODEL_ON = AppEng.makeId(f("part/{}_on", MERequester.TERMINAL_ID));
 
     private static final IPartModel MODELS_OFF = new PartModel(MODEL_BASE, MODEL_OFF, MODEL_STATUS_OFF);
     private static final IPartModel MODELS_ON = new PartModel(MODEL_BASE, MODEL_ON, MODEL_STATUS_ON);

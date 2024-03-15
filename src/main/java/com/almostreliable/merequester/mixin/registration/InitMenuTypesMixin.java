@@ -14,13 +14,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @SuppressWarnings("ALL")
 @Mixin(InitMenuTypes.class)
 public abstract class InitMenuTypesMixin {
+
     @Inject(method = "init", at = @At("TAIL"), remap = false)
     private static void merequester$initMenuTypes(Registry<MenuType<?>> registry, CallbackInfo ci) {
-        merequester$registerAll(
-            registry,
-            RequesterMenu.TYPE,
-            RequesterTerminalMenu.TYPE
-        );
+        merequester$registerAll(registry, RequesterMenu.TYPE, RequesterTerminalMenu.TYPE);
     }
 
     @Invoker(value = "registerAll", remap = false)

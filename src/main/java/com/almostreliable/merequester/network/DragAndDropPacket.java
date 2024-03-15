@@ -39,11 +39,7 @@ public class DragAndDropPacket implements CustomPacketPayload {
     }
 
     public static DragAndDropPacket decode(FriendlyByteBuf buffer) {
-        return new DragAndDropPacket(
-            buffer.readLong(),
-            buffer.readVarInt(),
-            buffer.readItem()
-        );
+        return new DragAndDropPacket(buffer.readLong(), buffer.readVarInt(), buffer.readItem());
     }
 
     public void handlePacket(Player player) {
@@ -52,4 +48,3 @@ public class DragAndDropPacket implements CustomPacketPayload {
         }
     }
 }
-

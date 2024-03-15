@@ -20,6 +20,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -35,7 +36,8 @@ import static com.almostreliable.merequester.Utils.f;
 public class Requests implements MEStorage, GenericInternalInventory, InternalInventory, TagSerializable<CompoundTag> {
 
     // if null, the inventory is client-side and doesn't need saving
-    @Nullable private final RequestHost host;
+    @Nullable
+    private final RequestHost host;
     private final Request[] requests;
     private final int size;
 
@@ -235,7 +237,8 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
         private final int index;
 
         private boolean state = true;
-        @Nullable private AEKey key;
+        @Nullable
+        private AEKey key;
         private long amount;
         private long batch = 1;
 
@@ -295,16 +298,17 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
         public String toString() {
             return f(
                 "Request[state={}, key={}, amount={}, batch={}, client_status={}]",
-                state, key == null ? "none" : key.getDisplayName(), amount, batch, clientStatus
+                state,
+                key == null ? "none" : key.getDisplayName(),
+                amount,
+                batch,
+                clientStatus
             );
         }
 
         public boolean isDifferent(Request clientRequest) {
-            return state != clientRequest.state ||
-                !Objects.equals(key, clientRequest.key) ||
-                amount != clientRequest.amount ||
-                batch != clientRequest.batch ||
-                clientStatus != clientRequest.clientStatus;
+            return state != clientRequest.state || !Objects.equals(key, clientRequest.key) || amount != clientRequest.amount ||
+                batch != clientRequest.batch || clientStatus != clientRequest.clientStatus;
         }
 
         @Nullable

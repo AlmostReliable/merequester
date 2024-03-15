@@ -63,20 +63,16 @@ public class StatusDisplay extends AbstractWidget implements ITooltip {
         if (Screen.hasShiftDown()) {
             tooltip.addAll(List.of(
                 Component.literal(" "),
-                Utils.translate("tooltip", RequestStatus.IDLE.toString().toLowerCase())
-                    .withStyle(getStatusColor(RequestStatus.IDLE)),
+                Utils.translate("tooltip", RequestStatus.IDLE.toString().toLowerCase()).withStyle(getStatusColor(RequestStatus.IDLE)),
                 Utils.translate("tooltip", f("{}_desc", RequestStatus.IDLE.toString().toLowerCase())),
                 Component.literal(" "),
-                Utils.translate("tooltip", RequestStatus.MISSING.toString().toLowerCase())
-                    .withStyle(getStatusColor(RequestStatus.MISSING)),
+                Utils.translate("tooltip", RequestStatus.MISSING.toString().toLowerCase()).withStyle(getStatusColor(RequestStatus.MISSING)),
                 Utils.translate("tooltip", f("{}_desc", RequestStatus.MISSING.toString().toLowerCase())),
                 Component.literal(" "),
-                Utils.translate("tooltip", RequestStatus.LINK.toString().toLowerCase())
-                    .withStyle(getStatusColor(RequestStatus.LINK)),
+                Utils.translate("tooltip", RequestStatus.LINK.toString().toLowerCase()).withStyle(getStatusColor(RequestStatus.LINK)),
                 Utils.translate("tooltip", f("{}_desc", RequestStatus.LINK.toString().toLowerCase())),
                 Component.literal(" "),
-                Utils.translate("tooltip", RequestStatus.EXPORT.toString().toLowerCase())
-                    .withStyle(getStatusColor(RequestStatus.EXPORT)),
+                Utils.translate("tooltip", RequestStatus.EXPORT.toString().toLowerCase()).withStyle(getStatusColor(RequestStatus.EXPORT)),
                 Utils.translate("tooltip", f("{}_desc", RequestStatus.EXPORT.toString().toLowerCase()))
             ));
         } else {

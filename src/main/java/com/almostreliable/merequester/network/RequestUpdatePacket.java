@@ -81,7 +81,6 @@ public class RequestUpdatePacket implements CustomPacketPayload {
     }
 
     private enum UpdateType {
-        STATE,
-        NUMBERS
+        STATE, NUMBERS
     }
 }

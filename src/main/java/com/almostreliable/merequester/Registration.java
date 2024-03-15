@@ -14,6 +14,7 @@ import com.almostreliable.merequester.requester.RequesterBlock;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.terminal.RequesterTerminalPart;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class Registration {
@@ -50,12 +51,8 @@ public final class Registration {
 
     private static void registerRequesterEntity(BlockDefinition<RequesterBlock> block) {
         AtomicReference<BlockEntityType<RequesterBlockEntity>> typeHolder = new AtomicReference<>();
-        BlockEntityType.BlockEntitySupplier<RequesterBlockEntity> supplier = (blockPos, blockState) ->
-            new RequesterBlockEntity(
-                typeHolder.get(),
-                blockPos,
-                blockState
-            );
+        BlockEntityType.BlockEntitySupplier<RequesterBlockEntity> supplier = (blockPos, blockState)
+            -> new RequesterBlockEntity(typeHolder.get(), blockPos, blockState);
 
         @SuppressWarnings("ConstantConditions")
         var type = BlockEntityType.Builder.of(supplier, block.block()).build(null);

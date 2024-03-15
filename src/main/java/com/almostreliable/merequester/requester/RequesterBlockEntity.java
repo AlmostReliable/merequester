@@ -35,6 +35,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -61,7 +62,8 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
         Arrays.fill(requestStatus, StatusState.IDLE);
         storageManager = new StorageManager(this);
         actionSource = new MachineSource(this);
-        getMainNode().setExposedOnSides(getExposedSides())
+        getMainNode()
+            .setExposedOnSides(getExposedSides())
             .addService(IGridTickable.class, this)
             .addService(ICraftingRequester.class, this)
             .addService(IStorageWatcherNode.class, storageManager)
@@ -134,9 +136,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
 
     @Override
     public Component getTerminalName() {
-        return hasCustomName() ?
-            Objects.requireNonNull(getCustomName()) :
-            Utils.translate("block", MERequester.REQUESTER_ID);
+        return hasCustomName() ? Objects.requireNonNull(getCustomName()) : Utils.translate("block", MERequester.REQUESTER_ID);
     }
 
     @Override
@@ -239,7 +239,8 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
 
     @Override
     public ImmutableSet<ICraftingLink> getRequestedJobs() {
-        return Arrays.stream(requestStatus)
+        return Arrays
+            .stream(requestStatus)
             .filter(LinkState.class::isInstance)
             .map(state -> ((LinkState) state).link())
             .collect(ImmutableSet.toImmutableSet());

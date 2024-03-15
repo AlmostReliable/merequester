@@ -4,6 +4,7 @@ import com.almostreliable.merequester.BuildConfig;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
 
 public final class PacketHandler {
+
     private static final String PROTOCOL = "1";
 
     private PacketHandler() {}

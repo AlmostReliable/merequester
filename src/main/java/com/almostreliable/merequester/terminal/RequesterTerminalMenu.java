@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
+
 import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
@@ -54,8 +55,7 @@ public class RequesterTerminalMenu extends AbstractRequesterMenu {
     @Override
     protected ItemStack transferStackToMenu(ItemStack stack) {
         // sort the requesters like in the terminal to refer to the same slots
-        var requesters = byRequester.keySet()
-            .stream().sorted(Comparator.comparingLong(RequesterBlockEntity::getSortValue)).toList();
+        var requesters = byRequester.keySet().stream().sorted(Comparator.comparingLong(RequesterBlockEntity::getSortValue)).toList();
 
         // find the first available slot and put the stack there
         for (var requester : requesters) {
@@ -125,6 +125,7 @@ public class RequesterTerminalMenu extends AbstractRequesterMenu {
     }
 
     private static class VisitorState {
+
         private int total;
         private boolean forceFullUpdate;
     }

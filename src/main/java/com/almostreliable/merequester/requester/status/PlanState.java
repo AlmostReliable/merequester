@@ -24,13 +24,10 @@ public final class PlanState implements StatusState {
 
         try {
             var plan = future.get();
-            var submitResult = host.getMainNodeGrid()
-                .getCraftingService()
-                .submitJob(plan, host, null, false, host.getActionSource());
+            var submitResult = host.getMainNodeGrid().getCraftingService().submitJob(plan, host, null, false, host.getActionSource());
 
             if (!submitResult.successful() || submitResult.link() == null) {
-                if (submitResult.errorCode() == CraftingSubmitErrorCode.INCOMPLETE_PLAN &&
-                    !plan.missingItems().isEmpty()) {
+                if (submitResult.errorCode() == CraftingSubmitErrorCode.INCOMPLETE_PLAN && !plan.missingItems().isEmpty()) {
                     return StatusState.MISSING;
                 }
                 return StatusState.IDLE;

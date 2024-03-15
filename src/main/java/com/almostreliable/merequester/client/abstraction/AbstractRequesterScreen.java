@@ -31,6 +31,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.ArrayList;
@@ -134,9 +135,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
     protected void init() {
         imageHeight = GUI_HEADER_HEIGHT + GUI_FOOTER_HEIGHT + rowAmount * ROW_HEIGHT;
 
-        requestWidgets.forEach(
-            w -> w.preInit(Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets())
-        );
+        requestWidgets.forEach(w -> w.preInit(Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets()));
         super.init();
         // clear old widgets because init() is recalled when the terminal resizes
         requestWidgets.clear();
@@ -240,12 +239,8 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
 
         InventoryAction action = null;
         switch (clickType) {
-            case PICKUP -> action = mouseButton == 1 ?
-                InventoryAction.SPLIT_OR_PLACE_SINGLE :
-                InventoryAction.PICKUP_OR_SET_DOWN;
-            case QUICK_MOVE -> action = mouseButton == 1 ?
-                InventoryAction.PICKUP_SINGLE :
-                InventoryAction.SHIFT_CLICK;
+            case PICKUP -> action = mouseButton == 1 ? InventoryAction.SPLIT_OR_PLACE_SINGLE : InventoryAction.PICKUP_OR_SET_DOWN;
+            case QUICK_MOVE -> action = mouseButton == 1 ? InventoryAction.PICKUP_SINGLE : InventoryAction.SHIFT_CLICK;
             case CLONE -> {
                 if (getPlayer().getAbilities().instabuild) {
                     action = InventoryAction.CREATIVE_DUPLICATE;

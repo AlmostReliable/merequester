@@ -8,15 +8,14 @@ import com.almostreliable.merequester.Utils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+
 import java.util.List;
 
 public class SubmitButton extends AECheckbox implements ITooltip {
 
     private static final int SIZE = 12;
 
-    private static final Blitter BLITTER = Blitter.texture(
-        Utils.getRL("textures/gui/submit_button.png"), SIZE * 2, SIZE
-    );
+    private static final Blitter BLITTER = Blitter.texture(Utils.getRL("textures/gui/submit_button.png"), SIZE * 2, SIZE);
     private static final Blitter UNFOCUSED = BLITTER.copy().src(0, 0, SIZE, SIZE);
     private static final Blitter FOCUSED = BLITTER.copy().src(SIZE, SIZE, SIZE, SIZE);
 

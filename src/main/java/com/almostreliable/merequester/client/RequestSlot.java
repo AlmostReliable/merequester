@@ -9,6 +9,7 @@ import com.almostreliable.merequester.platform.Platform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
@@ -77,10 +78,6 @@ public class RequestSlot extends FakeSlot {
 
     @Override
     public void setFilterTo(ItemStack itemStack) {
-        Platform.sendDragAndDrop(
-            getRequesterReference().getRequesterId(),
-            getSlot(),
-            itemStack
-        );
+        Platform.sendDragAndDrop(getRequesterReference().getRequesterId(), getSlot(), itemStack);
     }
 }

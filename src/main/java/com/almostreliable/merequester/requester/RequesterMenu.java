@@ -9,6 +9,7 @@ import com.almostreliable.merequester.requester.abstraction.RequestTracker;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
+
 import javax.annotation.Nullable;
 
 public final class RequesterMenu extends AbstractRequesterMenu {
@@ -17,7 +18,8 @@ public final class RequesterMenu extends AbstractRequesterMenu {
         .create(RequesterMenu::new, RequesterBlockEntity.class)
         .build(MERequester.REQUESTER_ID);
 
-    @Nullable private RequestTracker requestTracker;
+    @Nullable
+    private RequestTracker requestTracker;
 
     private RequesterMenu(int id, Inventory playerInventory, RequesterBlockEntity host) {
         super(TYPE, id, playerInventory, host);

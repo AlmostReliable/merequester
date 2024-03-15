@@ -11,6 +11,7 @@ import java.util.Map;
 @SuppressWarnings("ALL")
 @Mixin(AEBlockEntities.class)
 public interface AEBlockEntitiesMixin {
+
     @Accessor(value = "BLOCK_ENTITY_TYPES", remap = false)
     public static Map<ResourceLocation, BlockEntityType<?>> merequester$blockEntityTypes() {
         throw new AssertionError();

@@ -15,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.network.PacketDistributor;
+
 import java.util.List;
 
 public final class Platform {

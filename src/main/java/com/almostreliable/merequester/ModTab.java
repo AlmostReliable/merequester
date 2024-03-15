@@ -9,10 +9,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 
 public final class ModTab {
 
-    public static final ResourceKey<CreativeModeTab> TAB_KEY = ResourceKey.create(
-        Registries.CREATIVE_MODE_TAB,
-        Utils.getRL("tab")
-    );
+    public static final ResourceKey<CreativeModeTab> TAB_KEY = ResourceKey.create(Registries.CREATIVE_MODE_TAB, Utils.getRL("tab"));
     private static final CreativeModeTab TAB = Platform.createTab();
 
     private ModTab() {}

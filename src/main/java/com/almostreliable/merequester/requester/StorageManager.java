@@ -8,6 +8,7 @@ import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.platform.TagSerializable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -15,7 +16,8 @@ public class StorageManager implements IStorageWatcherNode, TagSerializable<Comp
 
     private final RequesterBlockEntity host;
     private final Storage[] storages;
-    @Nullable private IStackWatcher stackWatcher;
+    @Nullable
+    private IStackWatcher stackWatcher;
 
     StorageManager(RequesterBlockEntity host) {
         this.host = host;
@@ -75,12 +77,7 @@ public class StorageManager implements IStorageWatcherNode, TagSerializable<Comp
     void addDrops(List<ItemStack> drops) {
         for (var storage : storages) {
             if (storage == null || storage.key == null) continue;
-            storage.key.addDrops(
-                storage.getBufferAmount() + storage.pendingAmount,
-                drops,
-                host.getLevel(),
-                host.getBlockPos()
-            );
+            storage.key.addDrops(storage.getBufferAmount() + storage.pendingAmount, drops, host.getLevel(), host.getBlockPos());
         }
     }
 
@@ -108,11 +105,7 @@ public class StorageManager implements IStorageWatcherNode, TagSerializable<Comp
     private void computeKnownAmount(int slot) {
         var key = host.getRequests().getKey(slot);
         if (key == null) return;
-        get(slot).knownAmount = host.getMainNodeGrid()
-            .getStorageService()
-            .getInventory()
-            .getAvailableStacks()
-            .get(key);
+        get(slot).knownAmount = host.getMainNodeGrid().getStorageService().getInventory().getAvailableStacks().get(key);
     }
 
     public static class Storage implements TagSerializable<CompoundTag> {
@@ -123,7 +116,8 @@ public class StorageManager implements IStorageWatcherNode, TagSerializable<Comp
         private static final String PENDING_AMOUNT_ID = "pending_amount";
         private static final String KNOWN_AMOUNT_ID = "known_amount";
 
-        @Nullable private AEKey key; // the item or fluid type stored in this storage
+        @Nullable
+        private AEKey key; // the item or fluid type stored in this storage
         private long totalAmount; // total amount of the job that needs to be exported
         private long bufferAmount; // amount of items or fluid in the buffer
         private long pendingAmount; // amount currently being inserted into the system but did not arrive yet

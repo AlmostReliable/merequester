@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import java.util.Objects;
 
 public class RequesterSyncPacket implements CustomPacketPayload {
+
     public static final ResourceLocation ID = Utils.getRL("requester_sync");
 
     private final boolean clearData;
@@ -45,11 +46,7 @@ public class RequesterSyncPacket implements CustomPacketPayload {
     }
 
     public static RequesterSyncPacket decode(FriendlyByteBuf buffer) {
-        return new RequesterSyncPacket(
-            buffer.readBoolean(),
-            buffer.readLong(),
-            Objects.requireNonNull(buffer.readNbt())
-        );
+        return new RequesterSyncPacket(buffer.readBoolean(), buffer.readLong(), Objects.requireNonNull(buffer.readNbt()));
     }
 
     public void handlePacket(Player player) {

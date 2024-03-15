@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
+
 import javax.annotation.Nullable;
 
 public abstract class AbstractRequesterMenu extends AEBaseMenu {
@@ -45,8 +46,7 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
 
         // the screen only has fake slots, so don't transfer anything to the player's inventory
         switch (action) {
-            case PICKUP_OR_SET_DOWN ->
-                requestSlot.setItemDirect(0, carriedStack.isEmpty() ? ItemStack.EMPTY : carriedStack.copy());
+            case PICKUP_OR_SET_DOWN -> requestSlot.setItemDirect(0, carriedStack.isEmpty() ? ItemStack.EMPTY : carriedStack.copy());
             case SPLIT_OR_PLACE_SINGLE -> {
                 if (carriedStack.isEmpty()) {
                     requestSlot.setItemDirect(0, ItemStack.EMPTY);
@@ -60,11 +60,7 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
             case EMPTY_ITEM -> {
                 var emptyingAction = ContainerItemStrategies.getEmptyingAction(carriedStack);
                 if (emptyingAction != null) {
-                    requestSlot.insertItem(
-                        0,
-                        GenericStack.wrapInItemStack(emptyingAction.what(), emptyingAction.maxAmount()),
-                        false
-                    );
+                    requestSlot.insertItem(0, GenericStack.wrapInItemStack(emptyingAction.what(), emptyingAction.maxAmount()), false);
                 }
             }
             case CREATIVE_DUPLICATE -> {

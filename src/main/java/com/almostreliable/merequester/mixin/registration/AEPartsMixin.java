@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @SuppressWarnings("ALL")
 @Mixin(AEParts.class)
 public abstract class AEPartsMixin {
+
     /**
      * AEParts are always initialized last on Forge and Fabric,
      * so we can safely init our registry here.

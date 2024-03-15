@@ -14,10 +14,10 @@ import java.util.function.Function;
 @SuppressWarnings("ALL")
 @Mixin(AEItems.class)
 public interface AEItemsMixin {
+
     @Invoker(value = "item", remap = false)
     public static <T extends Item> ItemDefinition<T> merequester$aeItem(
-        String name, ResourceLocation id, Function<Item.Properties, T> partFactory,
-        ResourceKey<CreativeModeTab> creativeTab
+        String name, ResourceLocation id, Function<Item.Properties, T> partFactory, ResourceKey<CreativeModeTab> creativeTab
     ) {
         throw new AssertionError();
     }

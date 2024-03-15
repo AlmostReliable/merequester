@@ -16,10 +16,10 @@ import java.util.function.Supplier;
 @SuppressWarnings("ALL")
 @Mixin(AEBlocks.class)
 public interface AEBlocksMixin {
+
     @Invoker(value = "block", remap = false)
     public static <T extends Block> BlockDefinition<T> merequester$aeBlock(
-        String name, ResourceLocation id, Supplier<T> blockSupplier,
-        @Nullable BiFunction<Block, Item.Properties, BlockItem> itemFactory
+        String name, ResourceLocation id, Supplier<T> blockSupplier, @Nullable BiFunction<Block, Item.Properties, BlockItem> itemFactory
     ) {
         throw new AssertionError();
     }

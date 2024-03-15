@@ -14,15 +14,10 @@ public class RequestState implements StatusState {
         if (amountToCraft <= 0) return StatusState.IDLE;
         var key = owner.getRequests().getKey(index);
 
-        var future = owner.getMainNodeGrid()
+        var future = owner
+            .getMainNodeGrid()
             .getCraftingService()
-            .beginCraftingCalculation(
-                owner.getLevel(),
-                owner::getActionSource,
-                key,
-                amountToCraft,
-                CalculationStrategy.CRAFT_LESS
-            );
+            .beginCraftingCalculation(owner.getLevel(), owner::getActionSource, key, amountToCraft, CalculationStrategy.CRAFT_LESS);
 
         return new PlanState(future);
     }

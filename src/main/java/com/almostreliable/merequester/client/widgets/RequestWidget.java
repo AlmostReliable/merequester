@@ -8,6 +8,7 @@ import com.almostreliable.merequester.requester.Requests.Request;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,14 +64,10 @@ public class RequestWidget {
         stateBox = new StateBox(x, y, style, () -> stateBoxChanged(host.getTargetRequest(index)));
         host.addSubWidget(f("request_state_{}", index), stateBox, subWidgets);
 
-        amountField = new NumberField(x + 38, y, "amount", style,
-            amount -> amountFieldSubmitted(host.getTargetRequest(index), amount)
-        );
+        amountField = new NumberField(x + 38, y, "amount", style, amount -> amountFieldSubmitted(host.getTargetRequest(index), amount));
         host.addSubWidget(f("request_amount_{}", index), amountField, subWidgets);
 
-        batchField = new NumberField(x + 92, y, "batch", style,
-            amount -> batchFieldSubmitted(host.getTargetRequest(index), amount)
-        );
+        batchField = new NumberField(x + 92, y, "batch", style, amount -> batchFieldSubmitted(host.getTargetRequest(index), amount));
         host.addSubWidget(f("request_batch_{}", index), batchField, subWidgets);
 
         submitButton = new SubmitButton(x + 146, y, style, () -> submitButtonClicked(host.getTargetRequest(index)));

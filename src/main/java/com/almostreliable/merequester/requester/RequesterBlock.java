@@ -23,6 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
+
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -73,8 +74,7 @@ public class RequesterBlock extends AEBaseEntityBlock<RequesterBlockEntity> {
     ) {
         if (Screen.hasShiftDown()) {
             tooltip.add(Component.literal(" "));
-            tooltip.add(Utils.translate("tooltip", f("{}_desc", MERequester.REQUESTER_ID))
-                .withStyle(ChatFormatting.AQUA));
+            tooltip.add(Utils.translate("tooltip", f("{}_desc", MERequester.REQUESTER_ID)).withStyle(ChatFormatting.AQUA));
         } else {
             Utils.addShiftInfoTooltip(tooltip);
         }

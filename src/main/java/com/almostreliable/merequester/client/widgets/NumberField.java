@@ -15,6 +15,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -74,14 +75,7 @@ public class NumberField extends ConfirmableTextField {
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partial) {
         super.renderWidget(guiGraphics, mouseX, mouseY, partial);
         if (!isFluid) return;
-        guiGraphics.drawString(
-            Minecraft.getInstance().font,
-            "B",
-            getX() + WIDTH - PADDING,
-            getY(),
-            0x54_5454,
-            false
-        );
+        guiGraphics.drawString(Minecraft.getInstance().font, "B", getX() + WIDTH - PADDING, getY(), 0x54_5454, false);
     }
 
     private void validate() {
@@ -159,12 +153,13 @@ public class NumberField extends ConfirmableTextField {
         tooltipMessage.add(0, Utils.translate("tooltip", name));
         super.setTooltipMessage(tooltipMessage);
         if (!isFocused() || (tooltipMessage.size() > 1 && !tooltipMessage.get(1).getString().startsWith("="))) return;
-        tooltipMessage.add(Component.literal("» ").withStyle(ChatFormatting.AQUA)
-            .append(Utils.translate(
-                "tooltip",
-                "enter_to_submit",
-                InputConstants.getKey("key.keyboard.enter").getDisplayName()
-            ).withStyle(ChatFormatting.GRAY)));
+        tooltipMessage.add(
+            Component.literal("» ")
+                .withStyle(ChatFormatting.AQUA)
+                .append(Utils
+                    .translate("tooltip", "enter_to_submit", InputConstants.getKey("key.keyboard.enter").getDisplayName())
+                    .withStyle(ChatFormatting.GRAY))
+        );
     }
 
     @Override
