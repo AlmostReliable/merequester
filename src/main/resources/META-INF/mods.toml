@@ -5,7 +5,7 @@ license = "${license}"
 logoFile = "logo.png"
 
 [[mixins]]
-config="${modId}.mixins.json"
+config = "${modId}.mixins.json"
 
 [[mods]]
 modId = "${modId}"
@@ -14,21 +14,21 @@ displayName = "${modName}"
 authors = "${modAuthor}"
 description = '''${modDescription}'''
 
-[[dependencies.${modId}]]
+[[dependencies."${modId}"]]
 modId = "neoforge"
 type = "REQUIRED"
 versionRange = "[${neoVersion},)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.${modId}]]
+[[dependencies."${modId}"]]
 modId = "minecraft"
 type = "REQUIRED"
 versionRange = "[${minecraftVersion},)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.${modId}]]
+[[dependencies."${modId}"]]
 modId = "ae2"
 type = "REQUIRED"
 versionRange = "[${aeVersion},)"
