@@ -28,7 +28,7 @@ plugins {
 base {
     version = "$minecraftVersion-$modVersion"
     group = modPackage
-    archivesName.set("$modId-neo")
+    archivesName.set("$modId-neoforge")
 }
 
 loom {

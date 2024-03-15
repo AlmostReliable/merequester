@@ -9,4 +9,4 @@ pluginManagement {
 
 val modName = extra.get("modName").toString().replace(" ", "-")
 val minecraftVersion: String by extra
-rootProject.name = "$modName-$minecraftVersion-Neo"
+rootProject.name = "$modName-$minecraftVersion-NeoForge"
