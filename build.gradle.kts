@@ -37,7 +37,6 @@ base {
 val commonSystemProperties = mapOf(
         "forge.logging.console.level" to "debug",
         "fml.earlyprogresswindow" to "false",
-        "appeng.tests" to "true",
         "guideDev.ae2guide.sources" to file("guidebook").absolutePath,
         "guideDev.ae2guide.sourcesNamespace" to modId
 )
@@ -51,16 +50,10 @@ runs {
         jvmArguments("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
     }
     create("client") {
-        systemProperties = commonSystemProperties + mapOf(
-                "appeng.tests" to "true",
-        )
     }
     create("gametestWorld") {
         configure("client")
         programArguments("--username", "AE2Dev", "--quickPlaySingleplayer", "GametestWorld")
-        systemProperties = commonSystemProperties + mapOf(
-                "appeng.tests" to "true"
-        )
     }
     create("guide") {
         configure("client")
@@ -132,6 +125,12 @@ tasks {
     withType<JavaCompile> {
         options.encoding = "UTF-8"
         options.release.set(17)
+    }
+
+    withType<Jar> {
+        from("guidebook") {
+            into("assets/$modId/ae2guide")
+        }
     }
 
     withType<GenerateModuleMetadata> {
