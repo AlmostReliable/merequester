@@ -1,18 +1,19 @@
 @file:Suppress("UnstableApiUsage")
 
 val license: String by project
-val minecraftVersion: String by project
+val logLevel: String by project
+val mixinDebugExport: String by project
+val recipeViewer: String by project
+val mcVersion: String by project
 val modVersion: String by project
 val modPackage: String by project
 val modId: String by project
 val modName: String by project
 val modAuthor: String by project
 val modDescription: String by project
-val parchmentVersion: String by project
 val neoVersion: String by project
-val forgeRecipeViewer: String by project
+val parchmentVersion: String by project
 val aeVersion: String by project
-val wtlibVersion: String by project
 val jeiVersion: String by project
 val reiVersion: String by project
 val emiVersion: String by project
@@ -26,16 +27,16 @@ plugins {
 }
 
 base {
-    version = "$minecraftVersion-$modVersion"
+    version = "$mcVersion-$modVersion"
     group = modPackage
     archivesName.set("$modId-neoforge")
 }
 
-/**
- * Configures properties common to all run configurations
- */
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
 val commonSystemProperties = mapOf(
-        "forge.logging.console.level" to "debug",
+        "forge.logging.console.level" to logLevel,
+        "mixin.debug.export" to mixinDebugExport,
         "guideDev.ae2guide.sources" to file("guidebook").absolutePath,
         "guideDev.ae2guide.sourcesNamespace" to modId
 )
@@ -44,27 +45,22 @@ runs {
     configureEach {
         workingDirectory = project.file("run")
         systemProperties = commonSystemProperties
-        // property "mixin.debug.export", "true"
         modSource(sourceSets.main.get())
         jvmArguments("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
     }
+
     create("client") {
-    }
-    create("gametestWorld") {
-        configure("client")
-        programArguments("--username", "AE2Dev", "--quickPlaySingleplayer", "GametestWorld")
+        programArguments("--quickPlaySingleplayer", "New World")
     }
     create("guide") {
         configure("client")
         systemProperty("guideDev.ae2guide.startupPage", "$modId:getting-started.md")
     }
-    create("server") {
-    }
+    create("server")
 }
 
 repositories {
-    maven("https://maven.neoforged.net/releases") // Neoforge
-    maven("https://maven.parchmentmc.org") // Parchment
+    maven("https://maven.neoforged.net/releases") // NeoForge
     maven("https://modmaven.dev") // Applied Energistics 2
     maven("https://maven.blamejared.com") // JEI
     maven("https://maven.shedaniel.me") // REI
@@ -73,24 +69,23 @@ repositories {
 }
 
 dependencies {
-    // Neoforge
+    // NeoForge
     implementation("net.neoforged:neoforge:$neoVersion")
 
     // Compile
     compileOnly("appeng:appliedenergistics2-neoforge:$aeVersion")
-    compileOnly("me.shedaniel:RoughlyEnoughItems-api:$reiVersion")
 
     // Runtime
-    implementation("appeng:appliedenergistics2-neoforge:$aeVersion")
-    when (forgeRecipeViewer) {
-        "jei" -> implementation("mezz.jei:jei-$minecraftVersion-neoforge:$jeiVersion") { isTransitive = false }
+    runtimeOnly("appeng:appliedenergistics2-neoforge:$aeVersion")
+    when (recipeViewer) {
+        "jei" -> runtimeOnly("mezz.jei:jei-$mcVersion-neoforge:$jeiVersion") { isTransitive = false }
         "rei" -> {
-            implementation("me.shedaniel:RoughlyEnoughItems-neoforge:$reiVersion")
-            implementation("dev.architectury:architectury-neoforge:11.1.17") // TODO: Remove on new REI version
+            runtimeOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$reiVersion")
+            runtimeOnly("dev.architectury:architectury-neoforge:11.1.17") // TODO: Remove on new REI version
         }
 
-        "emi" -> implementation("dev.emi:emi-neoforge:$emiVersion+$minecraftVersion")
-        else -> throw GradleException("Invalid recipeViewer value: $forgeRecipeViewer")
+        "emi" -> runtimeOnly("dev.emi:emi-neoforge:$emiVersion+$mcVersion")
+        else -> throw GradleException("Invalid recipeViewer value: $recipeViewer")
     }
 }
 
@@ -100,7 +95,7 @@ tasks {
 
         val replaceProperties = mapOf(
                 "license" to license,
-                "minecraftVersion" to minecraftVersion,
+                "mcVersion" to mcVersion,
                 "version" to project.version as String,
                 "modId" to modId,
                 "modName" to modName,
@@ -137,8 +132,9 @@ tasks {
     }
 }
 
-extensions.configure<JavaPluginExtension> {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+subsystems.parchment {
+    minecraftVersion(mcVersion)
+    mappingsVersion(parchmentVersion)
 }
 
 buildConfig {

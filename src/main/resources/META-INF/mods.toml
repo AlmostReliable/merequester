@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[1,)"
+loaderVersion = "[2,)"
 issueTrackerURL = "https://github.com/${githubUser}/${githubRepo}/issues"
 license = "${license}"
 logoFile = "logo.png"
@@ -24,7 +24,7 @@ side = "BOTH"
 [[dependencies."${modId}"]]
 modId = "minecraft"
 type = "REQUIRED"
-versionRange = "[${minecraftVersion},)"
+versionRange = "[${mcVersion},)"
 ordering = "NONE"
 side = "BOTH"
 
