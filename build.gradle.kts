@@ -20,7 +20,7 @@ val githubUser: String by project
 val githubRepo: String by project
 
 plugins {
-    id("dev.architectury.loom") version "1.4.+"
+    id("net.neoforged.gradle.userdev") version "7.0.97"
     id("com.github.gmazzo.buildconfig") version "4.0.4"
     java
 }
@@ -31,20 +31,44 @@ base {
     archivesName.set("$modId-neoforge")
 }
 
-loom {
-    silentMojangMappingsLicense()
+/**
+ * Configures properties common to all run configurations
+ */
+val commonSystemProperties = mapOf(
+        "forge.logging.console.level" to "debug",
+        "fml.earlyprogresswindow" to "false",
+        "appeng.tests" to "true",
+)
 
-    runs {
-        create("guide") {
-            client()
-            property("appeng.guide-dev.sources", file("guidebook").absolutePath)
-            property("appeng.guide-dev.sources.namespace", modId)
-            property("guideDev.ae2guide.startupPage", "$modId:getting-started.md")
-        }
-
-        forEach {
-            it.vmArgs("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
-        }
+runs {
+    configureEach {
+        workingDirectory = project.file("run")
+        systemProperties = commonSystemProperties
+        // property "mixin.debug.export", "true"
+        modSource(sourceSets.main.get())
+        jvmArguments("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
+    }
+    create("client") {
+        systemProperties = commonSystemProperties + mapOf(
+                "appeng.tests" to "true",
+                "guideDev.ae2guide.sources" to file("guidebook").absolutePath,
+        )
+    }
+    create("gametestWorld") {
+        configure("client")
+        programArguments("--username", "AE2Dev", "--quickPlaySingleplayer", "GametestWorld")
+        systemProperties = mapOf(
+                "appeng.tests" to "true",
+                "guideDev.ae2guide.sources" to file("guidebook").absolutePath,
+        )
+    }
+    create("guide") {
+        configure("client")
+        systemProperty("appeng.guide-dev.sources", file("guidebook").absolutePath)
+        systemProperty("appeng.guide-dev.sources.namespace", modId)
+        systemProperty("guideDev.ae2guide.startupPage", "$modId:getting-started.md")
+    }
+    create("server") {
     }
 }
 
@@ -59,30 +83,23 @@ repositories {
 }
 
 dependencies {
-    // Minecraft
-    minecraft("com.mojang:minecraft:$minecraftVersion")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-$minecraftVersion:$parchmentVersion@zip")
-    })
-
     // Neoforge
-    neoForge("net.neoforged:neoforge:$neoVersion")
+    implementation("net.neoforged:neoforge:$neoVersion")
 
     // Compile
-    modCompileOnly("appeng:appliedenergistics2-neoforge:$aeVersion")
-    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:$reiVersion")
+    compileOnly("appeng:appliedenergistics2-neoforge:$aeVersion")
+    compileOnly("me.shedaniel:RoughlyEnoughItems-api:$reiVersion")
 
     // Runtime
-    modLocalRuntime("appeng:appliedenergistics2-neoforge:$aeVersion")
+    implementation("appeng:appliedenergistics2-neoforge:$aeVersion")
     when (forgeRecipeViewer) {
-        "jei" -> modLocalRuntime("mezz.jei:jei-$minecraftVersion-neoforge:$jeiVersion") { isTransitive = false }
+        "jei" -> implementation("mezz.jei:jei-$minecraftVersion-neoforge:$jeiVersion") { isTransitive = false }
         "rei" -> {
-            modLocalRuntime("me.shedaniel:RoughlyEnoughItems-neoforge:$reiVersion")
-            modLocalRuntime("dev.architectury:architectury-neoforge:11.1.17") // TODO: Remove on new REI version
+            implementation("me.shedaniel:RoughlyEnoughItems-neoforge:$reiVersion")
+            implementation("dev.architectury:architectury-neoforge:11.1.17") // TODO: Remove on new REI version
         }
 
-        "emi" -> modLocalRuntime("dev.emi:emi-neoforge:$emiVersion+$minecraftVersion")
+        "emi" -> implementation("dev.emi:emi-neoforge:$emiVersion+$minecraftVersion")
         else -> throw GradleException("Invalid recipeViewer value: $forgeRecipeViewer")
     }
 }
