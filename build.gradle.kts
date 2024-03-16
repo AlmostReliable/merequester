@@ -38,6 +38,8 @@ val commonSystemProperties = mapOf(
         "forge.logging.console.level" to "debug",
         "fml.earlyprogresswindow" to "false",
         "appeng.tests" to "true",
+        "guideDev.ae2guide.sources" to file("guidebook").absolutePath,
+        "guideDev.ae2guide.sourcesNamespace" to modId
 )
 
 runs {
@@ -51,21 +53,17 @@ runs {
     create("client") {
         systemProperties = commonSystemProperties + mapOf(
                 "appeng.tests" to "true",
-                "guideDev.ae2guide.sources" to file("guidebook").absolutePath,
         )
     }
     create("gametestWorld") {
         configure("client")
         programArguments("--username", "AE2Dev", "--quickPlaySingleplayer", "GametestWorld")
-        systemProperties = mapOf(
-                "appeng.tests" to "true",
-                "guideDev.ae2guide.sources" to file("guidebook").absolutePath,
+        systemProperties = commonSystemProperties + mapOf(
+                "appeng.tests" to "true"
         )
     }
     create("guide") {
         configure("client")
-        systemProperty("appeng.guide-dev.sources", file("guidebook").absolutePath)
-        systemProperty("appeng.guide-dev.sources.namespace", modId)
         systemProperty("guideDev.ae2guide.startupPage", "$modId:getting-started.md")
     }
     create("server") {
