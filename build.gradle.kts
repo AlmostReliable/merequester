@@ -36,7 +36,6 @@ base {
  */
 val commonSystemProperties = mapOf(
         "forge.logging.console.level" to "debug",
-        "fml.earlyprogresswindow" to "false",
         "guideDev.ae2guide.sources" to file("guidebook").absolutePath,
         "guideDev.ae2guide.sourcesNamespace" to modId
 )
