@@ -748,6 +748,7 @@
       <option name="ignorableAnnotations">
         <value>
           <item value="net.minecraftforge.fml.common.Mod" />
+          <item value="net.neoforged.fml.common.Mod" />
         </value>
       </option>
       <option name="ignoreClassesWithOnlyMain" value="false" />
