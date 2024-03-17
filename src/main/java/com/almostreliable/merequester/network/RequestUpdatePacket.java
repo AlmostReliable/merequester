@@ -3,14 +3,14 @@ package com.almostreliable.merequester.network;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
-public class RequestUpdatePacket implements CustomPacketPayload {
+public final class RequestUpdatePacket implements Packet {
 
-    public static final ResourceLocation ID = Utils.getRL("request_update");
+    static final ResourceLocation ID = Utils.getRL("request_update");
 
+    private final UpdateType updateType;
     private final long requesterId;
     private final int requestIndex;
 
@@ -18,21 +18,19 @@ public class RequestUpdatePacket implements CustomPacketPayload {
     private long amount;
     private long batch;
 
-    private final UpdateType updateType;
-
     public RequestUpdatePacket(long requesterId, int requestIndex, boolean state) {
+        this.updateType = UpdateType.STATE;
         this.requesterId = requesterId;
         this.requestIndex = requestIndex;
         this.state = state;
-        this.updateType = UpdateType.STATE;
     }
 
     public RequestUpdatePacket(long requesterId, int requestIndex, long amount, long batch) {
+        this.updateType = UpdateType.NUMBERS;
         this.requesterId = requesterId;
         this.requestIndex = requestIndex;
         this.amount = amount;
         this.batch = batch;
-        this.updateType = UpdateType.NUMBERS;
     }
 
     @Override
@@ -56,7 +54,7 @@ public class RequestUpdatePacket implements CustomPacketPayload {
         }
     }
 
-    public static RequestUpdatePacket decode(FriendlyByteBuf buffer) {
+    static RequestUpdatePacket decode(FriendlyByteBuf buffer) {
         var id = buffer.readLong();
         var index = buffer.readVarInt();
 
@@ -70,7 +68,8 @@ public class RequestUpdatePacket implements CustomPacketPayload {
         throw new IllegalStateException("Unknown update type: " + type);
     }
 
-    public void handlePacket(Player player) {
+    @Override
+    public void handle(Player player) {
         if (player.containerMenu instanceof AbstractRequesterMenu requester) {
             if (updateType == UpdateType.STATE) {
                 requester.updateRequesterState(requesterId, requestIndex, state);

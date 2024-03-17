@@ -5,15 +5,14 @@ import com.almostreliable.merequester.client.abstraction.AbstractRequesterScreen
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.Objects;
 
-public class RequesterSyncPacket implements CustomPacketPayload {
+public final class RequesterSyncPacket implements Packet {
 
-    public static final ResourceLocation ID = Utils.getRL("requester_sync");
+    static final ResourceLocation ID = Utils.getRL("requester_sync");
 
     private final boolean clearData;
     private final long requesterId;
@@ -45,11 +44,12 @@ public class RequesterSyncPacket implements CustomPacketPayload {
         buffer.writeNbt(data);
     }
 
-    public static RequesterSyncPacket decode(FriendlyByteBuf buffer) {
+    static RequesterSyncPacket decode(FriendlyByteBuf buffer) {
         return new RequesterSyncPacket(buffer.readBoolean(), buffer.readLong(), Objects.requireNonNull(buffer.readNbt()));
     }
 
-    public void handlePacket(Player player) {
+    @Override
+    public void handle(Player player) {
         if (Minecraft.getInstance().screen instanceof AbstractRequesterScreen<?> screen) {
             screen.updateFromMenu(clearData, requesterId, data);
         }
