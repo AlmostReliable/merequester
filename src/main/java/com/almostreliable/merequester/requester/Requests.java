@@ -9,8 +9,7 @@ import appeng.api.stacks.AEKeyType;
 import appeng.api.stacks.GenericStack;
 import appeng.api.storage.MEStorage;
 import appeng.helpers.externalstorage.GenericStackInv;
-import com.almostreliable.merequester.platform.Platform;
-import com.almostreliable.merequester.platform.TagSerializable;
+import com.almostreliable.merequester.Config;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
 import com.almostreliable.merequester.requester.status.RequestStatus;
 import com.google.common.primitives.Ints;
@@ -20,6 +19,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,7 +33,7 @@ import static com.almostreliable.merequester.Utils.f;
  * Automatically provides a menu wrapper by implementing {@link InternalInventory}.
  */
 @SuppressWarnings("UnstableApiUsage")
-public class Requests implements MEStorage, GenericInternalInventory, InternalInventory, TagSerializable<CompoundTag> {
+public class Requests implements MEStorage, GenericInternalInventory, InternalInventory, INBTSerializable<CompoundTag> {
 
     // if null, the inventory is client-side and doesn't need saving
     @Nullable
@@ -43,7 +43,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
 
     public Requests(@Nullable RequestHost host) {
         this.host = host;
-        this.size = Platform.getRequestLimit();
+        this.size = Config.COMMON.requests.get();
         requests = new Request[size];
         for (var i = 0; i < requests.length; i++) {
             requests[i] = new Request(i);
@@ -137,18 +137,18 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
     }
 
     @Override
-    public CompoundTag serialize() {
+    public CompoundTag serializeNBT() {
         var tag = new CompoundTag();
         for (var i = 0; i < size(); i++) {
-            tag.put(String.valueOf(i), get(i).serialize());
+            tag.put(String.valueOf(i), get(i).serializeNBT());
         }
         return tag;
     }
 
     @Override
-    public void deserialize(CompoundTag tag) {
+    public void deserializeNBT(CompoundTag tag) {
         for (var i = 0; i < size(); i++) {
-            get(i).deserialize(tag.getCompound(String.valueOf(i)));
+            get(i).deserializeNBT(tag.getCompound(String.valueOf(i)));
         }
     }
 
@@ -225,7 +225,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
     }
     // </editor-fold>
 
-    public final class Request implements TagSerializable<CompoundTag> {
+    public final class Request implements INBTSerializable<CompoundTag> {
 
         // serialization IDs
         private static final String STATE_ID = "state";
@@ -251,7 +251,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
         }
 
         @Override
-        public CompoundTag serialize() {
+        public CompoundTag serializeNBT() {
             var tag = new CompoundTag();
             tag.putBoolean(STATE_ID, state);
             if (key != null) tag.put(KEY_ID, key.toTagGeneric());
@@ -262,7 +262,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
         }
 
         @Override
-        public void deserialize(CompoundTag tag) {
+        public void deserializeNBT(CompoundTag tag) {
             state = tag.getBoolean(STATE_ID);
             key = tag.contains(KEY_ID) ? AEKey.fromTagGeneric(tag.getCompound(KEY_ID)) : null;
             amount = tag.getLong(AMOUNT_ID);

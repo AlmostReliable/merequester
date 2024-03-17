@@ -3,12 +3,14 @@ package com.almostreliable.merequester.requester;
 import appeng.api.networking.IGrid;
 import appeng.menu.implementations.MenuTypeBuilder;
 import com.almostreliable.merequester.MERequester;
-import com.almostreliable.merequester.platform.Platform;
+import com.almostreliable.merequester.network.RequesterSyncPacket;
 import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
 import com.almostreliable.merequester.requester.abstraction.RequestTracker;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 
@@ -48,7 +50,9 @@ public final class RequesterMenu extends AbstractRequesterMenu {
 
     @Override
     protected void sendFullUpdate(@Nullable IGrid grid) {
-        Platform.sendClearData(getPlayer());
+        if (getPlayer() instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.PLAYER.with(serverPlayer).send(RequesterSyncPacket.clearData());
+        }
         requestTracker = createTracker((RequesterBlockEntity) getBlockEntity());
         syncRequestTrackerFull(requestTracker);
     }

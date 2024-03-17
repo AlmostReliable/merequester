@@ -1,6 +1,5 @@
 package com.almostreliable.merequester;
 
-import com.almostreliable.merequester.platform.Platform;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
@@ -10,7 +9,11 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 public final class ModTab {
 
     public static final ResourceKey<CreativeModeTab> TAB_KEY = ResourceKey.create(Registries.CREATIVE_MODE_TAB, Utils.getRL("tab"));
-    private static final CreativeModeTab TAB = Platform.createTab();
+    private static final CreativeModeTab TAB = CreativeModeTab.builder()
+        .title(Utils.translate("itemGroup", "tab"))
+        .icon(() -> Registration.REQUESTER.stack())
+        .noScrollBar()
+        .build();
 
     private ModTab() {}
 

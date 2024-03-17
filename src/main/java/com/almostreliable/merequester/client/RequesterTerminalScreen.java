@@ -8,11 +8,11 @@ import appeng.client.gui.widgets.AETextField;
 import appeng.client.gui.widgets.SettingToggleButton;
 import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
+import com.almostreliable.merequester.Config;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.abstraction.AbstractRequesterScreen;
 import com.almostreliable.merequester.client.abstraction.RequesterReference;
-import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.Requests.Request;
 import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
 import com.google.common.collect.HashMultimap;
@@ -118,7 +118,7 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
         Collections.sort(requesterNames);
 
         lines.clear();
-        lines.ensureCapacity(requesterNames.size() + byId.size() * Platform.getRequestLimit());
+        lines.ensureCapacity(requesterNames.size() + byId.size() * Config.COMMON.requests.get());
 
         for (var name : requesterNames) {
             lines.add(name);
@@ -166,9 +166,8 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
 
     @SuppressWarnings("SuspiciousMethodCalls")
     private void reinitialize() {
-        var renderableWidgets = Platform.getRenderables(this);
-        children().removeAll(renderableWidgets);
-        renderableWidgets.clear();
+        children().removeAll(renderables);
+        renderables.clear();
         init();
     }
 

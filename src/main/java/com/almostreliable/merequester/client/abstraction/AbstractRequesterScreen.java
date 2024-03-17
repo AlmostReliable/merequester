@@ -123,7 +123,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
         for (var i = 0; i < requests.size(); i++) {
             var requestIndex = String.valueOf(i);
             if (data.contains(requestIndex)) {
-                requests.get(i).deserialize(data.getCompound(requestIndex));
+                requests.get(i).deserializeNBT(data.getCompound(requestIndex));
             }
         }
 

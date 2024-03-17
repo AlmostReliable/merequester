@@ -6,14 +6,16 @@ import appeng.api.networking.security.IActionHost;
 import appeng.menu.implementations.MenuTypeBuilder;
 import appeng.menu.implementations.PatternAccessTermMenu;
 import com.almostreliable.merequester.MERequester;
-import com.almostreliable.merequester.platform.Platform;
+import com.almostreliable.merequester.network.RequesterSyncPacket;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
 import com.almostreliable.merequester.requester.abstraction.RequestTracker;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
@@ -74,7 +76,9 @@ public class RequesterTerminalMenu extends AbstractRequesterMenu {
         byRequester.clear();
 
         // clear the current data on the client
-        Platform.sendClearData(getPlayer());
+        if (getPlayer() instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.PLAYER.with(serverPlayer).send(RequesterSyncPacket.clearData());
+        }
 
         for (var requester : grid.getActiveMachines(RequesterBlockEntity.class)) {
             byRequester.put(requester, createTracker(requester));
