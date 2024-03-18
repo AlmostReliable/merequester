@@ -11,19 +11,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.almostreliable.merequester.Utils.f;
-
 @SuppressWarnings("ALL")
 @Mixin(InitScreens.class)
 public abstract class InitScreensMixin {
 
     @Inject(method = "init", at = @At("TAIL"), remap = false)
     private static void merequester$initScreens(CallbackInfo ci) {
-        InitScreens.register(RequesterMenu.TYPE, RequesterScreen::new, f("/screens/{}.json", MERequester.REQUESTER_ID));
+        InitScreens.register(RequesterMenu.TYPE, RequesterScreen::new, String.format("/screens/%s.json", MERequester.REQUESTER_ID));
         InitScreens.<RequesterTerminalMenu, RequesterTerminalScreen<RequesterTerminalMenu>> register(
             RequesterTerminalMenu.TYPE,
             RequesterTerminalScreen::new,
-            f("/screens/{}.json", MERequester.TERMINAL_ID)
+            String.format("/screens/%s.json", MERequester.TERMINAL_ID)
         );
     }
 }

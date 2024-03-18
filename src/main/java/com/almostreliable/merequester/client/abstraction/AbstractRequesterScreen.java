@@ -39,8 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.almostreliable.merequester.Utils.f;
-
 /**
  * yoinked from {@link PatternAccessTermScreen}
  */
@@ -199,7 +197,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
             } else if (lineElement instanceof String name) {
                 var text = name;
                 int rows = getByName(name).size();
-                if (rows > 1) text = f("{} ({})", text, rows);
+                if (rows > 1) text = String.format("%s (%s)", text, rows);
                 text = font.plainSubstrByWidth(text, TEXT_MAX_WIDTH, true);
 
                 guiGraphics.drawString(

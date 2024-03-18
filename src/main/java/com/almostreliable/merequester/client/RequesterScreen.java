@@ -17,11 +17,9 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Set;
 
-import static com.almostreliable.merequester.Utils.f;
-
 public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
 
-    private static final ResourceLocation TEXTURE = Utils.getRL(f("textures/gui/{}.png", MERequester.REQUESTER_ID));
+    private static final ResourceLocation TEXTURE = Utils.getRL(String.format("textures/gui/%s.png", MERequester.REQUESTER_ID));
     private static final Rect2i FOOTER_BBOX = new Rect2i(0, 114, GUI_WIDTH, GUI_FOOTER_HEIGHT);
     private static final int MAX_ROW_COUNT = 10;
 

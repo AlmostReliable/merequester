@@ -14,8 +14,6 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.almostreliable.merequester.Utils.f;
-
 @OnlyIn(Dist.CLIENT)
 public class RequestWidget {
 
@@ -63,19 +61,19 @@ public class RequestWidget {
      */
     public void postInit() {
         stateBox = new StateBox(x, y, style, () -> stateBoxChanged(host.getTargetRequest(index)));
-        host.addSubWidget(f("request_state_{}", index), stateBox, subWidgets);
+        host.addSubWidget(String.format("request_state_%s", index), stateBox, subWidgets);
 
         amountField = new NumberField(x + 38, y, "amount", style, amount -> amountFieldSubmitted(host.getTargetRequest(index), amount));
-        host.addSubWidget(f("request_amount_{}", index), amountField, subWidgets);
+        host.addSubWidget(String.format("request_amount_%s", index), amountField, subWidgets);
 
         batchField = new NumberField(x + 92, y, "batch", style, amount -> batchFieldSubmitted(host.getTargetRequest(index), amount));
-        host.addSubWidget(f("request_batch_{}", index), batchField, subWidgets);
+        host.addSubWidget(String.format("request_batch_%s", index), batchField, subWidgets);
 
         submitButton = new SubmitButton(x + 146, y, style, () -> submitButtonClicked(host.getTargetRequest(index)));
-        host.addSubWidget(f("request_submit_{}", index), submitButton, subWidgets);
+        host.addSubWidget(String.format("request_submit_%s", index), submitButton, subWidgets);
 
         statusDisplay = new StatusDisplay(x + 39, y + 15, () -> isInactive(host.getTargetRequest(index)));
-        host.addSubWidget(f("request_status_{}", index), statusDisplay, subWidgets);
+        host.addSubWidget(String.format("request_status_%s", index), statusDisplay, subWidgets);
     }
 
     public void hide() {

@@ -24,11 +24,9 @@ import net.minecraft.world.entity.player.Inventory;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static com.almostreliable.merequester.Utils.f;
-
 public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends AbstractRequesterScreen<T> {
 
-    private static final ResourceLocation TEXTURE = Utils.getRL(f("textures/gui/{}.png", MERequester.TERMINAL_ID));
+    private static final ResourceLocation TEXTURE = Utils.getRL(String.format("textures/gui/%s.png", MERequester.TERMINAL_ID));
     private static final Rect2i FOOTER_BBOX = new Rect2i(0, 133, GUI_WIDTH, GUI_FOOTER_HEIGHT);
 
     private final HashMap<Long, RequesterReference> byId = new HashMap<>();

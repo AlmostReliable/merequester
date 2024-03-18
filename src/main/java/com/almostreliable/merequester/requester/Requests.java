@@ -25,8 +25,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-import static com.almostreliable.merequester.Utils.f;
-
 /**
  * Uses the same approach as {@link GenericStackInv} to track items and fluids.
  * <p>
@@ -296,8 +294,8 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
 
         @Override
         public String toString() {
-            return f(
-                "Request[state={}, key={}, amount={}, batch={}, client_status={}]",
+            return String.format(
+                "Request[state=%s, key=%s, amount=%s, batch=%s, client_status=%s]",
                 state,
                 key == null ? "none" : key.getDisplayName(),
                 amount,

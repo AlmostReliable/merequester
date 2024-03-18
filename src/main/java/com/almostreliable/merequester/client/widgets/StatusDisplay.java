@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-import static com.almostreliable.merequester.Utils.f;
-
 public class StatusDisplay extends AbstractWidget implements ITooltip {
 
     private static final int WIDTH = 118;
@@ -64,16 +62,16 @@ public class StatusDisplay extends AbstractWidget implements ITooltip {
             tooltip.addAll(List.of(
                 Component.literal(" "),
                 Utils.translate("tooltip", RequestStatus.IDLE.toString().toLowerCase()).withStyle(getStatusColor(RequestStatus.IDLE)),
-                Utils.translate("tooltip", f("{}_desc", RequestStatus.IDLE.toString().toLowerCase())),
+                Utils.translate("tooltip", String.format("%s_desc", RequestStatus.IDLE.toString().toLowerCase())),
                 Component.literal(" "),
                 Utils.translate("tooltip", RequestStatus.MISSING.toString().toLowerCase()).withStyle(getStatusColor(RequestStatus.MISSING)),
-                Utils.translate("tooltip", f("{}_desc", RequestStatus.MISSING.toString().toLowerCase())),
+                Utils.translate("tooltip", String.format("%s_desc", RequestStatus.MISSING.toString().toLowerCase())),
                 Component.literal(" "),
                 Utils.translate("tooltip", RequestStatus.LINK.toString().toLowerCase()).withStyle(getStatusColor(RequestStatus.LINK)),
-                Utils.translate("tooltip", f("{}_desc", RequestStatus.LINK.toString().toLowerCase())),
+                Utils.translate("tooltip", String.format("%s_desc", RequestStatus.LINK.toString().toLowerCase())),
                 Component.literal(" "),
                 Utils.translate("tooltip", RequestStatus.EXPORT.toString().toLowerCase()).withStyle(getStatusColor(RequestStatus.EXPORT)),
-                Utils.translate("tooltip", f("{}_desc", RequestStatus.EXPORT.toString().toLowerCase()))
+                Utils.translate("tooltip", String.format("%s_desc", RequestStatus.EXPORT.toString().toLowerCase()))
             ));
         } else {
             Utils.addShiftInfoTooltip(tooltip);
