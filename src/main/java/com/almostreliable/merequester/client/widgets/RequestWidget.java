@@ -3,17 +3,16 @@ package com.almostreliable.merequester.client.widgets;
 import appeng.client.gui.style.ScreenStyle;
 import com.almostreliable.merequester.client.abstraction.RequestDisplay;
 import com.almostreliable.merequester.client.abstraction.RequesterReference;
-import com.almostreliable.merequester.platform.Platform;
+import com.almostreliable.merequester.network.RequestUpdatePacket;
 import com.almostreliable.merequester.requester.Requests.Request;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.almostreliable.merequester.Utils.f;
 
 @OnlyIn(Dist.CLIENT)
 public class RequestWidget {
@@ -62,23 +61,19 @@ public class RequestWidget {
      */
     public void postInit() {
         stateBox = new StateBox(x, y, style, () -> stateBoxChanged(host.getTargetRequest(index)));
-        host.addSubWidget(f("request_state_{}", index), stateBox, subWidgets);
+        host.addSubWidget(String.format("request_state_%s", index), stateBox, subWidgets);
 
-        amountField = new NumberField(x + 38, y, "amount", style,
-            amount -> amountFieldSubmitted(host.getTargetRequest(index), amount)
-        );
-        host.addSubWidget(f("request_amount_{}", index), amountField, subWidgets);
+        amountField = new NumberField(x + 38, y, "amount", style, amount -> amountFieldSubmitted(host.getTargetRequest(index), amount));
+        host.addSubWidget(String.format("request_amount_%s", index), amountField, subWidgets);
 
-        batchField = new NumberField(x + 92, y, "batch", style,
-            amount -> batchFieldSubmitted(host.getTargetRequest(index), amount)
-        );
-        host.addSubWidget(f("request_batch_{}", index), batchField, subWidgets);
+        batchField = new NumberField(x + 92, y, "batch", style, amount -> batchFieldSubmitted(host.getTargetRequest(index), amount));
+        host.addSubWidget(String.format("request_batch_%s", index), batchField, subWidgets);
 
         submitButton = new SubmitButton(x + 146, y, style, () -> submitButtonClicked(host.getTargetRequest(index)));
-        host.addSubWidget(f("request_submit_{}", index), submitButton, subWidgets);
+        host.addSubWidget(String.format("request_submit_%s", index), submitButton, subWidgets);
 
         statusDisplay = new StatusDisplay(x + 39, y + 15, () -> isInactive(host.getTargetRequest(index)));
-        host.addSubWidget(f("request_status_{}", index), statusDisplay, subWidgets);
+        host.addSubWidget(String.format("request_status_%s", index), statusDisplay, subWidgets);
     }
 
     public void hide() {
@@ -109,7 +104,7 @@ public class RequestWidget {
         var newState = stateBox.isSelected();
         request.updateState(newState); // prevent jittery animation before server information is received
         var requesterId = ((RequesterReference) request.getRequesterReference()).getRequesterId();
-        Platform.sendRequestUpdate(requesterId, request.getIndex(), newState);
+        PacketDistributor.SERVER.noArg().send(new RequestUpdatePacket(requesterId, request.getIndex(), newState));
     }
 
     private void amountFieldSubmitted(@Nullable Request request, long amount) {
@@ -139,7 +134,7 @@ public class RequestWidget {
         long amount = amountField.getLongValue().orElse(0);
         long batch = batchField.getLongValue().orElse(1);
         var requesterId = ((RequesterReference) request.getRequesterReference()).getRequesterId();
-        Platform.sendRequestUpdate(requesterId, request.getIndex(), amount, batch);
+        PacketDistributor.SERVER.noArg().send(new RequestUpdatePacket(requesterId, request.getIndex(), amount, batch));
     }
 
     private boolean isInactive(@Nullable Request request) {

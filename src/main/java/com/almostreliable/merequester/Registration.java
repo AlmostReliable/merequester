@@ -7,63 +7,98 @@ import appeng.core.definitions.BlockDefinition;
 import appeng.core.definitions.ItemDefinition;
 import appeng.items.parts.PartItem;
 import appeng.items.parts.PartModelsHelper;
-import com.almostreliable.merequester.mixin.registration.AEBlockEntitiesMixin;
-import com.almostreliable.merequester.mixin.registration.AEBlocksMixin;
-import com.almostreliable.merequester.mixin.registration.AEItemsMixin;
 import com.almostreliable.merequester.requester.RequesterBlock;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import com.almostreliable.merequester.terminal.RequesterTerminalPart;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.almostreliable.merequester.MERequester.REQUESTER_ID;
+import static com.almostreliable.merequester.MERequester.TERMINAL_ID;
+
 public final class Registration {
 
-    public static final ItemDefinition<PartItem<?>> TERMINAL = setupTerminal();
-    public static final BlockDefinition<RequesterBlock> REQUESTER = setupRequester();
+    public static final BlockDefinition<RequesterBlock> REQUESTER_BLOCK = registerRequester();
+    public static final ItemDefinition<PartItem<RequesterTerminalPart>> REQUESTER_TERMINAL = registerRequesterTerminal();
+    private static final BlockEntityType<RequesterBlockEntity> REQUESTER_ENTITY = registerRequesterEntity();
 
     private Registration() {}
 
-    public static void init() {
-        MERequester.LOGGER.info("Registering content");
+    private static BlockDefinition<RequesterBlock> registerRequester() {
+        RequesterBlock block = new RequesterBlock();
+        AEBaseBlockItem item = new AEBaseBlockItem(block, new Item.Properties());
+        return new BlockDefinition<>("", Utils.getRL(REQUESTER_ID), block, item);
     }
 
-    private static ItemDefinition<PartItem<?>> setupTerminal() {
+    private static ItemDefinition<PartItem<RequesterTerminalPart>> registerRequesterTerminal() {
         PartModels.registerModels(PartModelsHelper.createModels(RequesterTerminalPart.class));
-        return AEItemsMixin.merequester$aeItem(
-            "",
-            Utils.getRL(MERequester.TERMINAL_ID),
-            props -> new PartItem<>(props, RequesterTerminalPart.class, RequesterTerminalPart::new),
-            ModTab.TAB_KEY
+
+        PartItem<RequesterTerminalPart> item = new PartItem<>(
+            new Item.Properties(),
+            RequesterTerminalPart.class,
+            RequesterTerminalPart::new
         );
+        return new ItemDefinition<>("", Utils.getRL(TERMINAL_ID), item);
     }
 
-    private static BlockDefinition<RequesterBlock> setupRequester() {
-        var blockDef = AEBlocksMixin.merequester$aeBlock(
-            "",
-            Utils.getRL(MERequester.REQUESTER_ID),
-            RequesterBlock::new,
-            AEBaseBlockItem::new
-        );
-        registerRequesterEntity(blockDef);
-        return blockDef;
-    }
-
-    private static void registerRequesterEntity(BlockDefinition<RequesterBlock> block) {
+    private static BlockEntityType<RequesterBlockEntity> registerRequesterEntity() {
         AtomicReference<BlockEntityType<RequesterBlockEntity>> typeHolder = new AtomicReference<>();
-        BlockEntityType.BlockEntitySupplier<RequesterBlockEntity> supplier = (blockPos, blockState) ->
-            new RequesterBlockEntity(
-                typeHolder.get(),
-                blockPos,
-                blockState
-            );
+        BlockEntityType.BlockEntitySupplier<RequesterBlockEntity> supplier = (blockPos, blockState)
+            -> new RequesterBlockEntity(typeHolder.get(), blockPos, blockState);
 
         @SuppressWarnings("ConstantConditions")
-        var type = BlockEntityType.Builder.of(supplier, block.block()).build(null);
+        BlockEntityType<RequesterBlockEntity> type = BlockEntityType.Builder.of(supplier, REQUESTER_BLOCK.block()).build(null);
         typeHolder.set(type);
 
-        AEBlockEntitiesMixin.merequester$blockEntityTypes().put(Utils.getRL(MERequester.REQUESTER_ID), type);
-        AEBaseBlockEntity.registerBlockEntityItem(type, block.asItem());
-        block.block().setBlockEntity(RequesterBlockEntity.class, type, null, null);
+        AEBaseBlockEntity.registerBlockEntityItem(type, REQUESTER_BLOCK.asItem());
+        REQUESTER_BLOCK.block().setBlockEntity(RequesterBlockEntity.class, type, null, null);
+
+        return type;
+    }
+
+    static void registerContents(RegisterEvent event) {
+        if (event.getRegistryKey() == Registries.CREATIVE_MODE_TAB) {
+            Tab.registerTab(event);
+            return;
+        }
+
+        if (event.getRegistryKey() == Registries.BLOCK) {
+            Registry.register(BuiltInRegistries.BLOCK, REQUESTER_BLOCK.id(), REQUESTER_BLOCK.block());
+            Registry.register(BuiltInRegistries.ITEM, REQUESTER_BLOCK.id(), REQUESTER_BLOCK.asItem());
+            Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, REQUESTER_BLOCK.id(), REQUESTER_ENTITY);
+            Registry.register(BuiltInRegistries.ITEM, REQUESTER_TERMINAL.id(), REQUESTER_TERMINAL.asItem());
+        }
+    }
+
+    public static final class Tab {
+
+        public static final ResourceKey<CreativeModeTab> TAB_KEY = ResourceKey.create(Registries.CREATIVE_MODE_TAB, Utils.getRL("tab"));
+        private static final CreativeModeTab TAB = CreativeModeTab.builder()
+            .title(Utils.translate("itemGroup", "tab"))
+            .icon(REQUESTER_BLOCK::stack)
+            .noScrollBar()
+            .build();
+
+        private Tab() {}
+
+        static void initContents(BuildCreativeModeTabContentsEvent event) {
+            if (event.getTabKey() == TAB_KEY) {
+                event.accept(REQUESTER_BLOCK);
+                event.accept(REQUESTER_TERMINAL);
+            }
+        }
+
+        private static void registerTab(RegisterEvent registerEvent) {
+            registerEvent.register(Registries.CREATIVE_MODE_TAB, TAB_KEY.location(), () -> TAB);
+        }
     }
 }

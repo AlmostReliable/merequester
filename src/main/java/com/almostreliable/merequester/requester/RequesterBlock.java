@@ -27,8 +27,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static com.almostreliable.merequester.Utils.f;
-
 public class RequesterBlock extends AEBaseEntityBlock<RequesterBlockEntity> {
 
     private static final IOrientationStrategy ORIENTATION_STRATEGY = new FacingWithVerticalSpin();
@@ -74,8 +72,7 @@ public class RequesterBlock extends AEBaseEntityBlock<RequesterBlockEntity> {
     ) {
         if (Screen.hasShiftDown()) {
             tooltip.add(Component.literal(" "));
-            tooltip.add(Utils.translate("tooltip", f("{}_desc", MERequester.REQUESTER_ID))
-                .withStyle(ChatFormatting.AQUA));
+            tooltip.add(Utils.translate("tooltip", String.format("%s_desc", MERequester.REQUESTER_ID)).withStyle(ChatFormatting.AQUA));
         } else {
             Utils.addShiftInfoTooltip(tooltip);
         }

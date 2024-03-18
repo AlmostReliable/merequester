@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @SuppressWarnings("ALL")
 @Mixin(Slot.class)
 public interface SlotMixin {
+
     @Accessor("x")
     void merequester$setX(int x);
 

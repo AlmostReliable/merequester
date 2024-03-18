@@ -9,8 +9,7 @@ import appeng.api.stacks.AEKeyType;
 import appeng.api.stacks.GenericStack;
 import appeng.api.storage.MEStorage;
 import appeng.helpers.externalstorage.GenericStackInv;
-import com.almostreliable.merequester.platform.Platform;
-import com.almostreliable.merequester.platform.TagSerializable;
+import com.almostreliable.merequester.Config;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
 import com.almostreliable.merequester.requester.status.RequestStatus;
 import com.google.common.primitives.Ints;
@@ -18,14 +17,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
-
-import static com.almostreliable.merequester.Utils.f;
 
 /**
  * Uses the same approach as {@link GenericStackInv} to track items and fluids.
@@ -33,16 +31,17 @@ import static com.almostreliable.merequester.Utils.f;
  * Automatically provides a menu wrapper by implementing {@link InternalInventory}.
  */
 @SuppressWarnings("UnstableApiUsage")
-public class Requests implements MEStorage, GenericInternalInventory, InternalInventory, TagSerializable<CompoundTag> {
+public class Requests implements MEStorage, GenericInternalInventory, InternalInventory, INBTSerializable<CompoundTag> {
 
     // if null, the inventory is client-side and doesn't need saving
-    @Nullable private final RequestHost host;
+    @Nullable
+    private final RequestHost host;
     private final Request[] requests;
     private final int size;
 
     public Requests(@Nullable RequestHost host) {
         this.host = host;
-        this.size = Platform.getRequestLimit();
+        this.size = Config.COMMON.requests.get();
         requests = new Request[size];
         for (var i = 0; i < requests.length; i++) {
             requests[i] = new Request(i);
@@ -105,7 +104,12 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
     }
 
     @Override
-    public boolean isAllowed(AEKey key) {
+    public boolean isSupportedType(AEKeyType type) {
+        return true;
+    }
+
+    @Override
+    public boolean isAllowedIn(int slot, AEKey what) {
         return true;
     }
 
@@ -131,18 +135,18 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
     }
 
     @Override
-    public CompoundTag serialize() {
+    public CompoundTag serializeNBT() {
         var tag = new CompoundTag();
         for (var i = 0; i < size(); i++) {
-            tag.put(String.valueOf(i), get(i).serialize());
+            tag.put(String.valueOf(i), get(i).serializeNBT());
         }
         return tag;
     }
 
     @Override
-    public void deserialize(CompoundTag tag) {
+    public void deserializeNBT(CompoundTag tag) {
         for (var i = 0; i < size(); i++) {
-            get(i).deserialize(tag.getCompound(String.valueOf(i)));
+            get(i).deserializeNBT(tag.getCompound(String.valueOf(i)));
         }
     }
 
@@ -219,7 +223,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
     }
     // </editor-fold>
 
-    public final class Request implements TagSerializable<CompoundTag> {
+    public final class Request implements INBTSerializable<CompoundTag> {
 
         // serialization IDs
         private static final String STATE_ID = "state";
@@ -231,7 +235,8 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
         private final int index;
 
         private boolean state = true;
-        @Nullable private AEKey key;
+        @Nullable
+        private AEKey key;
         private long amount;
         private long batch = 1;
 
@@ -244,7 +249,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
         }
 
         @Override
-        public CompoundTag serialize() {
+        public CompoundTag serializeNBT() {
             var tag = new CompoundTag();
             tag.putBoolean(STATE_ID, state);
             if (key != null) tag.put(KEY_ID, key.toTagGeneric());
@@ -255,7 +260,7 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
         }
 
         @Override
-        public void deserialize(CompoundTag tag) {
+        public void deserializeNBT(CompoundTag tag) {
             state = tag.getBoolean(STATE_ID);
             key = tag.contains(KEY_ID) ? AEKey.fromTagGeneric(tag.getCompound(KEY_ID)) : null;
             amount = tag.getLong(AMOUNT_ID);
@@ -289,18 +294,19 @@ public class Requests implements MEStorage, GenericInternalInventory, InternalIn
 
         @Override
         public String toString() {
-            return f(
-                "Request[state={}, key={}, amount={}, batch={}, client_status={}]",
-                state, key == null ? "none" : key.getDisplayName(), amount, batch, clientStatus
+            return String.format(
+                "Request[state=%s, key=%s, amount=%s, batch=%s, client_status=%s]",
+                state,
+                key == null ? "none" : key.getDisplayName(),
+                amount,
+                batch,
+                clientStatus
             );
         }
 
         public boolean isDifferent(Request clientRequest) {
-            return state != clientRequest.state ||
-                !Objects.equals(key, clientRequest.key) ||
-                amount != clientRequest.amount ||
-                batch != clientRequest.batch ||
-                clientStatus != clientRequest.clientStatus;
+            return state != clientRequest.state || !Objects.equals(key, clientRequest.key) || amount != clientRequest.amount ||
+                batch != clientRequest.batch || clientStatus != clientRequest.clientStatus;
         }
 
         @Nullable

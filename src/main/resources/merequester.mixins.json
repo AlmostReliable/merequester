@@ -3,20 +3,13 @@
   "minVersion": "0.8.5",
   "package": "com.almostreliable.merequester.mixin",
   "compatibilityLevel": "JAVA_17",
-  "plugin": "com.almostreliable.merequester.mixin.AlmostMixinPlugin",
   "mixins": [
-    "registration.AEBlockEntitiesMixin",
-    "registration.AEBlocksMixin",
-    "registration.AEItemsMixin",
-    "registration.AEPartsMixin",
     "registration.InitMenuTypesMixin"
   ],
   "client": [
     "accessors.EditBoxMixin",
     "accessors.SlotMixin",
     "accessors.WidgetContainerMixin",
-    "compat.JEIItemSlotTargetMixin",
-    "compat.REIItemSlotTargetMixin",
     "registration.InitScreensMixin"
   ],
   "injectors": {

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface RequestDisplay {
+
     void addSubWidget(String id, AbstractWidget widget, Map<String, AbstractWidget> subWidgets);
 
     @Nullable

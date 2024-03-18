@@ -1,8 +1,11 @@
 modLoader = "javafml"
-loaderVersion = "[${forgeLoaderVersion},)"
+loaderVersion = "[2,)"
 issueTrackerURL = "https://github.com/${githubUser}/${githubRepo}/issues"
 license = "${license}"
 logoFile = "logo.png"
+
+[[mixins]]
+config = "${modId}.mixins.json"
 
 [[mods]]
 modId = "${modId}"
@@ -11,23 +14,23 @@ displayName = "${modName}"
 authors = "${modAuthor}"
 description = '''${modDescription}'''
 
-[[dependencies.${modId}]]
-modId = "forge"
-mandatory = true
-versionRange = "[${forgeVersion},)"
+[[dependencies."${modId}"]]
+modId = "neoforge"
+type = "REQUIRED"
+versionRange = "[${neoVersion},)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.${modId}]]
+[[dependencies."${modId}"]]
 modId = "minecraft"
-mandatory = true
-versionRange = "[${minecraftVersion},)"
+type = "REQUIRED"
+versionRange = "[${mcVersion},)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.${modId}]]
+[[dependencies."${modId}"]]
 modId = "ae2"
-mandatory = true
+type = "REQUIRED"
 versionRange = "[${aeVersion},)"
 ordering = "AFTER"
 side = "BOTH"

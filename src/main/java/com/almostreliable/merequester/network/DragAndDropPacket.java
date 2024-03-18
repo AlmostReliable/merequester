@@ -1,18 +1,20 @@
 package com.almostreliable.merequester.network;
 
+import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import javax.annotation.Nullable;
+public final class DragAndDropPacket implements Packet {
 
-public class DragAndDropPacket extends ClientToServerPacket<DragAndDropPacket> {
+    static final ResourceLocation ID = Utils.getRL("drag_and_drop");
 
-    private long requesterId;
-    private int requestIndex;
-
-    private ItemStack item;
+    private final long requesterId;
+    private final int requestIndex;
+    private final ItemStack item;
 
     public DragAndDropPacket(long requesterId, int requestIndex, ItemStack item) {
         this.requesterId = requesterId;
@@ -20,27 +22,26 @@ public class DragAndDropPacket extends ClientToServerPacket<DragAndDropPacket> {
         this.item = item;
     }
 
-    DragAndDropPacket() {}
-
     @Override
-    public void encode(DragAndDropPacket packet, FriendlyByteBuf buffer) {
-        buffer.writeLong(packet.requesterId);
-        buffer.writeVarInt(packet.requestIndex);
-        buffer.writeItem(packet.item);
+    public ResourceLocation id() {
+        return ID;
     }
 
     @Override
-    public DragAndDropPacket decode(FriendlyByteBuf buffer) {
-        return new DragAndDropPacket(
-            buffer.readLong(),
-            buffer.readVarInt(),
-            buffer.readItem()
-        );
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeLong(requesterId);
+        buffer.writeVarInt(requestIndex);
+        buffer.writeItem(item);
+    }
+
+    static DragAndDropPacket decode(FriendlyByteBuf buffer) {
+        return new DragAndDropPacket(buffer.readLong(), buffer.readVarInt(), buffer.readItem());
     }
 
     @Override
-    protected void handlePacket(DragAndDropPacket packet, @Nullable ServerPlayer player) {
-        if (player == null || !(player.containerMenu instanceof AbstractRequesterMenu requester)) return;
-        requester.applyDragAndDrop(player, packet.requestIndex, packet.requesterId, packet.item);
+    public void handle(Player player) {
+        if (player instanceof ServerPlayer serverPlayer && player.containerMenu instanceof AbstractRequesterMenu requester) {
+            requester.applyDragAndDrop(serverPlayer, requestIndex, requesterId, item);
+        }
     }
 }

@@ -17,9 +17,9 @@ import appeng.api.storage.StorageHelper;
 import appeng.blockentity.grid.AENetworkBlockEntity;
 import appeng.me.helpers.MachineSource;
 import appeng.util.SettingsFrom;
+import com.almostreliable.merequester.Config;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
-import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
 import com.almostreliable.merequester.requester.status.LinkState;
 import com.almostreliable.merequester.requester.status.RequestStatus;
@@ -58,16 +58,17 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
     public RequesterBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
         requests = new Requests(this);
-        requestStatus = new StatusState[Platform.getRequestLimit()];
+        requestStatus = new StatusState[Config.COMMON.requests.get()];
         Arrays.fill(requestStatus, StatusState.IDLE);
         storageManager = new StorageManager(this);
         actionSource = new MachineSource(this);
-        getMainNode().setExposedOnSides(getExposedSides())
+        getMainNode()
+            .setExposedOnSides(getExposedSides())
             .addService(IGridTickable.class, this)
             .addService(ICraftingRequester.class, this)
             .addService(IStorageWatcherNode.class, storageManager)
-            .setIdlePowerUsage(Platform.getIdleEnergy());
-        if (Platform.requireChannel()) {
+            .setIdlePowerUsage(Config.COMMON.idleEnergy.get());
+        if (Config.COMMON.requireChannel.get()) {
             getMainNode().setFlags(GridFlags.REQUIRE_CHANNEL);
         }
     }
@@ -75,24 +76,24 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
     @Override
     public void loadTag(CompoundTag tag) {
         super.loadTag(tag);
-        if (tag.contains(REQUESTS_ID)) requests.deserialize(tag.getCompound(REQUESTS_ID));
+        if (tag.contains(REQUESTS_ID)) requests.deserializeNBT(tag.getCompound(REQUESTS_ID));
         if (tag.contains(REQUEST_STATUS_ID)) deserializeStatus(tag.getCompound(REQUEST_STATUS_ID));
-        if (tag.contains(STORAGE_MANAGER_ID)) storageManager.deserialize(tag.getCompound(STORAGE_MANAGER_ID));
+        if (tag.contains(STORAGE_MANAGER_ID)) storageManager.deserializeNBT(tag.getCompound(STORAGE_MANAGER_ID));
     }
 
     @Override
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        tag.put(REQUESTS_ID, requests.serialize());
+        tag.put(REQUESTS_ID, requests.serializeNBT());
         tag.put(REQUEST_STATUS_ID, serializeStatus());
-        tag.put(STORAGE_MANAGER_ID, storageManager.serialize());
+        tag.put(STORAGE_MANAGER_ID, storageManager.serializeNBT());
     }
 
     @Override
     public void importSettings(SettingsFrom mode, CompoundTag input, @Nullable Player player) {
         super.importSettings(mode, input, player);
         if (mode == SettingsFrom.MEMORY_CARD) {
-            if (input.contains(REQUESTS_ID)) requests.deserialize(input.getCompound(REQUESTS_ID));
+            if (input.contains(REQUESTS_ID)) requests.deserializeNBT(input.getCompound(REQUESTS_ID));
         }
     }
 
@@ -100,7 +101,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
     public void exportSettings(SettingsFrom mode, CompoundTag output, @Nullable Player player) {
         super.exportSettings(mode, output, player);
         if (mode == SettingsFrom.MEMORY_CARD) {
-            output.put(REQUESTS_ID, requests.serialize());
+            output.put(REQUESTS_ID, requests.serializeNBT());
         }
     }
 
@@ -112,7 +113,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
 
     @Override
     public TickingRequest getTickingRequest(IGridNode node) {
-        return new TickingRequest(1, 20, false, false);
+        return new TickingRequest(1, 20, false);
     }
 
     @Override
@@ -135,9 +136,7 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
 
     @Override
     public Component getTerminalName() {
-        return hasCustomName() ?
-            Objects.requireNonNull(getCustomName()) :
-            Utils.translate("block", MERequester.REQUESTER_ID);
+        return hasCustomName() ? Objects.requireNonNull(getCustomName()) : Utils.translate("block", MERequester.REQUESTER_ID);
     }
 
     @Override
@@ -240,7 +239,8 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
 
     @Override
     public ImmutableSet<ICraftingLink> getRequestedJobs() {
-        return Arrays.stream(requestStatus)
+        return Arrays
+            .stream(requestStatus)
             .filter(LinkState.class::isInstance)
             .map(state -> ((LinkState) state).link())
             .collect(ImmutableSet.toImmutableSet());

@@ -5,9 +5,11 @@ import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.abstraction.RequestDisplay;
 import com.almostreliable.merequester.client.abstraction.RequesterReference;
 import com.almostreliable.merequester.mixin.accessors.SlotMixin;
+import com.almostreliable.merequester.network.DragAndDropPacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -73,5 +75,10 @@ public class RequestSlot extends FakeSlot {
 
     public void setLocked(boolean locked) {
         isLocked = locked;
+    }
+
+    @Override
+    public void setFilterTo(ItemStack itemStack) {
+        PacketDistributor.SERVER.noArg().send(new DragAndDropPacket(getRequesterReference().getRequesterId(), getSlot(), itemStack));
     }
 }

@@ -1,57 +1,60 @@
 package com.almostreliable.merequester.network;
 
+import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.requester.abstraction.AbstractRequesterMenu;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
-import javax.annotation.Nullable;
+public final class RequestUpdatePacket implements Packet {
 
-public class RequestUpdatePacket extends ClientToServerPacket<RequestUpdatePacket> {
+    static final ResourceLocation ID = Utils.getRL("request_update");
 
-    private long requesterId;
-    private int requestIndex;
+    private final UpdateType updateType;
+    private final long requesterId;
+    private final int requestIndex;
 
     private boolean state;
     private long amount;
     private long batch;
 
-    private UpdateType updateType;
-
     public RequestUpdatePacket(long requesterId, int requestIndex, boolean state) {
+        this.updateType = UpdateType.STATE;
         this.requesterId = requesterId;
         this.requestIndex = requestIndex;
         this.state = state;
-        this.updateType = UpdateType.STATE;
     }
 
     public RequestUpdatePacket(long requesterId, int requestIndex, long amount, long batch) {
+        this.updateType = UpdateType.NUMBERS;
         this.requesterId = requesterId;
         this.requestIndex = requestIndex;
         this.amount = amount;
         this.batch = batch;
-        this.updateType = UpdateType.NUMBERS;
     }
 
-    RequestUpdatePacket() {}
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
 
     @Override
-    public void encode(RequestUpdatePacket packet, FriendlyByteBuf buffer) {
-        buffer.writeLong(packet.requesterId);
-        buffer.writeVarInt(packet.requestIndex);
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeLong(requesterId);
+        buffer.writeVarInt(requestIndex);
 
-        buffer.writeVarInt(packet.updateType.ordinal());
-        if (packet.updateType == UpdateType.STATE) {
-            buffer.writeBoolean(packet.state);
-        } else if (packet.updateType == UpdateType.NUMBERS) {
-            buffer.writeLong(packet.amount);
-            buffer.writeLong(packet.batch);
+        buffer.writeVarInt(updateType.ordinal());
+        if (updateType == UpdateType.STATE) {
+            buffer.writeBoolean(state);
+        } else if (updateType == UpdateType.NUMBERS) {
+            buffer.writeLong(amount);
+            buffer.writeLong(batch);
         } else {
-            throw new IllegalStateException("Unknown update type: " + packet.updateType);
+            throw new IllegalStateException("Unknown update type: " + updateType);
         }
     }
 
-    @Override
-    public RequestUpdatePacket decode(FriendlyByteBuf buffer) {
+    static RequestUpdatePacket decode(FriendlyByteBuf buffer) {
         var id = buffer.readLong();
         var index = buffer.readVarInt();
 
@@ -66,18 +69,17 @@ public class RequestUpdatePacket extends ClientToServerPacket<RequestUpdatePacke
     }
 
     @Override
-    protected void handlePacket(RequestUpdatePacket packet, @Nullable ServerPlayer player) {
-        if (player != null && player.containerMenu instanceof AbstractRequesterMenu requester) {
-            if (packet.updateType == UpdateType.STATE) {
-                requester.updateRequesterState(packet.requesterId, packet.requestIndex, packet.state);
-            } else if (packet.updateType == UpdateType.NUMBERS) {
-                requester.updateRequesterNumbers(packet.requesterId, packet.requestIndex, packet.amount, packet.batch);
+    public void handle(Player player) {
+        if (player.containerMenu instanceof AbstractRequesterMenu requester) {
+            if (updateType == UpdateType.STATE) {
+                requester.updateRequesterState(requesterId, requestIndex, state);
+            } else if (updateType == UpdateType.NUMBERS) {
+                requester.updateRequesterNumbers(requesterId, requestIndex, amount, batch);
             }
         }
     }
 
     private enum UpdateType {
-        STATE,
-        NUMBERS
+        STATE, NUMBERS
     }
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 @SuppressWarnings("ALL")
 @Mixin(WidgetContainer.class)
 public interface WidgetContainerMixin {
+
     @Accessor(value = "widgets", remap = false)
     Map<String, AbstractWidget> merequester$getWidgets();
 }

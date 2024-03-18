@@ -1,14 +1,9 @@
 package com.almostreliable.merequester.network;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.entity.player.Player;
 
-import java.util.function.Supplier;
+public interface Packet extends CustomPacketPayload {
 
-public interface Packet<T> {
-    void encode(T packet, FriendlyByteBuf buffer);
-
-    T decode(FriendlyByteBuf buffer);
-
-    void handle(T packet, Supplier<? extends NetworkEvent.Context> context);
+    void handle(Player player);
 }

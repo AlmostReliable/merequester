@@ -7,7 +7,8 @@ import javax.annotation.Nullable;
 
 public class MissingState implements StatusState {
 
-    @Nullable private PlanState simulatedPlanState;
+    @Nullable
+    private PlanState simulatedPlanState;
 
     MissingState() {}
 

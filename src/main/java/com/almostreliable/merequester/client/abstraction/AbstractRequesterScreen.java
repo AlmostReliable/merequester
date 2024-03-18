@@ -10,8 +10,8 @@ import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.Scrollbar;
 import appeng.core.localization.ButtonToolTips;
 import appeng.core.localization.Tooltips;
-import appeng.core.sync.network.NetworkHandler;
-import appeng.core.sync.packets.InventoryActionPacket;
+import appeng.core.network.NetworkHandler;
+import appeng.core.network.serverbound.InventoryActionPacket;
 import appeng.helpers.InventoryAction;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
@@ -38,8 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static com.almostreliable.merequester.Utils.f;
 
 /**
  * yoinked from {@link PatternAccessTermScreen}
@@ -123,7 +121,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
         for (var i = 0; i < requests.size(); i++) {
             var requestIndex = String.valueOf(i);
             if (data.contains(requestIndex)) {
-                requests.get(i).deserialize(data.getCompound(requestIndex));
+                requests.get(i).deserializeNBT(data.getCompound(requestIndex));
             }
         }
 
@@ -135,9 +133,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
     protected void init() {
         imageHeight = GUI_HEADER_HEIGHT + GUI_FOOTER_HEIGHT + rowAmount * ROW_HEIGHT;
 
-        requestWidgets.forEach(
-            w -> w.preInit(Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets())
-        );
+        requestWidgets.forEach(w -> w.preInit(Utils.cast(widgets, WidgetContainerMixin.class).merequester$getWidgets()));
         super.init();
         // clear old widgets because init() is recalled when the terminal resizes
         requestWidgets.clear();
@@ -201,7 +197,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
             } else if (lineElement instanceof String name) {
                 var text = name;
                 int rows = getByName(name).size();
-                if (rows > 1) text = f("{} ({})", text, rows);
+                if (rows > 1) text = String.format("%s (%s)", text, rows);
                 text = font.plainSubstrByWidth(text, TEXT_MAX_WIDTH, true);
 
                 guiGraphics.drawString(
@@ -241,12 +237,8 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
 
         InventoryAction action = null;
         switch (clickType) {
-            case PICKUP -> action = mouseButton == 1 ?
-                InventoryAction.SPLIT_OR_PLACE_SINGLE :
-                InventoryAction.PICKUP_OR_SET_DOWN;
-            case QUICK_MOVE -> action = mouseButton == 1 ?
-                InventoryAction.PICKUP_SINGLE :
-                InventoryAction.SHIFT_CLICK;
+            case PICKUP -> action = mouseButton == 1 ? InventoryAction.SPLIT_OR_PLACE_SINGLE : InventoryAction.PICKUP_OR_SET_DOWN;
+            case QUICK_MOVE -> action = mouseButton == 1 ? InventoryAction.PICKUP_SINGLE : InventoryAction.SHIFT_CLICK;
             case CLONE -> {
                 if (getPlayer().getAbilities().instabuild) {
                     action = InventoryAction.CREATIVE_DUPLICATE;

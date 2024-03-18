@@ -8,11 +8,11 @@ import appeng.client.gui.widgets.AETextField;
 import appeng.client.gui.widgets.SettingToggleButton;
 import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
+import com.almostreliable.merequester.Config;
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.abstraction.AbstractRequesterScreen;
 import com.almostreliable.merequester.client.abstraction.RequesterReference;
-import com.almostreliable.merequester.platform.Platform;
 import com.almostreliable.merequester.requester.Requests.Request;
 import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
 import com.google.common.collect.HashMultimap;
@@ -24,11 +24,9 @@ import net.minecraft.world.entity.player.Inventory;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static com.almostreliable.merequester.Utils.f;
-
 public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends AbstractRequesterScreen<T> {
 
-    private static final ResourceLocation TEXTURE = Utils.getRL(f("textures/gui/{}.png", MERequester.TERMINAL_ID));
+    private static final ResourceLocation TEXTURE = Utils.getRL(String.format("textures/gui/%s.png", MERequester.TERMINAL_ID));
     private static final Rect2i FOOTER_BBOX = new Rect2i(0, 133, GUI_WIDTH, GUI_FOOTER_HEIGHT);
 
     private final HashMap<Long, RequesterReference> byId = new HashMap<>();
@@ -118,7 +116,7 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
         Collections.sort(requesterNames);
 
         lines.clear();
-        lines.ensureCapacity(requesterNames.size() + byId.size() * Platform.getRequestLimit());
+        lines.ensureCapacity(requesterNames.size() + byId.size() * Config.COMMON.requests.get());
 
         for (var name : requesterNames) {
             lines.add(name);
@@ -166,9 +164,8 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
 
     @SuppressWarnings("SuspiciousMethodCalls")
     private void reinitialize() {
-        var renderableWidgets = Platform.getRenderables(this);
-        children().removeAll(renderableWidgets);
-        renderableWidgets.clear();
+        children().removeAll(renderables);
+        renderables.clear();
         init();
     }
 

@@ -75,14 +75,7 @@ public class NumberField extends ConfirmableTextField {
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partial) {
         super.renderWidget(guiGraphics, mouseX, mouseY, partial);
         if (!isFluid) return;
-        guiGraphics.drawString(
-            Minecraft.getInstance().font,
-            "B",
-            getX() + WIDTH - PADDING,
-            getY(),
-            0x54_5454,
-            false
-        );
+        guiGraphics.drawString(Minecraft.getInstance().font, "B", getX() + WIDTH - PADDING, getY(), 0x54_5454, false);
     }
 
     private void validate() {
@@ -140,7 +133,7 @@ public class NumberField extends ConfirmableTextField {
     void setLongValue(long value) {
         var internalValue = convertToInternalValue(Math.max(value, MIN_VALUE));
         setValue(decimalFormat.format(internalValue));
-        moveCursorToEnd();
+        moveCursorToEnd(true);
         validate();
     }
 
@@ -160,12 +153,13 @@ public class NumberField extends ConfirmableTextField {
         tooltipMessage.add(0, Utils.translate("tooltip", name));
         super.setTooltipMessage(tooltipMessage);
         if (!isFocused() || (tooltipMessage.size() > 1 && !tooltipMessage.get(1).getString().startsWith("="))) return;
-        tooltipMessage.add(Component.literal("» ").withStyle(ChatFormatting.AQUA)
-            .append(Utils.translate(
-                "tooltip",
-                "enter_to_submit",
-                InputConstants.getKey("key.keyboard.enter").getDisplayName()
-            ).withStyle(ChatFormatting.GRAY)));
+        tooltipMessage.add(
+            Component.literal("» ")
+                .withStyle(ChatFormatting.AQUA)
+                .append(Utils
+                    .translate("tooltip", "enter_to_submit", InputConstants.getKey("key.keyboard.enter").getDisplayName())
+                    .withStyle(ChatFormatting.GRAY))
+        );
     }
 
     @Override

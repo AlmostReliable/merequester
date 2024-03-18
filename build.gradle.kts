@@ -1,84 +1,91 @@
 @file:Suppress("UnstableApiUsage")
 
-import net.fabricmc.loom.api.LoomGradleExtensionAPI
-
 val license: String by project
-val enableAccessWidener: String by project
-val minecraftVersion: String by project
+val logLevel: String by project
+val mixinDebugExport: String by project
+val recipeViewer: String by project
+val mcVersion: String by project
 val modVersion: String by project
 val modPackage: String by project
 val modId: String by project
 val modName: String by project
 val modAuthor: String by project
 val modDescription: String by project
+val neoVersion: String by project
 val parchmentVersion: String by project
-val forgeVersion: String by project
-val forgeRecipeViewer: String by project
 val aeVersion: String by project
 val jeiVersion: String by project
 val reiVersion: String by project
+val emiVersion: String by project
 val githubUser: String by project
 val githubRepo: String by project
 
 plugins {
-    id("dev.architectury.loom") version "1.3.+"
-    id("io.github.juuxel.loom-vineflower") version "1.11.0"
+    id("net.neoforged.gradle.userdev") version "7.0.97"
     id("com.github.gmazzo.buildconfig") version "4.0.4"
     java
 }
 
 base {
-    version = "$minecraftVersion-$modVersion"
+    version = "$mcVersion-$modVersion"
     group = modPackage
-    archivesName.set("$modId-forge")
+    archivesName.set("$modId-neoforge")
 }
 
-loom {
-    silentMojangMappingsLicense()
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-    forge {
-        mixinConfig("$modId.mixins.json")
+val commonSystemProperties = mapOf(
+        "forge.logging.console.level" to logLevel,
+        "mixin.debug.export" to mixinDebugExport,
+        "guideDev.ae2guide.sources" to file("guidebook").absolutePath,
+        "guideDev.ae2guide.sourcesNamespace" to modId
+)
+
+runs {
+    configureEach {
+        workingDirectory = project.file("run")
+        systemProperties = commonSystemProperties
+        modSource(sourceSets.main.get())
+        jvmArguments("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
     }
 
-    if (project.findProperty("enableAccessWidener") == "true") {
-        accessWidenerPath.set(file("src/main/resources/$modId.accesswidener"))
-        forge {
-            convertAccessWideners.set(true)
-            extraAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
-        }
-        println("Access widener enabled for project. Access widener path: ${loom.accessWidenerPath.get()}")
+    create("client") {
+        programArguments("--quickPlaySingleplayer", "New World")
     }
+    create("guide") {
+        configure("client")
+        systemProperty("guideDev.ae2guide.startupPage", "$modId:getting-started.md")
+    }
+    create("server")
 }
 
 repositories {
-    maven("https://maven.parchmentmc.org/") // Parchment
-    maven("https://modmaven.dev/") // Applied Energistics 2
+    maven("https://maven.neoforged.net/releases") // NeoForge
+    maven("https://modmaven.dev") // Applied Energistics 2
     maven("https://maven.blamejared.com") // JEI
     maven("https://maven.shedaniel.me") // REI
+    maven("https://maven.terraformersmc.com") // EMI
     mavenLocal()
 }
 
 dependencies {
-    // Minecraft
-    minecraft("com.mojang:minecraft:$minecraftVersion")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-$minecraftVersion:$parchmentVersion@zip")
-    })
-
-    // Forge
-    forge("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
+    // NeoForge
+    implementation("net.neoforged:neoforge:$neoVersion")
 
     // Compile
-    modCompileOnly("appeng:appliedenergistics2-forge:$aeVersion")
-    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-forge:$reiVersion")
+    compileOnly("appeng:appliedenergistics2-neoforge:$aeVersion")
 
     // Runtime
-    modLocalRuntime("appeng:appliedenergistics2-forge:$aeVersion")
-    when (forgeRecipeViewer) {
-        "rei" -> modLocalRuntime("me.shedaniel:RoughlyEnoughItems-forge:$reiVersion")
-        "jei" -> modLocalRuntime("mezz.jei:jei-$minecraftVersion-forge:$jeiVersion") { isTransitive = false }
-        else -> throw GradleException("Invalid recipeViewer value: $forgeRecipeViewer")
+    runtimeOnly("appeng:appliedenergistics2-neoforge:$aeVersion")
+    when (recipeViewer) {
+        "jei" -> runtimeOnly("mezz.jei:jei-$mcVersion-neoforge:$jeiVersion") { isTransitive = false }
+        "rei" -> {
+            runtimeOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$reiVersion")
+            runtimeOnly("dev.architectury:architectury-neoforge:11.1.17") // TODO: Remove on new REI version
+        }
+
+        "emi" -> runtimeOnly("dev.emi:emi-neoforge:$emiVersion+$mcVersion")
+        else -> throw GradleException("Invalid recipeViewer value: $recipeViewer")
     }
 }
 
@@ -87,18 +94,17 @@ tasks {
         val resourceTargets = listOf("META-INF/mods.toml", "pack.mcmeta")
 
         val replaceProperties = mapOf(
-            "license" to license,
-            "minecraftVersion" to minecraftVersion,
-            "version" to project.version as String,
-            "modId" to modId,
-            "modName" to modName,
-            "modAuthor" to modAuthor,
-            "modDescription" to modDescription,
-            "forgeVersion" to forgeVersion,
-            "forgeLoaderVersion" to forgeVersion.substringBefore("."),
-            "aeVersion" to aeVersion,
-            "githubUser" to githubUser,
-            "githubRepo" to githubRepo
+                "license" to license,
+                "mcVersion" to mcVersion,
+                "version" to project.version as String,
+                "modId" to modId,
+                "modName" to modName,
+                "modAuthor" to modAuthor,
+                "modDescription" to modDescription,
+                "neoVersion" to neoVersion,
+                "aeVersion" to aeVersion,
+                "githubUser" to githubUser,
+                "githubRepo" to githubRepo
         )
 
         println("[Process Resources] Replacing properties in resources: ")
@@ -115,21 +121,20 @@ tasks {
         options.release.set(17)
     }
 
+    withType<Jar> {
+        from("guidebook") {
+            into("assets/$modId/ae2guide")
+        }
+    }
+
     withType<GenerateModuleMetadata> {
         enabled = false
     }
 }
 
-extensions.configure<JavaPluginExtension> {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
-}
-
-extensions.configure<LoomGradleExtensionAPI> {
-    runs {
-        forEach {
-            it.vmArgs("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
-        }
-    }
+subsystems.parchment {
+    minecraftVersion(mcVersion)
+    mappingsVersion(parchmentVersion)
 }
 
 buildConfig {

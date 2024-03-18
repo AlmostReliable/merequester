@@ -6,13 +6,14 @@ import appeng.api.stacks.GenericStack;
 import appeng.helpers.InventoryAction;
 import appeng.menu.AEBaseMenu;
 import com.almostreliable.merequester.MERequester;
-import com.almostreliable.merequester.platform.Platform;
+import com.almostreliable.merequester.network.RequesterSyncPacket;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 
@@ -46,8 +47,7 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
 
         // the screen only has fake slots, so don't transfer anything to the player's inventory
         switch (action) {
-            case PICKUP_OR_SET_DOWN ->
-                requestSlot.setItemDirect(0, carriedStack.isEmpty() ? ItemStack.EMPTY : carriedStack.copy());
+            case PICKUP_OR_SET_DOWN -> requestSlot.setItemDirect(0, carriedStack.isEmpty() ? ItemStack.EMPTY : carriedStack.copy());
             case SPLIT_OR_PLACE_SINGLE -> {
                 if (carriedStack.isEmpty()) {
                     requestSlot.setItemDirect(0, ItemStack.EMPTY);
@@ -61,11 +61,7 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
             case EMPTY_ITEM -> {
                 var emptyingAction = ContainerItemStrategies.getEmptyingAction(carriedStack);
                 if (emptyingAction != null) {
-                    requestSlot.insertItem(
-                        0,
-                        GenericStack.wrapInItemStack(emptyingAction.what(), emptyingAction.maxAmount()),
-                        false
-                    );
+                    requestSlot.insertItem(0, GenericStack.wrapInItemStack(emptyingAction.what(), emptyingAction.maxAmount()), false);
                 }
             }
             case CREATIVE_DUPLICATE -> {
@@ -114,16 +110,18 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
         var client = requestTracker.getClient();
 
         // get the requests from the server
-        var tag = server.serialize();
+        var tag = server.serializeNBT();
         // store the information in the client tracker to
         // check for differences on partial updates later
         // tag serialization is used to avoid references to the original data
-        client.deserialize(tag);
+        client.deserializeNBT(tag);
 
         // send relevant data to the client
         tag.putString(UNIQUE_NAME_ID, requestTracker.getName());
         tag.putLong(SORT_BY_ID, requestTracker.getSortBy());
-        Platform.sendInventoryData(getPlayer(), requestTracker.getId(), tag);
+        if (getPlayer() instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.PLAYER.with(serverPlayer).send(RequesterSyncPacket.inventory(requestTracker.getId(), tag));
+        }
     }
 
     protected void syncRequestTrackerPartial(RequestTracker requestTracker) {
@@ -144,16 +142,16 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
                     tag.putLong(SORT_BY_ID, requestTracker.getSortBy());
                 }
 
-                var serverData = serverRequest.serialize();
+                var serverData = serverRequest.serializeNBT();
                 tag.put(String.valueOf(i), serverData);
                 // update the client information for future difference checks
-                clientRequest.deserialize(serverData);
+                clientRequest.deserializeNBT(serverData);
             }
         }
 
         // only send an update if something changed
-        if (tag != null) {
-            Platform.sendInventoryData(getPlayer(), requestTracker.getId(), tag);
+        if (tag != null && getPlayer() instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.PLAYER.with(serverPlayer).send(RequesterSyncPacket.inventory(requestTracker.getId(), tag));
         }
     }
 

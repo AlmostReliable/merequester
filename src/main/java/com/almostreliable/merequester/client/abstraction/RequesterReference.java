@@ -3,8 +3,8 @@ package com.almostreliable.merequester.client.abstraction;
 import com.almostreliable.merequester.requester.Requests;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * yoinked from AE2's legacy {@code PatternProviderRecord}
