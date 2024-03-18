@@ -17,7 +17,7 @@ public final class PacketHandler {
 
     private PacketHandler() {}
 
-    public static void init(RegisterPayloadHandlerEvent event) {
+    public static void onPacketRegistration(RegisterPayloadHandlerEvent event) {
         IPayloadRegistrar registrar = event.registrar(BuildConfig.MOD_ID).versioned(PROTOCOL);
 
         // server to client

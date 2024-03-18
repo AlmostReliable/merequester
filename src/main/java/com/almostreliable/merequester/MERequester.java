@@ -14,22 +14,22 @@ import org.slf4j.Logger;
 public final class MERequester {
 
     public static final Logger LOGGER = LogUtils.getLogger();
-    public static final String TERMINAL_ID = "requester_terminal";
     public static final String REQUESTER_ID = "requester";
+    public static final String TERMINAL_ID = "requester_terminal";
 
     public MERequester(IEventBus modEventBus) {
-        var modLoadingContext = ModLoadingContext.get();
-        modLoadingContext.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
         modEventBus.addListener(MERequester::onRegistryEvent);
         modEventBus.addListener(MERequester::onCreativeTabContents);
-        modEventBus.addListener(PacketHandler::init);
+        modEventBus.addListener(PacketHandler::onPacketRegistration);
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
     }
 
     private static void onRegistryEvent(RegisterEvent event) {
-        ModTab.registerTab(event);
+        Registration.registerContents(event);
     }
 
     private static void onCreativeTabContents(BuildCreativeModeTabContentsEvent event) {
-        ModTab.initContents(event);
+        Registration.Tab.initContents(event);
     }
 }
