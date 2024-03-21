@@ -54,7 +54,7 @@ runs {
     }
     create("guide") {
         configure("client")
-        systemProperty("guideDev.ae2guide.startupPage", "$modId:getting-started.md")
+        systemProperty("guideDev.ae2guide.startupPage", "$modId:$modId.md")
     }
     create("server")
 }
