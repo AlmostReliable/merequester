@@ -3,9 +3,9 @@ navigation:
   title: ME Requester
   icon: requester
   position: 100
-  item_ids:
-    - merequester:requester
-    - merequester:requester_terminal
+item_ids:
+  - merequester:requester
+  - merequester:requester_terminal
 ---
 
 # ME Requester
