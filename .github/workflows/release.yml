@@ -45,5 +45,5 @@ jobs:
       target_version: ${{ github.event.inputs.target_version }}
       update_type: ${{ github.event.inputs.update_type }}
       release_type: ${{ github.event.inputs.release_type }}
-      loaders: neoforge
+      loaders: "neoforge"
       debug: ${{ github.event.inputs.debug }}
