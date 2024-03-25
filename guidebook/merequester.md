@@ -35,14 +35,14 @@ and can also be crafted if you request them as a player. It will only automate t
 
 ## Configuration
 
-When opening the <ItemLink id="requester"/> for the first time, you will see an overview of request settings. The amount of slots a single
+When opening the <ItemLink id="requester"/> for the first time, you will see an overview of request settings. The number of slots a single
 block can host is adjustable in the config. Each row of the GUI represents an individual request.
 <br/>
 
-### Global Switch
+### Toggle Switch
 
-The checkbox to the left is a global switch to toggle the whole row. When a request is disabled, no checks or validations will run and the
-stock of your specified item or fluid in your system isn't being tracked.<br/>
+The checkbox to the left toggles the request configured on that row. When a request is disabled, no checks will run and the stock of your
+request will not be maintained.<br/>
 This can be used to temporarily disable a specific request or to prevent the <ItemLink id="requester"/> from emitting crafting jobs while
 you are still making changes to a row.
 <br/>
@@ -58,34 +58,28 @@ drop it from recipe viewers that are supported by Applied Energistics.
 
 ### Amount to Stock
 
-As mentioned before, the amount input box will react to the way you specify what to stock. If you want a custom amount, make sure to specify
-what to stock first and then enter your desired number. When you specified a fluid in the previous step, the input boxes will adapt and show
-a `B` behind them because the amount you enter is defined as Buckets.<br/>
-The amount will specify the number of items or number of buckets of the fluid the system should keep in stock. When the current stock falls
-below that number, the <ItemLink id="requester"/> will start to emit crafting jobs to reach it again.
+The Amount to Stock field indicates how much to stock. Specify what to stock first and then enter your desired value. For non-item requests,
+the field will adapt to the type. For example, showing a `B` to indicate buckets for fluid.<br/>
+When the current stock falls below the specified amount, the <ItemLink id="requester"/> will request more.
 <br/>
 
 ### Batch Size
 
-The next input box will specify the batch size. It refers to the number of items or number of buckets of the fluid the
-<ItemLink id="requester"/> will request at once when the current stock falls below the threshold from the previous input box. It is
-specifically the number of items or number of buckets of fluid, not the number of crafts.<br/>
-This can be used to put less stress on [Crafting CPU](ae2:ae2-mechanics/autocrafting.md#the-crafting-cpu)s and machines required for the
-craft since the full amount will be crafted at once instead of waiting for a single craft to finish before emitting a new job.
+The next input field specifies the batch size that will be requested once the current stock falls below the threshold specified in the
+Amount to Stock field.<br/>
+This can be used to put less stress on [Crafting CPU](ae2:ae2-mechanics/autocrafting.md#the-crafting-cpu)s and machines used in the craft
+since the full amount will be requested at once, rather than as many individual jobs.
 <br/>
 
 ### Submit Button
 
-In order to apply changes to the request, press enter after entering a number in an input box or click the submit button to the right of the
-current row. Unfocusing any of the input boxes without refocusing another input box of the same row or pressing the submit button, will
-result in the values being reset to their previous state.
+To apply changes to the request, enter the desired values in the Amount to Stock and Batch Size fields and then either press Enter or click
+the submit button to the right on the current row. Clicking into any other row will reset the values to their previous state.
 <br/>
 
 ### Status Bar
 
-The bar below the input boxes and the submit button reflects the current status of the request. It is empty if the request is disabled via
-the global switch or if you didn't configure what to stock.
-
+The bar below the input boxes and the submit button reflects the current status of the request.
 <br clear="all" />
 <br/>
 
@@ -101,7 +95,7 @@ The current row is disabled or nothing to stock has been specified.
 
 ### Green - Idling
 
-The target amount to stock is already reached or there is no pattern for the item or fluid to craft.
+The target amount to stock is already reached or there is no pattern for the configured request.
 <br/>
 
 ### Red - Missing Ingredients
@@ -112,7 +106,7 @@ system.
 
 ### Yellow - Crafting
 
-The desired item or fluid is currently being crafted. The requester is waiting for the job to finish.<br/>
+The desired request is currently being crafted. The requester is waiting for the job to finish.<br/>
 While this status is active, the settings for the respective request inside the <ItemLink id="requester"/> are locked and can't be changed.
 <br/>
 
@@ -143,7 +137,7 @@ If any request in a <ItemLink id="requester"/> has any status except idle or emp
 The mod also provides a new terminal called the <ItemLink id="requester_terminal"/>. It allows you to access all <ItemLink id="requester"/>s
 in the same network from a central point.
 
-The terminal has the same features as the <ItemLink id="ae2:pattern_access_terminal"/> and allows you to search for a specific request by
-the configured item or fluid. Since all <ItemLink id="requester"/>s have the same name by default, all requests will be grouped under the
+The terminal has the same features as the <ItemLink id="ae2:pattern_access_terminal"/> and allows you to search for a specific request.
+Since all <ItemLink id="requester"/>s have the same name by default, all requests will be grouped under the
 same header. If you want a separate group of <ItemLink id="requester"/>s in the <ItemLink id="requester_terminal"/>, you can rename them in
 an anvil or with the <ItemLink id="ae2:name_press"/>.
