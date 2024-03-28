@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## Unreleased
+
+### Changed
+
+- updated to new Applied Energistics version for API changes
+  - new minimum version is 17.12.1-beta
+
+### Fixed
+
+- fixed ME Requester from disconnecting after world restart
+- fixed connectable sides not being exposed correctly
+
 ## [1.1.4] - 2024-03-25
 
 Initial 1.20.4 release!
