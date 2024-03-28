@@ -1,9 +1,9 @@
 package com.almostreliable.merequester;
 
+import appeng.api.AECapabilities;
 import appeng.api.parts.PartModels;
 import appeng.block.AEBaseBlockItem;
 import appeng.blockentity.AEBaseBlockEntity;
-import appeng.capabilities.AppEngCapabilities;
 import appeng.core.definitions.BlockDefinition;
 import appeng.core.definitions.ItemDefinition;
 import appeng.items.parts.PartItem;
@@ -82,7 +82,7 @@ public final class Registration {
     }
 
     static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(AppEngCapabilities.IN_WORLD_GRID_NODE_HOST, REQUESTER_ENTITY, (requester, ctx) -> requester);
+        event.registerBlockEntity(AECapabilities.IN_WORLD_GRID_NODE_HOST, REQUESTER_ENTITY, (requester, ctx) -> requester);
     }
 
     public static final class Tab {
