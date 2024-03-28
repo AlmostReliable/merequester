@@ -3,6 +3,7 @@ package com.almostreliable.merequester;
 import appeng.api.parts.PartModels;
 import appeng.block.AEBaseBlockItem;
 import appeng.blockentity.AEBaseBlockEntity;
+import appeng.capabilities.AppEngCapabilities;
 import appeng.core.definitions.BlockDefinition;
 import appeng.core.definitions.ItemDefinition;
 import appeng.items.parts.PartItem;
@@ -17,6 +18,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -77,6 +79,10 @@ public final class Registration {
             Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, REQUESTER_BLOCK.id(), REQUESTER_ENTITY);
             Registry.register(BuiltInRegistries.ITEM, REQUESTER_TERMINAL.id(), REQUESTER_TERMINAL.asItem());
         }
+    }
+
+    static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(AppEngCapabilities.IN_WORLD_GRID_NODE_HOST, REQUESTER_ENTITY, (requester, ctx) -> requester);
     }
 
     public static final class Tab {

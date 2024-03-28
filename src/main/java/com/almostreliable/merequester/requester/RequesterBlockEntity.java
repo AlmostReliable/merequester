@@ -36,10 +36,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class RequesterBlockEntity extends AENetworkBlockEntity implements RequestHost, IGridTickable, ICraftingRequester {
 
@@ -143,6 +140,11 @@ public class RequesterBlockEntity extends AENetworkBlockEntity implements Reques
     public void onOrientationChanged(BlockOrientation orientation) {
         super.onOrientationChanged(orientation);
         getMainNode().setExposedOnSides(getExposedSides());
+    }
+
+    @Override
+    public Set<Direction> getGridConnectableSides(BlockOrientation orientation) {
+        return getExposedSides();
     }
 
     @Override
