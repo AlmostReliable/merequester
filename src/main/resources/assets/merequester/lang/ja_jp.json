@@ -1,0 +1,32 @@
+{
+  "itemGroup.merequester.tab": "ME Requester",
+
+  "item.merequester.requester_terminal": "MEリクエスターターミナル",
+  "block.merequester.requester": "MEリクエスター",
+
+  "gui.merequester.requester_terminal": "ME要求ターミナル",
+  "gui.merequester.no_requesters": "MEリクエスターが見つかりません!",
+
+  "tooltip.merequester.requester_desc": "必要に応じてクラフト要求を出すことで、指定された数のアイテムや液体、その他の物がネットワーク内に自動的に補填されるようにします。MEネットワークに接続する必要があり、MEリクエスターターミナルから一括で制御することが可能です。破壊されると設定は失われます。設定はメモリーカードでコピーペーストすることが可能です。",
+
+  "tooltip.merequester.shift_for_more": "%sで詳細",
+  "tooltip.merequester.enter_to_submit": "%sを送信",
+
+  "tooltip.merequester.whole_number": "整数である必要があります!",
+  "tooltip.merequester.locked": "ロック!リクエストが進行中です",
+
+  "tooltip.merequester.toggle": "リクエスト切り替え",
+  "tooltip.merequester.amount": "在庫量",
+  "tooltip.merequester.batch": "バッチサイズ",
+  "tooltip.merequester.submit": "変更の送信",
+  "tooltip.merequester.status": "リクエスト状況",
+
+  "tooltip.merequester.idle": "アイドリング",
+  "tooltip.merequester.idle_desc": "要求在庫量にすでに到達しているか、リクエストした物のクラフトパターンがネットワーク内に無い場合はリクエスターはアイドリングします。",
+  "tooltip.merequester.missing": "材料不足",
+  "tooltip.merequester.missing_desc": "ネットワーク内に要求された物を作るための素材が不足しています。必要量補填されるとリクエストが開始されます。",
+  "tooltip.merequester.link": "クラフト中",
+  "tooltip.merequester.link_desc": "現在、要求された物をクラフト中です。",
+  "tooltip.merequester.export": "出力中",
+  "tooltip.merequester.export_desc": "リクエスターはクラフト結果をネットワークに出力しようとしています。リクエスターが長時間この場合の時は、ネットワーク内に出力できる容量がない可能性が高いです。"
+}
