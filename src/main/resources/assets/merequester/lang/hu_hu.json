@@ -1,13 +1,13 @@
 {
-  "itemGroup.merequester.tab": "ME Kérelmező",
+  "itemGroup.merequester.tab": "ME kérelmező",
 
-  "item.merequester.requester_terminal": "ME Kérelmező terminál",
-  "block.merequester.requester": "ME Kérelmező",
+  "item.merequester.requester_terminal": "ME kérelmező terminál",
+  "block.merequester.requester": "ME kérelmező",
 
-  "gui.merequester.requester_terminal": "ME Kér. terminál",
+  "gui.merequester.requester_terminal": "ME kér. terminál",
   "gui.merequester.no_requesters": "Nem található ME Kérelmező!",
 
-  "tooltip.merequester.requester_desc": "Automatikusan készleten tart tárgyakat és folyadékokat új barkácsolások kérésével, ha szükséges. Csatlakoztatva kell lennie egy ME hálózathoz, és egy ME Kérelmező terminálról elérhető. A konfiguráció elveszik, ha felszedik. A beállításokat Memória kártyával lehet másolni.",
+  "tooltip.merequester.requester_desc": "Automatikusan készleten tart tárgyakat és folyadékokat új barkácsolások kérésével, ha szükséges. Csatlakoztatva kell lennie egy ME hálózathoz, és egy ME kérelmező terminálról elérhető. A konfiguráció elveszik, ha felszedik. A beállításokat Memória kártyával lehet másolni.",
 
   "tooltip.merequester.shift_for_more": "%s több információért",
   "tooltip.merequester.enter_to_submit": "%s küldéshez",
