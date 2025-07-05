@@ -1,0 +1,32 @@
+{
+  "itemGroup.merequester.tab": "ME Kérelmező",
+
+  "item.merequester.requester_terminal": "ME Kérelmező terminál",
+  "block.merequester.requester": "ME Kérelmező",
+
+  "gui.merequester.requester_terminal": "ME Kér. terminál",
+  "gui.merequester.no_requesters": "Nem található ME Kérelmező!",
+
+  "tooltip.merequester.requester_desc": "Automatikusan készleten tart tárgyakat és folyadékokat új barkácsolások kérésével, ha szükséges. Csatlakoztatva kell lennie egy ME hálózathoz, és egy ME Kérelmező terminálról elérhető. A konfiguráció elveszik, ha felszedik. A beállításokat Memória kártyával lehet másolni.",
+
+  "tooltip.merequester.shift_for_more": "%s több információért",
+  "tooltip.merequester.enter_to_submit": "%s küldéshez",
+
+  "tooltip.merequester.whole_number": "Egész számnak kell lennie!",
+  "tooltip.merequester.locked": "Zárolva! Kérés folyamatban.",
+
+  "tooltip.merequester.toggle": "Kérés kapcsoló",
+  "tooltip.merequester.amount": "Készlet mennyiség",
+  "tooltip.merequester.batch": "Köteg méret",
+  "tooltip.merequester.submit": "Változtatások beküldése",
+  "tooltip.merequester.status": "Kérés állapota",
+
+  "tooltip.merequester.idle": "Üresjárat",
+  "tooltip.merequester.idle_desc": "A Kérelmező üresjáratban van, amikor a kért mennyiség már el van érve, vagy nincs barkácsolási minta az adott tárgyhoz vagy folyadékhoz.",
+  "tooltip.merequester.missing": "Hiányzó alapanyagok",
+  "tooltip.merequester.missing_desc": "Nem találhatóak a kért tárgyak vagy folyadékok készítéséhez szükséges alapanyagok a rendszerben. A folyamat folytatódik, amikor az alapanyagok rendelkezésre válnak.",
+  "tooltip.merequester.link": "Barkácsolás",
+  "tooltip.merequester.link_desc": "A rendszer jelenleg készíti a kért tárgyat vagy folyadékot.",
+  "tooltip.merequester.export": "Exportálás",
+  "tooltip.merequester.export_desc": "A Kérelmező megpróbálja exportálni a barkácsolási eredményeket a rendszerbe. Ha a Kérelmező hosszú ideig ebben az állapotban van, akkor nincs elérhető hely az exportáláshoz."
+}
