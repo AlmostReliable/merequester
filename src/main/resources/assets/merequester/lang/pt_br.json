@@ -1,26 +1,26 @@
 {
   "itemGroup.merequester.tab": "ME Requester",
-  
+
   "item.merequester.requester_terminal": "Terminal Requisitor ME",
   "block.merequester.requester": "Requisitor ME",
-  
+
   "gui.merequester.requester_terminal": "Term. Requisitor ME",
   "gui.merequester.no_requesters": "Sem Requisitores ME na rede!",
-  
+
   "tooltip.merequester.requester_desc": "Mantém automaticamente itens e fluidos em estoque solicitando novas fabricações quando necessário. Deve estar conectado a uma rede ME e pode ser acessado a partir de um Terminal Requisitor ME. Perderá sua configuração ao ser quebrado. As configurações podem ser copiadas com um Cartão de Memória.",
-  
+
   "tooltip.merequester.shift_for_more": "%s para mais detalhes",
   "tooltip.merequester.enter_to_submit": "%s para enviar",
-  
+
   "tooltip.merequester.whole_number": "Deve ser um número inteiro!",
   "tooltip.merequester.locked": "Bloqueado! Requisição em progresso.",
-  
+
   "tooltip.merequester.toggle": "Alternar requisição",
   "tooltip.merequester.amount": "Quantidade para estocar",
   "tooltip.merequester.batch": "Tamanho da fila",
   "tooltip.merequester.submit": "Enviar mudanças",
   "tooltip.merequester.status": "Estado da Requisição",
-  
+
   "tooltip.merequester.idle": "Inativo",
   "tooltip.merequester.idle_desc": "O Requisitor ME está inativo quando a quantidade solicitada já foi atingida, não há padrão de fabricação para este item ou fluido ou se não houver ingredientes suficientes para mais fabricações.",
   "tooltip.merequester.missing": "Ingredientes Ausentes",
