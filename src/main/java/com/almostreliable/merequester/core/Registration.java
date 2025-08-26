@@ -140,7 +140,7 @@ public final class Registration {
             (requester, ctx) -> requester
         );
 
-        WirelessTerminalCompat.INSTANCE.registerCapabilities();
+        WirelessTerminalCompat.INSTANCE.registerCapabilities(event);
     }
 
     public static final class Tab {

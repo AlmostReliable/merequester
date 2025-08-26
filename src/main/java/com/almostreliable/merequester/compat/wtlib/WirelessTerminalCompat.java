@@ -3,6 +3,8 @@ package com.almostreliable.merequester.compat.wtlib;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -10,6 +12,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import appeng.api.features.GridLinkables;
 import appeng.init.client.InitScreens;
+import appeng.items.tools.powered.WirelessTerminalItem;
+import appeng.items.tools.powered.powersink.PoweredItemCapabilities;
 import de.mari_023.ae2wtlib.api.gui.Icon;
 import de.mari_023.ae2wtlib.api.registration.AddTerminalEvent;
 
@@ -35,9 +39,9 @@ public final class WirelessTerminalCompat {
         }
     }
 
-    public void registerCapabilities() {
+    public void registerCapabilities(RegisterCapabilitiesEvent event) {
         if (isLoaded()) {
-            Guard.registerCapabilities();
+            Guard.registerCapabilities(event);
         }
     }
 
@@ -81,9 +85,14 @@ public final class WirelessTerminalCompat {
                 .addTerminal());
         }
 
-        private static void registerCapabilities() {
+        private static void registerCapabilities(RegisterCapabilitiesEvent event) {
             assert WIRELESS_REQUESTER_TERMINAL != null;
-            GridLinkables.register(WIRELESS_REQUESTER_TERMINAL, appeng.items.tools.powered.WirelessTerminalItem.LINKABLE_HANDLER);
+            GridLinkables.register(WIRELESS_REQUESTER_TERMINAL, WirelessTerminalItem.LINKABLE_HANDLER);
+            event.registerItem(
+                Capabilities.EnergyStorage.ITEM,
+                (stack, context) -> new PoweredItemCapabilities(stack, WIRELESS_REQUESTER_TERMINAL.get()),
+                WIRELESS_REQUESTER_TERMINAL
+            );
         }
 
         private static Iterable<ItemLike> collectItems() {
