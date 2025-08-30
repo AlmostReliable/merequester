@@ -2,7 +2,10 @@
   "itemGroup.merequester.tab": "ME kérelmező",
 
   "item.merequester.requester_terminal": "ME kérelmező terminál",
+  "item.merequester.wireless_requester_terminal": "Vezeték nélküli kérelmező terminál",
   "block.merequester.requester": "ME kérelmező",
+
+  "key.ae2.wireless_requester_terminal": "Vez. nélküli kér. terminál megnyitása",
 
   "gui.merequester.requester_terminal": "ME kér. terminál",
   "gui.merequester.no_requesters": "Nem található ME Kérelmező!",
@@ -25,6 +28,8 @@
   "tooltip.merequester.idle_desc": "A Kérelmező üresjáratban van, amikor a kért mennyiség már el van érve, vagy nincs barkácsolási minta az adott tárgyhoz vagy folyadékhoz.",
   "tooltip.merequester.missing": "Hiányzó alapanyagok",
   "tooltip.merequester.missing_desc": "Nem találhatóak a kért tárgyak vagy folyadékok készítéséhez szükséges alapanyagok a rendszerben. A folyamat folytatódik, amikor az alapanyagok rendelkezésre válnak.",
+  "tooltip.merequester.cpu": "Nincs CPU",
+  "tooltip.merequester.cpu_desc": "A rendszer nem talál megfelelő CPU-t a barkácsoláshoz. A folyamat folytatódik, amikor lesz elérhető CPU.",
   "tooltip.merequester.link": "Barkácsolás",
   "tooltip.merequester.link_desc": "A rendszer jelenleg készíti a kért tárgyat vagy folyadékot.",
   "tooltip.merequester.export": "Exportálás",
