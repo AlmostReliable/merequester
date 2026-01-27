@@ -5,6 +5,7 @@ import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.abstraction.RequestDisplay;
 import com.almostreliable.merequester.client.abstraction.RequesterReference;
 import com.almostreliable.merequester.mixin.accessors.SlotMixin;
+import com.almostreliable.merequester.platform.Platform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -73,5 +74,15 @@ public class RequestSlot extends FakeSlot {
 
     public void setLocked(boolean locked) {
         isLocked = locked;
+    }
+    
+    @Override
+    public boolean canSetFilterTo(ItemStack stack) {
+        return isLocked ? false : super.canSetFilterTo(stack);
+    }
+
+    @Override
+    public void setFilterTo(ItemStack stack) {
+        Platform.sendDragAndDrop(requesterReference.getRequesterId(), slot, stack);
     }
 }
