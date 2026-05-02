@@ -6,10 +6,10 @@
   "merequester.midnightconfig.IDLE_ENERGY": "Потребление энергии в простое",
   "merequester.midnightconfig.REQUIRE_CHANNEL": "Запросчику требуется канал",
 
-  "item.merequester.requester_terminal": "Терминал доступа к МЭ запросчикам",
+  "item.merequester.requester_terminal": "МЭ терминал запросов",
   "block.merequester.requester": "МЭ запросчик",
 
-  "gui.merequester.requester_terminal": "Терминал доступа к МЭ запросчикам",
+  "gui.merequester.requester_terminal": "МЭ терминал запросов",
   "gui.merequester.no_requesters": "МЭ запросчики не найдены!",
 
   "tooltip.merequester.requester_desc": "Автоматически поддерживает запас предметов и жидкостей, заказывая создание новых, когда это необходимо. Должен быть подключён к МЭ-сети; доступен через терминал МЭ-запросчика. Сбрасывает настройки при демонтаже. Настройки можно скопировать с помощью карты памяти.",
