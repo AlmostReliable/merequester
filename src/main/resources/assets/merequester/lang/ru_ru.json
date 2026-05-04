@@ -1,0 +1,37 @@
+{
+  "itemGroup.merequester.tab": "ME Requester",
+
+  "merequester.midnightconfig.title": "Конфигурация ME Requester",
+  "merequester.midnightconfig.REQUESTS": "Запросов на один запросчик",
+  "merequester.midnightconfig.IDLE_ENERGY": "Потребление энергии в простое",
+  "merequester.midnightconfig.REQUIRE_CHANNEL": "Запросчику требуется канал",
+
+  "item.merequester.requester_terminal": "МЭ терминал запросов",
+  "block.merequester.requester": "МЭ запросчик",
+
+  "gui.merequester.requester_terminal": "МЭ терминал запросов",
+  "gui.merequester.no_requesters": "МЭ запросчики не найдены!",
+
+  "tooltip.merequester.requester_desc": "Автоматически поддерживает запас предметов и жидкостей, заказывая создание новых, когда это необходимо. Должен быть подключён к МЭ-сети и может быть доступен через МЭ терминал запросов. При поломке сбрасывает свои настройки. Настройки можно скопировать с помощью карты памяти.",
+
+  "tooltip.merequester.shift_for_more": "Нажмите %s для подробностей",
+  "tooltip.merequester.enter_to_submit": "Нажмите %s для подтверждения",
+
+  "tooltip.merequester.whole_number": "Должно быть целое число!",
+  "tooltip.merequester.locked": "Заблокировано! Идёт выполнение запроса.",
+
+  "tooltip.merequester.toggle": "Переключить запрос",
+  "tooltip.merequester.amount": "Целевое количество",
+  "tooltip.merequester.batch": "Размер партии",
+  "tooltip.merequester.submit": "Применить изменения",
+  "tooltip.merequester.status": "Статус запроса",
+
+  "tooltip.merequester.idle": "Ожидание",
+  "tooltip.merequester.idle_desc": "Запросчик бездействует, если целевое количество уже достигнуто или в системе отсутствует шаблон для создания этого предмета или жидкости.",
+  "tooltip.merequester.missing": "Недостаточно ингредиентов",
+  "tooltip.merequester.missing_desc": "В системе не хватает ресурсов для создания запрошенного предмета или жидкости. Процесс возобновится, когда ингредиенты появятся в наличии.",
+  "tooltip.merequester.link": "Создание",
+  "tooltip.merequester.link_desc": "Система в данный момент выполняет автокрафт запрошенного предмета или жидкости.",
+  "tooltip.merequester.export": "Экспорт",
+  "tooltip.merequester.export_desc": "Запросчик пытается переместить результат крафта в систему. Если этот статус сохраняется долгое время, значит в системе нет свободного места для приёма продукции."
+}
