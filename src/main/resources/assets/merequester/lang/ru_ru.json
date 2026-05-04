@@ -1,0 +1,32 @@
+{
+  "itemGroup.merequester.tab": "ME Requester",
+
+  "item.merequester.requester_terminal": "МЭ терминал запросов",
+  "block.merequester.requester": "МЭ запросчик",
+
+  "gui.merequester.requester_terminal": "МЭ терминал запросов",
+  "gui.merequester.no_requesters": "МЭ запросчики не найдены!",
+
+  "tooltip.merequester.requester_desc": "Автоматически поддерживает запас предметов и жидкостей, заказывая создание новых, когда это необходимо. Должен быть подключён к МЭ-сети и может быть доступен через МЭ терминал запросов. При поломке сбрасывает свои настройки. Настройки можно скопировать с помощью карты памяти.",
+
+  "tooltip.merequester.shift_for_more": "%s для подробностей",
+  "tooltip.merequester.enter_to_submit": "%s для подтверждения",
+
+  "tooltip.merequester.whole_number": "Должно быть целое число!",
+  "tooltip.merequester.locked": "Заблокировано! Идёт выполнение запроса.",
+
+  "tooltip.merequester.toggle": "Переключить запрос",
+  "tooltip.merequester.amount": "Целевое количество",
+  "tooltip.merequester.batch": "Размер партии",
+  "tooltip.merequester.submit": "Применить изменения",
+  "tooltip.merequester.status": "Состояние запроса",
+
+  "tooltip.merequester.idle": "Простой",
+  "tooltip.merequester.idle_desc": "Запросчик простаивает, если целевое количество уже достигнуто или в системе отсутствует шаблон для создания этого предмета или жидкости.",
+  "tooltip.merequester.missing": "Недостаточно ингредиентов",
+  "tooltip.merequester.missing_desc": "Системе не хватает ингредиентов для создания требуемого предмета или жидкости. Процесс будет продолжен, когда ингредиенты будут доступны.",
+  "tooltip.merequester.link": "Создание",
+  "tooltip.merequester.link_desc": "Система в данный момент выполняет автокрафт запрошенного предмета или жидкости.",
+  "tooltip.merequester.export": "Экспорт",
+  "tooltip.merequester.export_desc": "Заказчик пытается экспортировать результаты крафта в систему. Если запросчик находится в этом статусе долгое время, то для экспорта нет свободного места."
+}
