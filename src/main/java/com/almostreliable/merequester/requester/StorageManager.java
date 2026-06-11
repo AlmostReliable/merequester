@@ -34,6 +34,9 @@ public class StorageManager implements IStorageWatcherNode, TagSerializable<Comp
     public void updateWatcher(IStackWatcher newWatcher) {
         stackWatcher = newWatcher;
         resetWatcher();
+        for(int i = 0; i < storages.length; i++){
+            computeKnownAmount(i);
+        }
     }
 
     @Override
