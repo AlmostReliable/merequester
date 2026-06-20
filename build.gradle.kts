@@ -1,9 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-import net.fabricmc.loom.api.LoomGradleExtensionAPI
-
 val license: String by project
-val enableAccessWidener: String by project
 val minecraftVersion: String by project
 val modVersion: String by project
 val modPackage: String by project
@@ -11,7 +8,6 @@ val modId: String by project
 val modName: String by project
 val modAuthor: String by project
 val modDescription: String by project
-val parchmentVersion: String by project
 val forgeVersion: String by project
 val forgeRecipeViewer: String by project
 val aeVersion: String by project
@@ -21,63 +17,65 @@ val githubUser: String by project
 val githubRepo: String by project
 
 plugins {
-    id("dev.architectury.loom") version "1.3.+"
-    id("io.github.juuxel.loom-vineflower") version "1.11.0"
+    id("net.neoforged.moddev.legacyforge") version "2.0.140"
     id("com.github.gmazzo.buildconfig") version "4.0.4"
     java
 }
 
+// cannot be configured inside the block for some reason
+legacyForge.version = "$minecraftVersion-$forgeVersion"
+
 base {
     version = "$minecraftVersion-$modVersion"
-    group = modPackage
     archivesName.set("$modId-forge")
 }
 
-loom {
-    silentMojangMappingsLicense()
-
-    forge {
-        mixinConfig("$modId.mixins.json")
-    }
-
-    if (project.findProperty("enableAccessWidener") == "true") {
-        accessWidenerPath.set(file("src/main/resources/$modId.accesswidener"))
-        forge {
-            convertAccessWideners.set(true)
-            extraAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
+legacyForge {
+    runs {
+        configureEach {
+            // DCEVM hot-swapping
+            jvmArgument("-XX:+AllowEnhancedClassRedefinition")
+            jvmArgument("-XX:+IgnoreUnrecognizedVMOptions")
         }
-        println("Access widener enabled for project. Access widener path: ${loom.accessWidenerPath.get()}")
+
+        create("client") {
+            client()
+        }
+        create("server") {
+            server()
+        }
     }
+    mods {
+        create(modId) {
+            sourceSet(sourceSets.main.get())
+        }
+    }
+}
+
+mixin {
+    add(sourceSets.main.get(), "$modId.mixins.refmap.json")
+    config("$modId.mixins.json")
 }
 
 repositories {
-    maven("https://maven.parchmentmc.org/") // Parchment
     maven("https://modmaven.dev/") // Applied Energistics 2
     maven("https://maven.blamejared.com") // JEI
     maven("https://maven.shedaniel.me") // REI
-    mavenLocal()
 }
 
 dependencies {
-    // Minecraft
-    minecraft("com.mojang:minecraft:$minecraftVersion")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-$minecraftVersion:$parchmentVersion@zip")
-    })
-
-    // Forge
-    forge("net.minecraftforge:forge:$minecraftVersion-$forgeVersion")
+    // Mixin
+    annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
 
     // Compile
     modCompileOnly("appeng:appliedenergistics2-forge:$aeVersion")
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-forge:$reiVersion")
 
     // Runtime
-    modLocalRuntime("appeng:appliedenergistics2-forge:$aeVersion")
+    modRuntimeOnly("appeng:appliedenergistics2-forge:$aeVersion")
     when (forgeRecipeViewer) {
-        "rei" -> modLocalRuntime("me.shedaniel:RoughlyEnoughItems-forge:$reiVersion")
-        "jei" -> modLocalRuntime("mezz.jei:jei-$minecraftVersion-forge:$jeiVersion") { isTransitive = false }
+        "rei" -> modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-forge:$reiVersion")
+        "jei" -> modRuntimeOnly("mezz.jei:jei-$minecraftVersion-forge:$jeiVersion") { isTransitive = false }
         else -> throw GradleException("Invalid recipeViewer value: $forgeRecipeViewer")
     }
 }
@@ -122,14 +120,6 @@ tasks {
 
 extensions.configure<JavaPluginExtension> {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
-}
-
-extensions.configure<LoomGradleExtensionAPI> {
-    runs {
-        forEach {
-            it.vmArgs("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
-        }
-    }
 }
 
 buildConfig {
