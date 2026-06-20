@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## Unreleased
+## [1.2.0] - 2026-06-20
 
 - added Russian translation ([#60](https://github.com/AlmostReliable/merequester/pull/60))
 - added option to enter fraction digits for fluids in Requester amounts ([#41](https://github.com/AlmostReliable/merequester/issues/41), [#64](https://github.com/AlmostReliable/merequester/pull/64))
@@ -30,6 +30,7 @@ Initial 1.20.1 release!
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
+[1.2.0]: https://github.com/AlmostReliable/merequester/releases/tag/v1.20.1-forge-1.2.0
 [1.1.5]: https://github.com/AlmostReliable/merequester/releases/tag/v1.20.1-forge-1.1.5
 [1.1.4]: https://github.com/AlmostReliable/merequester/releases/tag/v1.20.1-forge-1.1.4
 [1.1.3]: https://github.com/AlmostReliable/merequester/releases/tag/v1.20.1-forge-1.1.3
