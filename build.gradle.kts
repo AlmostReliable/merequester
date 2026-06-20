@@ -11,8 +11,10 @@ val modDescription: String by project
 val forgeVersion: String by project
 val forgeRecipeViewer: String by project
 val aeVersion: String by project
+val guideMeVersion: String by project
 val jeiVersion: String by project
 val reiVersion: String by project
+val archVersion: String by project
 val githubUser: String by project
 val githubRepo: String by project
 
@@ -61,18 +63,18 @@ repositories {
     maven("https://modmaven.dev/") // Applied Energistics 2
     maven("https://maven.blamejared.com") // JEI
     maven("https://maven.shedaniel.me") // REI
+    maven("https://maven.architectury.dev/") // Architectury for REI
 }
 
 dependencies {
-    // Mixin
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
 
-    // Compile
-    modCompileOnly("appeng:appliedenergistics2-forge:$aeVersion")
-    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-forge:$reiVersion")
+    modImplementation("appeng:appliedenergistics2-forge:$aeVersion")
+    modRuntimeOnly("org.appliedenergistics:guideme:$guideMeVersion")
 
-    // Runtime
-    modRuntimeOnly("appeng:appliedenergistics2-forge:$aeVersion")
+    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-forge:$reiVersion")
+    modImplementation("dev.architectury:architectury-forge:$archVersion")
+
     when (forgeRecipeViewer) {
         "rei" -> modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-forge:$reiVersion")
         "jei" -> modRuntimeOnly("mezz.jei:jei-$minecraftVersion-forge:$jeiVersion") { isTransitive = false }
