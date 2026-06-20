@@ -91,7 +91,7 @@ public class NumberField extends ConfirmableTextField {
 
         var possibleValue = getValueInternal();
         if (possibleValue.isPresent()) {
-            if (possibleValue.get().scale() > 0) {
+            if (possibleValue.get().scale() > (isFluid ? 3 : 0)) {
                 validationErrors.add(Utils.translate("tooltip", "whole_number"));
             } else {
                 var value = convertToExternalValue(possibleValue.get());
