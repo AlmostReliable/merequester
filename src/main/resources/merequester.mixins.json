@@ -3,6 +3,7 @@
   "minVersion": "0.8.5",
   "package": "com.almostreliable.merequester.mixin",
   "compatibilityLevel": "JAVA_17",
+  "refmap": "merequester.mixins.refmap.json",
   "plugin": "com.almostreliable.merequester.mixin.AlmostMixinPlugin",
   "mixins": [
     "registration.AEBlockEntitiesMixin",
