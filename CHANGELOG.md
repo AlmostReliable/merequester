@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## Unreleased
+
+- fixed Mixins not loading ([#65](https://github.com/AlmostReliable/merequester/issues/65))
+
 ## [1.2.0] - 2026-06-20
 
 - added Russian translation ([#60](https://github.com/AlmostReliable/merequester/pull/60))

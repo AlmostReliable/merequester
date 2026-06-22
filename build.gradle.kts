@@ -1,5 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
+
 val license: String by project
 val minecraftVersion: String by project
 val modVersion: String by project
@@ -117,6 +118,10 @@ tasks {
 
     withType<GenerateModuleMetadata> {
         enabled = false
+    }
+
+    jar {
+        manifest.attributes(mapOf("MixinConfigs" to "$modId.mixins.json"))
     }
 }
 
