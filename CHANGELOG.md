@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## Unreleased
+## [1.2.1] - 2026-06-22
 
 - fixed Mixins not loading ([#65](https://github.com/AlmostReliable/merequester/issues/65))
 
@@ -34,6 +34,7 @@ Initial 1.20.1 release!
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
+[1.2.1]: https://github.com/AlmostReliable/merequester/releases/tag/v1.20.1-forge-1.2.1
 [1.2.0]: https://github.com/AlmostReliable/merequester/releases/tag/v1.20.1-forge-1.2.0
 [1.1.5]: https://github.com/AlmostReliable/merequester/releases/tag/v1.20.1-forge-1.1.5
 [1.1.4]: https://github.com/AlmostReliable/merequester/releases/tag/v1.20.1-forge-1.1.4
