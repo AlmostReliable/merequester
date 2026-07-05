@@ -1,0 +1,37 @@
+{
+  "itemGroup.merequester.tab": "Demandeur ME",
+
+  "item.merequester.requester_terminal": "Terminal demandeur ME",
+  "item.merequester.wireless_requester_terminal": "Terminal demandeur ME sans fil",
+  "block.merequester.requester": "Demandeur ME",
+
+  "key.ae2.wireless_requester_terminal": "Ouvrir le terminal demandeur ME sans fil",
+
+  "gui.merequester.requester_terminal": "Term. demandeur ME",
+  "gui.merequester.no_requesters": "Aucun demandeur ME trouvé !",
+
+  "tooltip.merequester.requester_desc": "Maintient automatiquement un stock d'objets et de fluides en demandant de nouvelles fabrications lorsque nécessaire. Doit être connecté à un réseau ME et peut être configuré depuis un terminal demandeur ME. Perd sa configuration lorsqu'il est détruit. Les réglages peuvent être copiés à l'aide d'une carte mémoire.",
+
+  "tooltip.merequester.shift_for_more": "%s pour plus de détails",
+  "tooltip.merequester.enter_to_submit": "%s pour envoyer",
+
+  "tooltip.merequester.whole_number": "Doit être un nombre entier !",
+  "tooltip.merequester.locked": "Verrouillé ! Requête en cours.",
+
+  "tooltip.merequester.toggle": "Activer/désactiver la requête",
+  "tooltip.merequester.amount": "Quantité à stocker",
+  "tooltip.merequester.batch": "Taille de lot",
+  "tooltip.merequester.submit": "Envoyer les modifications",
+  "tooltip.merequester.status": "État de la requête",
+
+  "tooltip.merequester.idle": "Inactif",
+  "tooltip.merequester.idle_desc": "Le demandeur est inactif lorsque la quantité demandée est déjà atteinte ou qu'il n'existe aucun schéma de fabrication pour cet objet ou ce fluide.",
+  "tooltip.merequester.missing": "Ingrédients manquants",
+  "tooltip.merequester.missing_desc": "Il manque au système des ingrédients pour fabriquer l'objet ou le fluide demandé. Le processus reprend dès que les ingrédients sont disponibles.",
+  "tooltip.merequester.cpu": "Aucun CPU",
+  "tooltip.merequester.cpu_desc": "Le système ne trouve pas de CPU adapté pour la fabrication. Le processus reprend dès qu'un CPU est trouvé.",
+  "tooltip.merequester.link": "Fabrication",
+  "tooltip.merequester.link_desc": "Le système est en train de fabriquer l'objet ou le fluide demandé.",
+  "tooltip.merequester.export": "Exportation",
+  "tooltip.merequester.export_desc": "Le demandeur essaie d'exporter les résultats de la fabrication vers le système. Si ce statut persiste longtemps, cela signifie qu'il n'y a plus d'espace disponible pour l'exportation."
+}
