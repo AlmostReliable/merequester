@@ -97,6 +97,7 @@ public final class Request implements INBTSerializable<CompoundTag> {
     }
 
     public void updateAmount(long amount) {
+        if (amount <= 0 && clientStatus.locksResourceSlot()) return;
         if (key == null || amount <= 0) {
             resetSlot();
             return;

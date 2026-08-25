@@ -90,13 +90,6 @@ public class RequestWidget {
         statusDisplay.setStatus(status);
         amountField.adjustToType(request.getKey());
         batchField.adjustToType(request.getKey());
-        if (status.locksRequest()) {
-            amountField.setEditable(false);
-            batchField.setEditable(false);
-        } else {
-            amountField.setEditable(true);
-            batchField.setEditable(true);
-        }
         if (amountField.isFocused() || batchField.isFocused() || submitButton.isFocused()) return;
         amountField.setLongValue(request.getAmount());
         batchField.setLongValue(request.getBatch());

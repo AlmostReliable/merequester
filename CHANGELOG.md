@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
-- /
+- allowed changing Requester amounts and batch sizes while jobs are processing ([#37](https://github.com/AlmostReliable/merequester/issues/37))
 
 ## [1.4.3] - 2026-06-20
 

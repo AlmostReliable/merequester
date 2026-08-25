@@ -309,7 +309,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
             (index + 1) * ROW_HEIGHT + 2
         );
         slot.setHideAmount(true);
-        slot.setLocked(request.getClientStatus().locksRequest());
+        slot.setLocked(request.getClientStatus().locksResourceSlot());
         return slot;
     }
 

@@ -61,6 +61,7 @@ drop it from recipe viewers that are supported by Applied Energistics.
 The Amount to Stock field indicates how much to stock. Specify what to stock first and then enter your desired value. For non-item requests,
 the field will adapt to the type. For example, showing a `B` to indicate buckets for fluid.<br/>
 When the current stock falls below the specified amount, the <ItemLink id="requester"/> will request more.
+Changes made while a batch is active do not affect the current job and are used when determining whether to request the next batch.
 <br/>
 
 ### Batch Size
@@ -69,6 +70,7 @@ The next input field specifies the batch size that will be requested once the cu
 Amount to Stock field.<br/>
 This can be used to put less stress on [Crafting CPU](ae2:ae2-mechanics/autocrafting.md#the-crafting-cpu)s and machines used in the craft
 since the full amount will be requested at once, rather than as many individual jobs.
+Changing the batch size while a job is active does not resize that job. The new size is used for subsequent batches.
 <br/>
 
 ### Submit Button
@@ -107,13 +109,15 @@ system.
 ### Yellow - Crafting
 
 The desired request is currently being crafted. The requester is waiting for the job to finish.<br/>
-While this status is active, the settings for the respective request inside the <ItemLink id="requester"/> are locked and can't be changed.
+While this status is active, the resource slot is locked to preserve the active job. The Amount to Stock and Batch Size fields remain
+editable, and their updated values are used for subsequent batches.
 <br/>
 
 ### Purple - Exporting
 
 The <ItemLink id="requester"/> received all results from the current job and is trying to export them into the storage system.<br/>
 This status is usually not visible. If it's active for too long, it means there is not enough space in your storage system.
+The resource slot remains locked until exporting finishes, while the Amount to Stock and Batch Size fields remain editable.
 <br/>
 
 ### Block Appearance

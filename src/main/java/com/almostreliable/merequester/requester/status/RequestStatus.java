@@ -19,7 +19,7 @@ public enum RequestStatus implements StringRepresentable {
         return this;
     }
 
-    public boolean locksRequest() {
+    public boolean locksResourceSlot() {
         return this == LINK || this == EXPORT;
     }
 
