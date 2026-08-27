@@ -5,7 +5,7 @@
   "item.merequester.wireless_requester_terminal": "Беспроводной терминал запросов",
   "block.merequester.requester": "МЭ запросчик",
 
-   "key.ae2.wireless_requester_terminal": "Открыть терминал запроса беспроводной связи",
+  "key.ae2.wireless_requester_terminal": "Открыть терминал запроса беспроводной связи",
 
   "gui.merequester.requester_terminal": "МЭ терминал запросов",
   "gui.merequester.no_requesters": "МЭ запросчики не найдены!",
