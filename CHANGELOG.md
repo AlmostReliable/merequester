@@ -3,7 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
-- /
+
+- added Korean translation ([#66](https://github.com/AlmostReliable/merequester/pull/66))
+- added French translation ([#67](https://github.com/AlmostReliable/merequester/pull/67))
+- updated Russian translation ([#70](https://github.com/AlmostReliable/merequester/pull/70))
+- removed drag and drop slot highlights when slot is locked
 
 ## [1.4.3] - 2026-06-20
 
