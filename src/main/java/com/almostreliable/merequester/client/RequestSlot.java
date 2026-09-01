@@ -84,4 +84,9 @@ public class RequestSlot extends FakeSlot {
     public void setFilterTo(ItemStack itemStack) {
         PacketDistributor.sendToServer(new DragAndDropPacket(getRequesterReference().getRequesterId(), getSlot(), itemStack));
     }
+
+    @Override
+    public boolean canSetFilterTo(ItemStack stack) {
+        return !isLocked && super.canSetFilterTo(stack);
+    }
 }
