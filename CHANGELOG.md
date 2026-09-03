@@ -3,7 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
-- /
+
+- added custom icon for Wireless Terminal integration ([#72](https://github.com/AlmostReliable/merequester/pull/72))
 
 ## [1.5.0] - 2026-09-01
 

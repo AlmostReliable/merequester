@@ -71,6 +71,9 @@ public final class WirelessTerminalCompat {
     @SuppressWarnings("StaticVariableUsedBeforeInitialization")
     private static final class Guard {
 
+        private static final Icon.Texture ICON_TEXTURE = new Icon.Texture(Utils.getRL("textures/wtlib/icon.png"), 16, 16);
+        private static final Icon ICON = new Icon(0, 0, 16, 16, ICON_TEXTURE);
+
         @Nullable
         private static ReqWirelessTerminalItem WIRELESS_REQUESTER_TERMINAL;
 
@@ -89,7 +92,7 @@ public final class WirelessTerminalCompat {
                     ReqWirelessTerminalMenuHost::new,
                     ReqWirelessTerminalMenu.TYPE,
                     terminalItem,
-                    Icon.PATTERN_ACCESS // TODO: replace this with a custom icon
+                    ICON
                 )
                 .addTerminal());
 
