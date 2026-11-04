@@ -25,7 +25,7 @@
   "tooltip.merequester.status": "État de la requête",
 
   "tooltip.merequester.idle": "Inactif",
-  "tooltip.merequester.idle_desc": "Le demandeur est inactif lorsque la quantité demandée est déjà atteinte ou qu'il n'existe aucun schéma de fabrication pour cet objet ou ce fluide.",
+  "tooltip.merequester.idle_desc": "Le demandeur est inactif lorsque la quantité demandée est déjà atteinte ou qu'il n'existe aucun modèle de fabrication pour cet objet ou ce fluide.",
   "tooltip.merequester.missing": "Ingrédients manquants",
   "tooltip.merequester.missing_desc": "Il manque au système des ingrédients pour fabriquer l'objet ou le fluide demandé. Le processus reprend dès que les ingrédients sont disponibles.",
   "tooltip.merequester.cpu": "Aucun CPU",
