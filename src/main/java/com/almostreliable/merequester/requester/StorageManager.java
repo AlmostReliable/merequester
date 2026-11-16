@@ -140,10 +140,11 @@ public class StorageManager implements IStorageWatcherNode, ValueIOSerializable 
         @Override
         public void deserialize(ValueInput data) {
             var childKey = data.child(KEY_ID);
-            if (childKey.isPresent())
+            if (childKey.isPresent()) {
                 key = AEKey.fromTagGeneric(childKey.orElseThrow());
-            else
+            } else {
                 key = null;
+            }
             bufferAmount = data.getLongOr(BUFFER_AMOUNT_ID, bufferAmount);
             pendingAmount = data.getLongOr(PENDING_AMOUNT_ID, pendingAmount);
             knownAmount = data.getLongOr(KNOWN_AMOUNT_ID, knownAmount);

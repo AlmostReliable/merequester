@@ -13,6 +13,7 @@ import appeng.parts.reporting.PatternAccessTerminalPart;
  * yoinked from {@link PatternAccessTerminalPart}
  */
 public class RequesterTerminalPart extends AbstractDisplayPart implements RequesterTerminalHost {
+
     public RequesterTerminalPart(IPartItem<?> partItem) {
         super(partItem, true);
     }

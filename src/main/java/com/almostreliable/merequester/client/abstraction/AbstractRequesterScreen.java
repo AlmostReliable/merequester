@@ -36,6 +36,7 @@ import appeng.helpers.InventoryAction;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
+
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;

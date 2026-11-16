@@ -31,5 +31,4 @@ public final class MERequesterClient {
         );
         WirelessTerminalCompat.INSTANCE.initClient(event);
     }
-
 }
