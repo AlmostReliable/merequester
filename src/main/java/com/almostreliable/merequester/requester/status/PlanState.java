@@ -7,6 +7,7 @@ import appeng.api.networking.crafting.ICraftingPlan;
 import appeng.api.networking.ticking.TickRateModulation;
 
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -26,14 +27,23 @@ public final class PlanState implements StatusState {
     }
 
     @Override
+    public void cancel() {
+        future.cancel(true);
+    }
+
+    @Override
     public StatusState handle(RequesterBlockEntity host, int index) {
         if (!future.isDone()) return this;
         if (future.isCancelled()) return IDLE;
 
+        if (!host.getRequestManager().get(index).isRequesting() || host.getStorageManager().computeAmountToCraft(index) <= 0) {
+            return IDLE;
+        }
+
         try {
             var plan = future.get();
             if (!plan.missingItems().isEmpty()) {
-                return new MissingState();
+                return BlockingState.coolDown(host, new MissingState());
             }
 
             var submitResult = host.getMainNodeGrid().getCraftingService().submitJob(plan, host, null, false, host.getActionSource());
@@ -41,7 +51,7 @@ public final class PlanState implements StatusState {
 
             if (!submitResult.successful() || craftingLink == null) {
                 if (submitResult.errorCode() != null && CPU_ERROR_CODES.contains(submitResult.errorCode())) {
-                    return new CpuState();
+                    return BlockingState.coolDown(host, new CpuState());
                 }
 
                 return IDLE;
@@ -49,7 +59,7 @@ public final class PlanState implements StatusState {
 
             host.getStorageManager().get(index).setTotalAmount(plan.finalOutput().amount());
             return new LinkState(craftingLink);
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (CancellationException | InterruptedException | ExecutionException e) {
             return IDLE;
         }
     }

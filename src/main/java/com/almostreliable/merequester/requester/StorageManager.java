@@ -58,7 +58,10 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
         var requests = host.getRequestManager();
         if (requests.getKey(slot) == null) return 0;
 
-        var storedAmount = get(slot).knownAmount + get(slot).pendingAmount;
+        var storage = get(slot);
+        if (storage.knownAmount < 0) return 0;
+
+        var storedAmount = storage.knownAmount + storage.pendingAmount;
         if (storedAmount < requests.getAmount(slot)) {
             return requests.get(slot).getBatch();
         }

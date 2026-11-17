@@ -28,6 +28,8 @@ public final class Config {
         public final ModConfigSpec.IntValue requests;
         public final ModConfigSpec.DoubleValue idleEnergy;
         public final ModConfigSpec.BooleanValue requireChannel;
+        public final ModConfigSpec.IntValue craftingRetryTicks;
+        public final ModConfigSpec.IntValue maxConcurrentPlans;
 
         private CommonConfig(ModConfigSpec.Builder builder) {
             builder.push(MERequester.REQUESTER_ID);
@@ -38,6 +40,16 @@ public final class Config {
             requireChannel = builder
                 .comment("Whether the ME Requester requires an ME network channel to function.")
                 .define("require_channel", true);
+            craftingRetryTicks = builder
+                .comment(
+                    "How many ticks a request waits after a crafting plan fails before it is planned again. Applies when ingredients are missing or no crafting CPU can take the job. Lower values restock sooner and start more AE2 crafting calculations."
+                )
+                .defineInRange("crafting_retry_ticks", 100, 1, 12000);
+            maxConcurrentPlans = builder
+                .comment(
+                    "How many ME Requester crafting plans may be calculated at the same time on one level. Plans run off the server thread. Higher values restock more requests in parallel and use more CPU."
+                )
+                .defineInRange("max_concurrent_plans", 4, 1, 64);
             builder.pop();
         }
     }

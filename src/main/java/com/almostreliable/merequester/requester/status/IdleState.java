@@ -10,12 +10,14 @@ public class IdleState implements StatusState {
 
     @Override
     public StatusState handle(RequesterBlockEntity host, int index) {
-        if (host.getStorageManager().get(index).getBufferAmount() > 0) {
+        var storage = host.getStorageManager().get(index);
+        if (storage.getBufferAmount() > 0) {
             return EXPORT;
         }
 
         var request = host.getRequestManager().get(index);
-        if (request.isRequesting() && request.getAmount() > host.getStorageManager().get(index).getKnownAmount()) {
+        // knownAmount stays -1 until the storage watcher reports a real count.
+        if (request.isRequesting() && storage.getKnownAmount() >= 0 && request.getAmount() > storage.getKnownAmount()) {
             return REQUEST;
         }
 

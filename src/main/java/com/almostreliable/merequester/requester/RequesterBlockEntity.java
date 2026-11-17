@@ -140,7 +140,17 @@ public class RequesterBlockEntity extends AENetworkedBlockEntity implements Requ
     }
 
     @Override
+    public void setRemoved() {
+        for (var state : requestStatus) {
+            state.cancel();
+        }
+        super.setRemoved();
+    }
+
+    @Override
     public void requestChanged(int index) {
+        requestStatus[index].cancel();
+        updateRequestStatus(index, StatusState.IDLE);
         storageManager.clear(index);
         saveChanges();
     }
@@ -218,12 +228,20 @@ public class RequesterBlockEntity extends AENetworkedBlockEntity implements Requ
 
     private StatusState handleRequest(int slot) {
         var state = requestStatus[slot];
-        updateRequestStatus(slot, state.handle(this, slot));
-        if (requestStatus[slot].type() != RequestStatus.IDLE && !Objects.equals(requestStatus[slot], state)) {
+        var next = state.handle(this, slot);
+        updateRequestStatus(slot, next);
+        // Follow cheap transitions in this tick. A plan, or a failed plan, has to
+        // wait for the next tick so one request cannot chain calculations.
+        if (next != state && continuesOnSameTick(next)) {
             return handleRequest(slot);
         }
 
-        return requestStatus[slot];
+        return next;
+    }
+
+    private static boolean continuesOnSameTick(StatusState state) {
+        var type = state.type();
+        return type == RequestStatus.REQUEST || type == RequestStatus.LINK || type == RequestStatus.EXPORT;
     }
 
     private void updateRequestStatus(int slot, StatusState state) {

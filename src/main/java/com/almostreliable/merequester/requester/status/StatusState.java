@@ -20,4 +20,9 @@ public interface StatusState {
     RequestStatus type();
 
     TickRateModulation getTickRateModulation();
+
+    /**
+     * Drops an in-flight crafting plan. Called when the request changes or the block is removed.
+     */
+    default void cancel() {}
 }

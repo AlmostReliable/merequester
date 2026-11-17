@@ -3,7 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
-- /
+- requester crafting plans run on AE2's calculator thread without parking the server tick. Pattern provider updates and the end-of-tick craftable-pattern refresh wait until those plans are paused, so they do not read or write the pattern map on the same tick.
+- failed crafting plans wait before they are calculated again, and only a few plans are calculated at once.
 
 ## [1.5.0] - 2026-09-01
 
