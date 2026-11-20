@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 - changed blocked requests to retry with a growing delay
+- changed requests to skip the crafting calculation while all crafting CPUs are busy or no pattern exists
 - fixed heavy server lag caused by blocked requests
 - fixed the server Requester slots not being synced to clients
 - fixed the scrollbar of the Requester and Requester Terminal being shown when there is nothing to scroll

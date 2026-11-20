@@ -47,7 +47,7 @@ public abstract class BlockingState implements StatusState {
             retryTick = gameTime + retryDelay + level.getRandom().nextInt(retryDelay / 4 + 1);
         }
 
-        if (gameTime < retryTick) return this;
+        if (gameTime < retryTick || !canRetry(host)) return this;
 
         var requestResult = REQUEST.handle(host, slot);
         if (!(requestResult instanceof PlanState planState)) return requestResult;
@@ -59,5 +59,9 @@ public abstract class BlockingState implements StatusState {
     @Override
     public TickRateModulation getTickRateModulation() {
         return TickRateModulation.IDLE;
+    }
+
+    boolean canRetry(RequesterBlockEntity host) {
+        return true;
     }
 }
