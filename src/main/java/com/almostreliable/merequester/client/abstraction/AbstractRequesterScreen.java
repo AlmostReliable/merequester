@@ -51,8 +51,9 @@ import java.util.Set;
 public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> extends AEBaseScreen<M> implements RequestDisplay {
 
     protected static final int GUI_WIDTH = 195;
-    private static final int GUI_PADDING_X = 8;
-    private static final int GUI_PADDING_Y = 6;
+    protected static final int GUI_WIDTH_NO_SCROLL = 176;
+    protected static final int GUI_PADDING_X = 8;
+    protected static final int GUI_PADDING_Y = 6;
     protected static final int GUI_HEADER_HEIGHT = 20;
     protected static final int GUI_FOOTER_HEIGHT = 99;
 
@@ -62,12 +63,20 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
     protected static final int ROW_HEIGHT = 19;
     protected static final int MIN_ROW_COUNT = 3;
 
-    private static final Rect2i HEADER_BBOX = new Rect2i(0, 0, GUI_WIDTH, GUI_HEADER_HEIGHT);
+    private static final Identifier TEXTURE = Utils.getRL("textures/gui/requester.png");
+    private static final int TEXTURE_SIZE = 256;
+    private static final Rect2i HEADER_BBOX = new Rect2i(0, 0, GUI_WIDTH_NO_SCROLL, GUI_HEADER_HEIGHT);
+    private static final Rect2i REQUEST_BBOX = new Rect2i(0, 38, GUI_WIDTH_NO_SCROLL, ROW_HEIGHT);
+    private static final Rect2i TEXT_BBOX = new Rect2i(0, 60, GUI_WIDTH_NO_SCROLL, ROW_HEIGHT);
+    private static final Rect2i FOOTER_BBOX = new Rect2i(0, 114, GUI_WIDTH_NO_SCROLL, GUI_FOOTER_HEIGHT + 2);
 
-    private static final Rect2i TEXT_BBOX = new Rect2i(0, 60, GUI_WIDTH, ROW_HEIGHT);
-    private static final Rect2i REQUEST_BBOX = new Rect2i(0, 38, GUI_WIDTH, ROW_HEIGHT);
-
-    private final Identifier texture;
+    private static final Identifier SCROLLBAR_TEXTURE = Utils.getRL("textures/gui/scrollbar.png");
+    private static final int SCROLLBAR_TEXTURE_SIZE = 64;
+    private static final int SCROLLBAR_PANEL_X = GUI_WIDTH_NO_SCROLL - 2;
+    private static final int SCROLLBAR_PANEL_WIDTH = GUI_WIDTH - SCROLLBAR_PANEL_X;
+    private static final Rect2i SCROLLBAR_TOP_BBOX = new Rect2i(0, 0, SCROLLBAR_PANEL_WIDTH, GUI_HEADER_HEIGHT);
+    private static final Rect2i SCROLLBAR_ROW_BBOX = new Rect2i(0, 20, SCROLLBAR_PANEL_WIDTH, ROW_HEIGHT);
+    private static final Rect2i SCROLLBAR_BOTTOM_BBOX = new Rect2i(0, 39, SCROLLBAR_PANEL_WIDTH, 10);
 
     protected final ArrayList<Object> lines = new ArrayList<>();
     private final Scrollbar scrollbar;
@@ -77,11 +86,8 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
     protected int rowAmount;
 
     @SuppressWarnings("AssignmentToSuperclassField")
-    protected AbstractRequesterScreen(
-        M menu, Inventory playerInventory, Component name, ScreenStyle style, Identifier texture
-    ) {
+    protected AbstractRequesterScreen(M menu, Inventory playerInventory, Component name, ScreenStyle style) {
         super(menu, playerInventory, name, style);
-        this.texture = texture;
         scrollbar = widgets.addScrollBar("scrollbar", Scrollbar.BIG);
         imageWidth = GUI_WIDTH;
     }
@@ -261,12 +267,12 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
 
     @Override
     public void drawBG(GuiGraphicsExtractor guiGraphics, int pX, int pY, int mX, int mY, float partial) {
-        blit(guiGraphics, pX, pY, HEADER_BBOX);
+        blit(guiGraphics, TEXTURE, TEXTURE_SIZE, pX, pY, HEADER_BBOX);
 
         int scrollLevel = scrollbar.getCurrentScroll();
         int currentY = pY + GUI_HEADER_HEIGHT;
 
-        blit(guiGraphics, pX, currentY + rowAmount * ROW_HEIGHT, getFooterBounds());
+        blit(guiGraphics, TEXTURE, TEXTURE_SIZE, pX, currentY + rowAmount * ROW_HEIGHT, FOOTER_BBOX);
 
         for (var i = 0; i < rowAmount; i++) {
             var isRequestElement = false;
@@ -275,15 +281,20 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
                 isRequestElement = lineElement instanceof Request;
             }
 
-            blit(guiGraphics, pX, currentY, isRequestElement ? REQUEST_BBOX : TEXT_BBOX);
+            blit(guiGraphics, TEXTURE, TEXTURE_SIZE, pX, currentY, isRequestElement ? REQUEST_BBOX : TEXT_BBOX);
 
             currentY += ROW_HEIGHT;
+        }
+
+        if (scrollbar.isVisible()) {
+            drawScrollbarPanel(guiGraphics, pX + SCROLLBAR_PANEL_X, pY);
         }
     }
 
     protected void resetScrollbar() {
         scrollbar.setHeight(rowAmount * ROW_HEIGHT + 1);
         scrollbar.setRange(0, lines.size() - rowAmount, 2);
+        scrollbar.setVisible(lines.size() > rowAmount);
     }
 
     protected abstract void clear();
@@ -294,7 +305,19 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
 
     protected abstract RequesterReference getById(long requesterId, String name, long sortBy);
 
-    private void blit(GuiGraphicsExtractor guiGraphics, int pX, int pY, Rect2i srcRect) {
+    private void drawScrollbarPanel(GuiGraphicsExtractor guiGraphics, int pX, int pY) {
+        blit(guiGraphics, SCROLLBAR_TEXTURE, SCROLLBAR_TEXTURE_SIZE, pX, pY, SCROLLBAR_TOP_BBOX);
+
+        var currentY = pY + GUI_HEADER_HEIGHT;
+        for (var i = 0; i < rowAmount; i++) {
+            blit(guiGraphics, SCROLLBAR_TEXTURE, SCROLLBAR_TEXTURE_SIZE, pX, currentY, SCROLLBAR_ROW_BBOX);
+            currentY += ROW_HEIGHT;
+        }
+
+        blit(guiGraphics, SCROLLBAR_TEXTURE, SCROLLBAR_TEXTURE_SIZE, pX, currentY, SCROLLBAR_BOTTOM_BBOX);
+    }
+
+    private static void blit(GuiGraphicsExtractor guiGraphics, Identifier texture, int textureSize, int pX, int pY, Rect2i srcRect) {
         guiGraphics.blit(
             RenderPipelines.GUI_TEXTURED,
             texture,
@@ -304,8 +327,8 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
             srcRect.getY(),
             srcRect.getWidth(),
             srcRect.getHeight(),
-            256,
-            256
+            textureSize,
+            textureSize
         );
     }
 
@@ -321,6 +344,4 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
         slot.setLocked(request.getClientStatus().locksRequest());
         return slot;
     }
-
-    protected abstract Rect2i getFooterBounds();
 }

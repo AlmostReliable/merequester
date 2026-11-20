@@ -1,7 +1,5 @@
 package com.almostreliable.merequester.client;
 
-import com.almostreliable.merequester.MERequester;
-import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.abstraction.AbstractRequesterScreen;
 import com.almostreliable.merequester.client.abstraction.RequesterReference;
 import com.almostreliable.merequester.core.Config;
@@ -10,9 +8,7 @@ import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
 
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 import appeng.api.config.Settings;
@@ -32,14 +28,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
 public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends AbstractRequesterScreen<T> {
-
-    private static final Identifier TEXTURE = Utils.getRL(String.format("textures/gui/%s.png", MERequester.TERMINAL_ID));
-    private static final Rect2i FOOTER_BBOX = new Rect2i(0, 133, GUI_WIDTH, GUI_FOOTER_HEIGHT + 2);
 
     private final HashMap<Long, RequesterReference> byId = new HashMap<>();
     private final HashMultimap<String, RequesterReference> byName = HashMultimap.create();
@@ -48,10 +42,8 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
     private final Map<String, Set<Object>> searchCache = new WeakHashMap<>();
     private final AETextField searchField;
 
-    public RequesterTerminalScreen(
-        T menu, Inventory playerInventory, Component name, ScreenStyle style
-    ) {
-        super(menu, playerInventory, name, style, TEXTURE);
+    public RequesterTerminalScreen(T menu, Inventory playerInventory, Component name, ScreenStyle style) {
+        super(menu, playerInventory, name, style);
 
         addToLeftToolbar(new SettingToggleButton<>(
             Settings.TERMINAL_STYLE,
@@ -60,7 +52,7 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
         ));
 
         searchField = widgets.addTextField("search");
-        searchField.setResponder(str -> refreshList());
+        searchField.setResponder(_ -> refreshList());
         searchField.setPlaceholder(GuiText.SearchPlaceholder.text());
     }
 
@@ -99,7 +91,7 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
         searchCache.clear();
         byName.clear();
 
-        var searchQuery = searchField.getValue().toLowerCase();
+        var searchQuery = searchField.getValue().toLowerCase(Locale.ROOT);
         var cachedSearch = searchByQuery(searchQuery);
         var rebuild = cachedSearch.isEmpty();
 
@@ -162,11 +154,6 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
         return requester;
     }
 
-    @Override
-    protected Rect2i getFooterBounds() {
-        return FOOTER_BBOX;
-    }
-
     private void toggleTerminalStyle(SettingToggleButton<TerminalStyle> button, boolean backwards) {
         TerminalStyle next = button.getNextValue(backwards);
         AEConfig.instance().setTerminalStyle(next);
@@ -182,11 +169,11 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
     }
 
     private boolean keyMatchesSearchQuery(@Nullable AEKey key, String searchTerm) {
-        return key != null && key.getDisplayName().getString().toLowerCase().contains(searchTerm);
+        return key != null && key.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(searchTerm);
     }
 
     private Set<Object> searchByQuery(String searchQuery) {
-        Set<Object> cache = searchCache.computeIfAbsent(searchQuery, $ -> new HashSet<>());
+        Set<Object> cache = searchCache.computeIfAbsent(searchQuery, _ -> new HashSet<>());
 
         if (cache.isEmpty() && searchQuery.length() > 1) {
             cache.addAll(searchByQuery(searchQuery.substring(0, searchQuery.length() - 1)));
