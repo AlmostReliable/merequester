@@ -10,6 +10,8 @@ public interface RequestHost {
 
     void requestChanged(int index);
 
+    void requestKeyChanged(int index);
+
     boolean isClientSide();
 
     RequestManager getRequestManager();

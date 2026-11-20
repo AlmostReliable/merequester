@@ -1,16 +1,11 @@
 package com.almostreliable.merequester.client;
 
-import com.almostreliable.merequester.MERequester;
-import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.client.abstraction.AbstractRequesterScreen;
 import com.almostreliable.merequester.client.abstraction.RequesterReference;
-import com.almostreliable.merequester.core.Config;
 import com.almostreliable.merequester.requester.Request;
 import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
 
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 import appeng.api.config.Settings;
@@ -30,14 +25,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
 public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends AbstractRequesterScreen<T> {
-
-    private static final ResourceLocation TEXTURE = Utils.getRL(String.format("textures/gui/%s.png", MERequester.TERMINAL_ID));
-    private static final Rect2i FOOTER_BBOX = new Rect2i(0, 133, GUI_WIDTH, GUI_FOOTER_HEIGHT + 2);
 
     private final HashMap<Long, RequesterReference> byId = new HashMap<>();
     private final HashMultimap<String, RequesterReference> byName = HashMultimap.create();
@@ -46,10 +39,8 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
     private final Map<String, Set<Object>> searchCache = new WeakHashMap<>();
     private final AETextField searchField;
 
-    public RequesterTerminalScreen(
-        T menu, Inventory playerInventory, Component name, ScreenStyle style
-    ) {
-        super(menu, playerInventory, name, style, TEXTURE);
+    public RequesterTerminalScreen(T menu, Inventory playerInventory, Component name, ScreenStyle style) {
+        super(menu, playerInventory, name, style);
 
         addToLeftToolbar(new SettingToggleButton<>(
             Settings.TERMINAL_STYLE,
@@ -97,7 +88,7 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
         searchCache.clear();
         byName.clear();
 
-        var searchQuery = searchField.getValue().toLowerCase();
+        var searchQuery = searchField.getValue().toLowerCase(Locale.ROOT);
         var cachedSearch = searchByQuery(searchQuery);
         var rebuild = cachedSearch.isEmpty();
 
@@ -126,7 +117,6 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
         Collections.sort(requesterNames);
 
         lines.clear();
-        lines.ensureCapacity(requesterNames.size() + byId.size() * Config.COMMON.requests.get());
 
         for (var name : requesterNames) {
             lines.add(name);
@@ -150,19 +140,14 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
     }
 
     @Override
-    protected RequesterReference getById(long requesterId, String name, long sortBy) {
+    protected RequesterReference getById(long requesterId, String name, long sortBy, int requestCount) {
         RequesterReference requester = byId.get(requesterId);
         if (requester == null) {
-            requester = new RequesterReference(requesterId, name, sortBy);
+            requester = new RequesterReference(requesterId, name, sortBy, requestCount);
             byId.put(requesterId, requester);
             refreshList = true;
         }
         return requester;
-    }
-
-    @Override
-    protected Rect2i getFooterBounds() {
-        return FOOTER_BBOX;
     }
 
     private void toggleTerminalStyle(SettingToggleButton<TerminalStyle> button, boolean backwards) {
@@ -180,7 +165,7 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
     }
 
     private boolean keyMatchesSearchQuery(@Nullable AEKey key, String searchTerm) {
-        return key != null && key.getDisplayName().getString().toLowerCase().contains(searchTerm);
+        return key != null && key.getDisplayName().getString().toLowerCase(Locale.ROOT).contains(searchTerm);
     }
 
     private Set<Object> searchByQuery(String searchQuery) {

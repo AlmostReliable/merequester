@@ -21,12 +21,12 @@ public class RequesterReference implements RequestHost, Comparable<RequesterRefe
     private final long sortBy;
     private final RequestManager requestManager;
 
-    public RequesterReference(long requesterId, String name, long sortBy) {
+    public RequesterReference(long requesterId, String name, long sortBy, int requestCount) {
         this.requesterId = requesterId;
         this.displayName = name;
         this.searchName = name.toLowerCase();
         this.sortBy = sortBy;
-        requestManager = new RequestManager(this);
+        requestManager = new RequestManager(this, requestCount);
     }
 
     // <editor-fold defaultstate="collapsed" desc="Not important for a reference.">
@@ -35,6 +35,9 @@ public class RequesterReference implements RequestHost, Comparable<RequesterRefe
 
     @Override
     public void requestChanged(int index) {}
+
+    @Override
+    public void requestKeyChanged(int index) {}
 
     @Override
     public boolean isClientSide() {

@@ -92,7 +92,7 @@ public final class Request implements INBTSerializable<CompoundTag> {
     public void updateState(boolean state) {
         if (this.state != state) {
             this.state = state;
-            if (host != null) host.saveChanges();
+            if (host != null) host.requestChanged(index);
         }
     }
 
@@ -103,14 +103,14 @@ public final class Request implements INBTSerializable<CompoundTag> {
         }
         if (this.amount != amount) {
             this.amount = amount;
-            if (host != null) host.saveChanges();
+            if (host != null) host.requestChanged(index);
         }
     }
 
     public void updateBatch(long batch) {
         var oldBatch = this.batch;
         this.batch = Mth.clamp(batch, 1, batch);
-        if (oldBatch != this.batch && host != null) host.saveChanges();
+        if (oldBatch != this.batch && host != null) host.requestChanged(index);
     }
 
     @Override
@@ -157,7 +157,7 @@ public final class Request implements INBTSerializable<CompoundTag> {
     }
 
     private void keyChanged() {
-        if (host != null) host.requestChanged(index);
+        if (host != null) host.requestKeyChanged(index);
     }
 
     private void resetSlot() {

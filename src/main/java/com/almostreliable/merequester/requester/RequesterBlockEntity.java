@@ -5,6 +5,7 @@ import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.core.Config;
 import com.almostreliable.merequester.core.Registration;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
+import com.almostreliable.merequester.requester.status.BlockingState;
 import com.almostreliable.merequester.requester.status.LinkState;
 import com.almostreliable.merequester.requester.status.RequestStatus;
 import com.almostreliable.merequester.requester.status.StatusState;
@@ -68,10 +69,11 @@ public class RequesterBlockEntity extends AENetworkedBlockEntity implements Requ
 
     public RequesterBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
-        requestManager = new RequestManager(this);
-        requestStatus = new StatusState[Config.COMMON.requests.get()];
+        var possibleRequests = Config.COMMON.requests.get();
+        requestManager = new RequestManager(this, possibleRequests);
+        requestStatus = new StatusState[possibleRequests];
         Arrays.fill(requestStatus, StatusState.IDLE);
-        storageManager = new StorageManager(this);
+        storageManager = new StorageManager(this, possibleRequests);
         actionSource = new MachineSource(this);
         getMainNode()
             .setExposedOnSides(getExposedSides())
@@ -141,8 +143,17 @@ public class RequesterBlockEntity extends AENetworkedBlockEntity implements Requ
 
     @Override
     public void requestChanged(int index) {
-        storageManager.clear(index);
+        if (requestStatus[index] instanceof BlockingState) {
+            updateRequestStatus(index, StatusState.IDLE);
+        }
+
         saveChanges();
+    }
+
+    @Override
+    public void requestKeyChanged(int index) {
+        storageManager.clear(index);
+        requestChanged(index);
     }
 
     @Override

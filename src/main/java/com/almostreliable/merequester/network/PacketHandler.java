@@ -7,7 +7,7 @@ import net.neoforged.neoforge.network.handling.IPayloadHandler;
 
 public final class PacketHandler {
 
-    private static final String PROTOCOL = "1";
+    private static final String PROTOCOL = "2";
 
     private PacketHandler() {}
 

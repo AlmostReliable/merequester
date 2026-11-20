@@ -17,18 +17,20 @@ public class RequestState implements StatusState {
 
         var amountToCraft = owner.getStorageManager().computeAmountToCraft(index);
         if (amountToCraft <= 0) return IDLE;
-        var key = owner.getRequestManager().getKey(index);
 
-        var future = owner
-            .getMainNodeGrid()
-            .getCraftingService()
-            .beginCraftingCalculation(
-                owner.getLevel(),
-                owner::getActionSource,
-                key,
-                amountToCraft,
-                CalculationStrategy.REPORT_MISSING_ITEMS
-            );
+        var key = owner.getRequestManager().getKey(index);
+        if (key == null) return IDLE;
+
+        var craftingService = owner.getMainNodeGrid().getCraftingService();
+        if (!craftingService.isCraftable(key) && !craftingService.canEmitFor(key)) return new MissingState();
+
+        var future = craftingService.beginCraftingCalculation(
+            owner.getLevel(),
+            owner::getActionSource,
+            key,
+            amountToCraft,
+            CalculationStrategy.REPORT_MISSING_ITEMS
+        );
 
         return new PlanState(future);
     }

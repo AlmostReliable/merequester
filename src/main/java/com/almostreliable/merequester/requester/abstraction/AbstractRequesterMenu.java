@@ -2,6 +2,7 @@ package com.almostreliable.merequester.requester.abstraction;
 
 import com.almostreliable.merequester.MERequester;
 import com.almostreliable.merequester.network.RequesterSyncPacket;
+import com.almostreliable.merequester.requester.Request;
 import com.almostreliable.merequester.requester.RequesterBlockEntity;
 
 import net.minecraft.nbt.CompoundTag;
@@ -23,6 +24,7 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
 
     public static final String SORT_BY_ID = "sort_by";
     public static final String UNIQUE_NAME_ID = "unique_name";
+    public static final String REQUEST_COUNT_ID = "request_count";
 
     // used to give requesters unique IDs
     private long idSerial = Long.MIN_VALUE;
@@ -36,12 +38,7 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
     @Override
     public void doAction(ServerPlayer player, InventoryAction action, int slot, long id) {
         RequestTracker requestTracker = getRequestTracker(id);
-        if (requestTracker == null) return;
-
-        if (slot < 0 || slot >= requestTracker.getServer().size()) {
-            MERequester.LOGGER.warn("Requester Screen refers to invalid slot {} of {}", slot, requestTracker.getName());
-            return;
-        }
+        if (requestTracker == null || isInvalidRequestIndex(requestTracker, slot)) return;
 
         var requestSlot = requestTracker.getServer().getSlotInv(slot);
         var requestStack = requestSlot.getStackInSlot(0);
@@ -89,18 +86,28 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
     }
 
     public void updateRequesterState(long requesterId, int requestIndex, boolean state) {
-        var requestTracker = getRequestTracker(requesterId);
-        if (requestTracker == null) return;
-        var request = requestTracker.getServer().get(requestIndex);
+        var request = getServerRequest(requesterId, requestIndex);
+        if (request == null) return;
+
         request.updateState(state);
     }
 
     public void updateRequesterNumbers(long requesterId, int requestIndex, long amount, long batch) {
-        var requestTracker = getRequestTracker(requesterId);
-        if (requestTracker == null) return;
-        var request = requestTracker.getServer().get(requestIndex);
+        var request = getServerRequest(requesterId, requestIndex);
+        if (request == null) return;
+
         request.updateAmount(amount);
         request.updateBatch(batch);
+    }
+
+    @Nullable
+    private Request getServerRequest(long requesterId, int requestIndex) {
+        var requestTracker = getRequestTracker(requesterId);
+        if (requestTracker == null) return null;
+
+        if (isInvalidRequestIndex(requestTracker, requestIndex)) return null;
+
+        return requestTracker.getServer().get(requestIndex);
     }
 
     protected abstract void sendFullUpdate(@Nullable IGrid grid);
@@ -121,6 +128,7 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
         // send relevant data to the client
         tag.putString(UNIQUE_NAME_ID, requestTracker.getName());
         tag.putLong(SORT_BY_ID, requestTracker.getSortBy());
+        tag.putInt(REQUEST_COUNT_ID, server.size());
         if (getPlayer() instanceof ServerPlayer serverPlayer) {
             PacketDistributor.sendToPlayer(serverPlayer, RequesterSyncPacket.createInventory(requestTracker.getId(), tag));
         }
@@ -142,6 +150,7 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
                     tag = new CompoundTag();
                     tag.putString(UNIQUE_NAME_ID, requestTracker.getName());
                     tag.putLong(SORT_BY_ID, requestTracker.getSortBy());
+                    tag.putInt(REQUEST_COUNT_ID, server.size());
                 }
 
                 var serverData = serverRequest.serializeNBT(getPlayer().registryAccess());
@@ -155,6 +164,14 @@ public abstract class AbstractRequesterMenu extends AEBaseMenu {
         if (tag != null && getPlayer() instanceof ServerPlayer serverPlayer) {
             PacketDistributor.sendToPlayer(serverPlayer, RequesterSyncPacket.createInventory(requestTracker.getId(), tag));
         }
+    }
+
+    private boolean isInvalidRequestIndex(RequestTracker requestTracker, int index) {
+        if (requestTracker.getServer().isInvalidIndex(index)) {
+            MERequester.LOGGER.warn("Requester Screen refers to invalid slot {} of {}", index, requestTracker.getName());
+            return true;
+        }
+        return false;
     }
 
     protected RequestTracker createTracker(RequesterBlockEntity requester) {

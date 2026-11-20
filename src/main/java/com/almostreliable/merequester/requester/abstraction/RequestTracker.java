@@ -21,7 +21,7 @@ public final class RequestTracker {
         this.sortBy = requester.getSortValue();
         this.name = requester.getTerminalName().getString();
         this.server = requester.getRequestManager();
-        this.client = new RequestManager();
+        this.client = new RequestManager(server.size());
     }
 
     public long getId() {

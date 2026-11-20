@@ -27,7 +27,7 @@ public final class PlanState implements StatusState {
 
     @Override
     public StatusState handle(RequesterBlockEntity host, int index) {
-        if (!future.isDone()) return this;
+        if (isNotDone()) return this;
         if (future.isCancelled()) return IDLE;
 
         try {
@@ -57,6 +57,10 @@ public final class PlanState implements StatusState {
     @Override
     public RequestStatus type() {
         return RequestStatus.PLAN;
+    }
+
+    boolean isNotDone() {
+        return !future.isDone();
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.almostreliable.merequester.requester;
 
-import com.almostreliable.merequester.core.Config;
-
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -23,9 +21,9 @@ public class StorageManager implements IStorageWatcherNode, INBTSerializable<Com
     @Nullable
     private IStackWatcher stackWatcher;
 
-    StorageManager(RequesterBlockEntity host) {
+    StorageManager(RequesterBlockEntity host, int size) {
         this.host = host;
-        storages = new Storage[Config.COMMON.requests.get()];
+        storages = new Storage[size];
     }
 
     public Storage get(int slot) {
