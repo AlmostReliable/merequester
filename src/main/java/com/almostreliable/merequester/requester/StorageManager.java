@@ -1,7 +1,5 @@
 package com.almostreliable.merequester.requester;
 
-import com.almostreliable.merequester.core.Config;
-
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -20,19 +18,20 @@ import java.util.List;
 public class StorageManager implements IStorageWatcherNode, ValueIOSerializable {
 
     private final RequesterBlockEntity host;
-    private final Storage[] storages;
+    private final @Nullable Storage[] storages;
     @Nullable
     private IStackWatcher stackWatcher;
 
-    StorageManager(RequesterBlockEntity host) {
+    StorageManager(RequesterBlockEntity host, Integer size) {
         this.host = host;
-        storages = new Storage[Config.COMMON.requests.get()];
+        storages = new Storage[size];
     }
 
     public Storage get(int slot) {
         if (storages[slot] == null) {
             storages[slot] = new Storage();
         }
+        //noinspection DataFlowIssue
         return storages[slot];
     }
 

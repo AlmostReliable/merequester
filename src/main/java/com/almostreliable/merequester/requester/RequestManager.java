@@ -1,6 +1,5 @@
 package com.almostreliable.merequester.requester;
 
-import com.almostreliable.merequester.core.Config;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
 
 import net.minecraft.world.level.storage.ValueInput;
@@ -20,11 +19,9 @@ import java.util.List;
 public class RequestManager implements ValueIOSerializable {
 
     private final Request[] requests;
-    private final int size;
     private final RequesterConfigInventory configInventory;
 
-    public RequestManager(@Nullable RequestHost host) {
-        this.size = Config.COMMON.requests.get();
+    public RequestManager(@Nullable RequestHost host, int size) {
         this.requests = new Request[size];
         for (var i = 0; i < requests.length; i++) {
             requests[i] = new Request(host, i);
@@ -32,8 +29,8 @@ public class RequestManager implements ValueIOSerializable {
         this.configInventory = new RequesterConfigInventory(this);
     }
 
-    public RequestManager() {
-        this(null);
+    public RequestManager(int size) {
+        this(null, size);
     }
 
     public Request get(int index) {
@@ -41,7 +38,11 @@ public class RequestManager implements ValueIOSerializable {
     }
 
     public int size() {
-        return size;
+        return requests.length;
+    }
+
+    public boolean isInvalidIndex(int index) {
+        return index < 0 || index >= requests.length;
     }
 
     @Nullable

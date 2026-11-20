@@ -68,10 +68,11 @@ public class RequesterBlockEntity extends AENetworkedBlockEntity implements Requ
 
     public RequesterBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState blockState) {
         super(blockEntityType, pos, blockState);
-        requestManager = new RequestManager(this);
-        requestStatus = new StatusState[Config.COMMON.requests.get()];
+        var possibleRequests = Config.COMMON.requests.get();
+        requestManager = new RequestManager(this, possibleRequests);
+        requestStatus = new StatusState[possibleRequests];
         Arrays.fill(requestStatus, StatusState.IDLE);
-        storageManager = new StorageManager(this);
+        storageManager = new StorageManager(this, possibleRequests);
         actionSource = new MachineSource(this);
         getMainNode()
             .setExposedOnSides(getExposedSides())

@@ -21,13 +21,19 @@ public final class RequesterMenu extends AbstractRequesterMenu {
 
     public static final MenuType<RequesterMenu> TYPE = MenuTypeBuilder
         .create(RequesterMenu::new, RequesterBlockEntity.class)
+        .withInitialData(
+            (host, buffer) -> buffer.writeVarInt(host.getRequestManager().size()),
+            (_, menu, buffer) -> menu.requestCount = buffer.readVarInt()
+        )
         .buildUnregistered(Utils.getRL(MERequester.REQUESTER_ID));
 
+    private int requestCount;
     @Nullable
     private RequestTracker requestTracker;
 
     private RequesterMenu(int id, Inventory playerInventory, RequesterBlockEntity host) {
         super(TYPE, id, playerInventory, host);
+        requestCount = host.getRequestManager().size();
     }
 
     @Override
@@ -70,5 +76,9 @@ public final class RequesterMenu extends AbstractRequesterMenu {
     @Override
     protected RequestTracker getRequestTracker(long id) {
         return requestTracker;
+    }
+
+    public int getRequestCount() {
+        return requestCount;
     }
 }

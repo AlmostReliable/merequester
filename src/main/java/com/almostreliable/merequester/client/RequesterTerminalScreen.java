@@ -2,7 +2,6 @@ package com.almostreliable.merequester.client;
 
 import com.almostreliable.merequester.client.abstraction.AbstractRequesterScreen;
 import com.almostreliable.merequester.client.abstraction.RequesterReference;
-import com.almostreliable.merequester.core.Config;
 import com.almostreliable.merequester.requester.Request;
 import com.almostreliable.merequester.terminal.RequesterTerminalMenu;
 
@@ -120,7 +119,6 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
         Collections.sort(requesterNames);
 
         lines.clear();
-        lines.ensureCapacity(requesterNames.size() + byId.size() * Config.COMMON.requests.get());
 
         for (var name : requesterNames) {
             lines.add(name);
@@ -144,10 +142,10 @@ public class RequesterTerminalScreen<T extends RequesterTerminalMenu> extends Ab
     }
 
     @Override
-    protected RequesterReference getById(long requesterId, String name, long sortBy) {
+    protected RequesterReference getById(long requesterId, String name, long sortBy, int requestCount) {
         RequesterReference requester = byId.get(requesterId);
         if (requester == null) {
-            requester = new RequesterReference(requesterId, name, sortBy);
+            requester = new RequesterReference(requesterId, name, sortBy, requestCount);
             byId.put(requesterId, requester);
             refreshList = true;
         }

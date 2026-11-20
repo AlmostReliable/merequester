@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- fixed the server Requester slots not being synced to clients
 - fixed the scrollbar of the Requester and Requester Terminal being shown when there is nothing to scroll
 
 ## [1.5.1] - 2026-09-03

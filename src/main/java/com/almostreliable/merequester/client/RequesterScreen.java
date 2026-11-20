@@ -2,7 +2,6 @@ package com.almostreliable.merequester.client;
 
 import com.almostreliable.merequester.client.abstraction.AbstractRequesterScreen;
 import com.almostreliable.merequester.client.abstraction.RequesterReference;
-import com.almostreliable.merequester.core.Config;
 import com.almostreliable.merequester.requester.RequesterMenu;
 
 import net.minecraft.network.chat.Component;
@@ -30,7 +29,7 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
     @Override
     protected void init() {
         var possibleRows = (height - GUI_HEADER_HEIGHT - GUI_FOOTER_HEIGHT) / ROW_HEIGHT;
-        rowAmount = Mth.clamp(possibleRows, MIN_ROW_COUNT, Math.min(Config.COMMON.requests.get(), MAX_ROW_COUNT));
+        rowAmount = Mth.clamp(possibleRows, MIN_ROW_COUNT, Math.min(menu.getRequestCount(), MAX_ROW_COUNT));
         super.init();
     }
 
@@ -40,10 +39,11 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
     @Override
     protected void refreshList() {
         if (requesterReference != null) {
+            var requests = requesterReference.getRequestManager();
             lines.clear();
-            lines.ensureCapacity(Config.COMMON.requests.get());
-            for (var i = 0; i < requesterReference.getRequestManager().size(); i++) {
-                lines.add(requesterReference.getRequestManager().get(i));
+            lines.ensureCapacity(requests.size());
+            for (var i = 0; i < requests.size(); i++) {
+                lines.add(requests.get(i));
             }
         }
         refreshList = false;
@@ -59,9 +59,9 @@ public class RequesterScreen extends AbstractRequesterScreen<RequesterMenu> {
     }
 
     @Override
-    protected RequesterReference getById(long requesterId, String name, long sortBy) {
+    protected RequesterReference getById(long requesterId, String name, long sortBy, int requestCount) {
         if (requesterReference == null) {
-            requesterReference = new RequesterReference(requesterId, name, sortBy);
+            requesterReference = new RequesterReference(requesterId, name, sortBy, requestCount);
             refreshList = true;
         }
         return requesterReference;

@@ -15,7 +15,7 @@ import java.util.List;
 
 public record RequesterSyncPacket(boolean clearData, long requesterId, Payload data) implements CustomPacketPayload {
 
-    private static final Payload EMPTY_PAYLOAD = new Payload("", 0L, List.of());
+    private static final Payload EMPTY_PAYLOAD = new Payload("", 0L, 0, List.of());
 
     static final Type<RequesterSyncPacket> TYPE = new Type<>(Utils.getRL("requester_sync"));
 
@@ -30,8 +30,14 @@ public record RequesterSyncPacket(boolean clearData, long requesterId, Payload d
         return new RequesterSyncPacket(true, -1, EMPTY_PAYLOAD);
     }
 
-    public static RequesterSyncPacket createInventory(long requesterId, String name, long sortBy, List<IndexedRequest> updates) {
-        return new RequesterSyncPacket(false, requesterId, new Payload(name, sortBy, updates));
+    public static RequesterSyncPacket createInventory(
+        long requesterId,
+        String name,
+        long sortBy,
+        int requestCount,
+        List<IndexedRequest> updates
+    ) {
+        return new RequesterSyncPacket(false, requesterId, new Payload(name, sortBy, requestCount, updates));
     }
 
     @Override
@@ -45,11 +51,12 @@ public record RequesterSyncPacket(boolean clearData, long requesterId, Payload d
         }
     }
 
-    public record Payload(String name, long sortBy, List<IndexedRequest> updates) {
+    public record Payload(String name, long sortBy, int requestCount, List<IndexedRequest> updates) {
 
         private static final StreamCodec<RegistryFriendlyByteBuf, Payload> PAYLOAD_STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8, Payload::name,
             ByteBufCodecs.VAR_LONG, Payload::sortBy,
+            ByteBufCodecs.VAR_INT, Payload::requestCount,
             IndexedRequest.REQUEST_STREAM_CODEC.apply(ByteBufCodecs.list()), Payload::updates,
             Payload::new
         );

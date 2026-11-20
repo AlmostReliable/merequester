@@ -125,7 +125,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
             return;
         }
 
-        var requests = getById(requesterId, data.name(), data.sortBy()).getRequestManager();
+        var requests = getById(requesterId, data.name(), data.sortBy(), data.requestCount()).getRequestManager();
         for (var update : data.updates()) {
             var index = update.index();
             if (index < 0 || index >= requests.size()) continue;
@@ -303,7 +303,7 @@ public abstract class AbstractRequesterScreen<M extends AbstractRequesterMenu> e
 
     protected abstract Set<RequesterReference> getByName(String name);
 
-    protected abstract RequesterReference getById(long requesterId, String name, long sortBy);
+    protected abstract RequesterReference getById(long requesterId, String name, long sortBy, int requestCount);
 
     private void drawScrollbarPanel(GuiGraphicsExtractor guiGraphics, int pX, int pY) {
         blit(guiGraphics, SCROLLBAR_TEXTURE, SCROLLBAR_TEXTURE_SIZE, pX, pY, SCROLLBAR_TOP_BBOX);
