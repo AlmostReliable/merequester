@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+- /
+
+## [1.5.2] - 2026-11-20
 
 - changed blocked requests to retry with a growing delay
 - changed requests to skip the crafting calculation while all crafting CPUs are busy or no pattern exists
@@ -102,6 +105,7 @@ Known issue: Just Enough Items drag and drop is currently not working. A fix on 
 - scroll bar is always visible
 
 <!-- Versions -->
+[1.5.2]: https://github.com/AlmostReliable/merequester/releases/tag/v26.1.2-neoforge-1.5.2
 [1.5.1]: https://github.com/AlmostReliable/merequester/releases/tag/v26.1.2-neoforge-1.5.1
 [1.5.0]: https://github.com/AlmostReliable/merequester/releases/tag/v26.1.2-neoforge-1.5.0
 [1.4.3]: https://github.com/AlmostReliable/merequester/releases/tag/v1.21.1-neoforge-1.4.3
