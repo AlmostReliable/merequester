@@ -28,15 +28,10 @@ public class RequesterReference implements RequestHost, Comparable<RequesterRefe
 
     // <editor-fold defaultstate="collapsed" desc="Not important for a reference.">
     @Override
-    public void saveChanges() {}
-
-    @Override
     public void requestChanged(int index) {}
 
     @Override
-    public boolean isClientSide() {
-        return true;
-    }
+    public void requestKeyChanged(int index) {}
 
     @Override
     public Component getTerminalName() {

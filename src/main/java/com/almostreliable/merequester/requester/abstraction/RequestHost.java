@@ -6,11 +6,9 @@ import net.minecraft.network.chat.Component;
 
 public interface RequestHost {
 
-    void saveChanges();
-
     void requestChanged(int index);
 
-    boolean isClientSide();
+    void requestKeyChanged(int index);
 
     RequestManager getRequestManager();
 
