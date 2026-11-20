@@ -5,6 +5,7 @@ import com.almostreliable.merequester.Utils;
 import com.almostreliable.merequester.core.Config;
 import com.almostreliable.merequester.core.ModRegistration;
 import com.almostreliable.merequester.requester.abstraction.RequestHost;
+import com.almostreliable.merequester.requester.status.BlockingState;
 import com.almostreliable.merequester.requester.status.LinkState;
 import com.almostreliable.merequester.requester.status.RequestStatus;
 import com.almostreliable.merequester.requester.status.StatusState;
@@ -140,8 +141,17 @@ public class RequesterBlockEntity extends AENetworkedBlockEntity implements Requ
 
     @Override
     public void requestChanged(int index) {
-        storageManager.clear(index);
+        if (requestStatus[index] instanceof BlockingState) {
+            updateRequestStatus(index, StatusState.IDLE);
+        }
+
         saveChanges();
+    }
+
+    @Override
+    public void requestKeyChanged(int index) {
+        storageManager.clear(index);
+        requestChanged(index);
     }
 
     @Override
